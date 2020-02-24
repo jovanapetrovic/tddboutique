@@ -1,0 +1,42 @@
+server:
+    port: 8080
+
+spring:
+    application:
+        name: tddboutique
+
+    datasource:
+        dataSourceClassName: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+        url: jdbc:mysql://localhost:3306/tddboutique?autoReconnect=true&useSSL=false
+        username: root
+        password: root
+
+    jpa:
+        database-platform: org.hibernate.dialect.MySQLInnoDBDialect
+        show_sql: true
+        generate-ddl: false
+        hibernate:
+            ddl-auto: validate
+        properties:
+            hibernate.cache.use_second_level_cache: false
+            hibernate.cache.use_query_cache: false
+            hibernate.generate_statistics: false
+
+app:
+    name: tddboutique
+
+# Disable the spring security default configuration from spring-boot-actuator
+management:
+    security:
+        enabled: true
+security:
+    basic:
+        enabled: false
+
+jwt:
+    header: Authorization
+    # Token is valid for 24 hours
+    expiresIn: 86400
+    secret: thisissomerandomsecret32
+    cookie: AUTH-TOKEN
+

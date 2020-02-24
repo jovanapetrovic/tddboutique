@@ -1,0 +1,16 @@
+package com.jovana.service.impl.user;
+
+import com.jovana.entity.user.User;
+
+/**
+ * Created by jovana on 24.02.2020
+ */
+public interface UserService {
+
+    User getUserById(Long userId);
+
+    User getUserByUsername(String login);
+
+    void registerUser(RegisterUserRequest registerUserRequest);
+
+}
