@@ -9,7 +9,7 @@ spring:
         dataSourceClassName: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
         url: jdbc:mysql://localhost:3306/tddboutique?autoReconnect=true&useSSL=false
         username: root
-        password: root
+        password:
 
     jpa:
         database-platform: org.hibernate.dialect.MySQLInnoDBDialect
