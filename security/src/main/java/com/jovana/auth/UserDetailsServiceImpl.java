@@ -25,7 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private AuthorityService authorityService;
 

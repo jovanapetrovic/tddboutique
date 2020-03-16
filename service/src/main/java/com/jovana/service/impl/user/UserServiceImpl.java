@@ -26,10 +26,9 @@ public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    BCryptPasswordEncoder passwordEncoder;
-
+    private BCryptPasswordEncoder passwordEncoder;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public User getUserById(Long userId) {

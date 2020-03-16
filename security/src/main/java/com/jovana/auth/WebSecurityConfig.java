@@ -24,15 +24,13 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String USERS_BY_USERNAME_QUERY = "SELECT p.email, u.password, 1 " +
+    private static final String USERS_BY_USERNAME_QUERY = "SELECT u.username, u.password, 1 " +
                                                           "FROM user u " +
-                                                          "JOIN profile p ON u.id = p.user_id " +
-                                                          "WHERE email=?";
-    private static final String AUTHORITIES_BY_USERNAME_QUERY = "SELECT p.email, u2a.authority_name " +
-                                                                "FROM profile p " +
-                                                                "JOIN user u ON p.user_id = u.id " +
+                                                          "WHERE username=?";
+    private static final String AUTHORITIES_BY_USERNAME_QUERY = "SELECT u.username, u2a.authority_name " +
+                                                                "FROM user u " +
                                                                 "JOIN user_authority u2a ON u.id = u2a.user_id " +
-                                                                "WHERE email=?";
+                                                                "WHERE username=?";
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -46,18 +44,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationSuccessHandler authenticationSuccessHandler;
-
     @Autowired
     private AuthenticationFailureHandler authenticationFailureHandler;
-
     @Autowired
     private RestAuthenticationEntryPoint authenticationEntryPoint;
-
     @Autowired
     private UserDetailsService userDetailService;
-
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -81,20 +75,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/testpost").permitAll()
                 .antMatchers("/api/testget").permitAll()
                 .antMatchers("/api/register/**").permitAll()
-                .antMatchers("/api/activate/**").permitAll()
-                .antMatchers("/api/suprise/me").permitAll()
-                .antMatchers("/api/account/undo/finish").permitAll()
                 .antMatchers("/api/authenticate").permitAll()
-                .antMatchers("/api/subscription/brands/webhook").permitAll()
-                .antMatchers("/api/conversation/saveMessage").permitAll()
-                .antMatchers("/api/account/reset_password/init").permitAll()
-                .antMatchers("/api/account/reset_password/finish").permitAll()
                 .antMatchers("/api/logs/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/api/invite/template").permitAll()
                 .antMatchers("/api/**").authenticated()
             .and()
                 .formLogin().loginPage("/api/login")    // Pre-set login form with default params
-                .usernameParameter("email").passwordParameter("password")
+                .usernameParameter("username").passwordParameter("password")
                 .successHandler(authenticationSuccessHandler)
                 .failureHandler(authenticationFailureHandler)
             .and()

@@ -19,10 +19,8 @@ public class TokenHelper {
 
     @Value("${app.name}")
     private String appName;
-
     @Value("${jwt.secret}")
     private String secret;
-
     @Value("${jwt.expiresIn}")
     private int expiresIn;
 

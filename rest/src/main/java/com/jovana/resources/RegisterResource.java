@@ -28,7 +28,7 @@ public class RegisterResource {
     @RequestMapping(value = "/demo", method = RequestMethod.POST)
     public ResponseEntity<Void> registerUserPOST(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
 
-        userService.registerUser(registerUserRequest); // will throw an error if login already exists
+        userService.registerUser(registerUserRequest); // will throw an error if username already exists
 
         return ResponseEntity.ok().build();
     }

@@ -21,7 +21,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorityServiceImpl.class);
 
     @Autowired
-    AuthorityRepository authorityRepository;
+    private AuthorityRepository authorityRepository;
 
     @Override
     public Authority getAuthorityByUserId(Long userId) {

@@ -48,20 +48,20 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
     }
 
     private class UserTokenState {
-        private String jws;
+        private String accessToken;
         private int expires;
 
-        public UserTokenState(String jws, int expires) {
-            this.jws = jws;
+        public UserTokenState(String accessToken, int expires) {
+            this.accessToken = accessToken;
             this.expires = expires;
         }
 
-        public String getJws() {
-            return jws;
+        public String getAccessToken() {
+            return accessToken;
         }
 
-        public void setJws(String jws) {
-            this.jws = jws;
+        public void setAccessToken(String accessToken) {
+            this.accessToken = accessToken;
         }
 
         public int getExpires() {

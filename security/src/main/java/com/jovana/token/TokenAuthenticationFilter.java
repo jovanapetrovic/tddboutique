@@ -25,12 +25,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Value("${jwt.header}")
     private String AUTH_HEADER;
-
     @Autowired
-    TokenHelper tokenHelper;
-
+    private TokenHelper tokenHelper;
     @Autowired
-    UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     private String getToken(HttpServletRequest request) {
         String authHeader = request.getHeader(AUTH_HEADER);

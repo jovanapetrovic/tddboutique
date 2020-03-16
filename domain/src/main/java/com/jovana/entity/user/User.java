@@ -27,7 +27,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Long id;
 
     @NotNull
-//    @Pattern(regexp = "^[+a-z0-9]*$") // usernam can be email, update pattern perhaps?
     @Size(min = 1, max = 50)
     @Column(length = 50, unique = true, nullable = false)
     private String username;
