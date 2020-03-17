@@ -26,12 +26,16 @@
     </modules>
 
     <properties>
-        <java.version>13</java.version>
+        <java-version>13</java-version>
         <apache-commons-lang3-version>3.9</apache-commons-lang3-version>
         <google-guava-version>28.2-jre</google-guava-version>
         <google-libphonenumber-version>8.11.4</google-libphonenumber-version>
         <json-web-token-version>0.9.1</json-web-token-version>
         <spring-tx-version>5.2.3.RELEASE</spring-tx-version>
+        <spring-security-test>5.3.0.RELEASE</spring-security-test>
+        <flyway-version>6.3.1</flyway-version>
+        <flyway-test-version>6.1.0</flyway-test-version>
+        <h2-database-version>1.4.200</h2-database-version>
     </properties>
 
     <dependencyManagement>
@@ -85,10 +89,34 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring-security-test}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb.flyway-test-extensions</groupId>
+            <artifactId>flyway-spring-test</artifactId>
+            <version>${flyway-test-version}</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2-database-version}</version>
         </dependency>
 
     </dependencies>

@@ -64,7 +64,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                         error = "ERROR: Role from token doesn't match the user's role from the db.";
                     } else {
                         // Create authentication
-                        TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                        TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails, authToken);
                         authentication.setToken(authToken);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }

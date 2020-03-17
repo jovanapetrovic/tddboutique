@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.jovana</groupId>
-            <artifactId>service</artifactId>
+            <artifactId>repository</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
