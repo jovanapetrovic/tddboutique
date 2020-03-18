@@ -1,8 +1,5 @@
-package com.jovana.entity;
+package com.jovana.exception;
 
-import com.jovana.exception.TddBoutiqueApiException;
-import com.jovana.exception.ErrorCode;
-import com.jovana.exception.ExceptionCode;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;

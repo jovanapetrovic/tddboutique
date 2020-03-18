@@ -1,4 +1,4 @@
-package com.jovana.entity.user;
+package com.jovana.entity.user.exception;
 
 import com.jovana.exception.TddBoutiqueApiException;
 import com.jovana.exception.ErrorCode;

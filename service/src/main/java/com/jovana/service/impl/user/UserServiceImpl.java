@@ -1,10 +1,10 @@
 package com.jovana.service.impl.user;
 
-import com.jovana.entity.authority.AuthoritiesConstants;
+import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.user.User;
-import com.jovana.entity.EntityNotFoundException;
-import com.jovana.entity.user.UsernameAlreadyExistsException;
+import com.jovana.exception.EntityNotFoundException;
+import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.repositories.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         Set<Authority> authorities = new HashSet<>();
-        authorities.add(new Authority(AuthoritiesConstants.USER));
+        authorities.add(new Authority(AuthorityConstants.USER));
 
         user.setUsername(registerUserRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));

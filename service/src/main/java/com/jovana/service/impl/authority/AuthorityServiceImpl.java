@@ -1,6 +1,6 @@
 package com.jovana.service.impl.authority;
 
-import com.jovana.entity.EntityNotFoundException;
+import com.jovana.exception.EntityNotFoundException;
 import com.jovana.entity.authority.Authority;
 import com.jovana.repositories.authority.AuthorityRepository;
 import org.slf4j.Logger;

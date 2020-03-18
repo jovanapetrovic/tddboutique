@@ -1,7 +1,7 @@
 package com.jovana.auth;
 
 import com.jovana.entity.user.User;
-import com.jovana.entity.EntityNotFoundException;
+import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.authority.AuthorityRepository;
 import com.jovana.repositories.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

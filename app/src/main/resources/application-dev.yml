@@ -34,7 +34,7 @@ security:
         enabled: false
 
 jwt:
-    header: Authorization
+    header: authorization
     # Token is valid for 24 hours
     expiresIn: 86400
     secret: thisissomerandomsecret32

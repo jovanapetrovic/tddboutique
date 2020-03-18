@@ -1,14 +1,14 @@
-package com.jovana.entity.user;
+package com.jovana.exception;
 
-import com.jovana.exception.TddBoutiqueApiException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
- * Created by jovana on 24.02.2020
+ * Created by jovana on 18.03.2020
  */
-@ResponseStatus(NOT_FOUND)
+@ResponseStatus(BAD_REQUEST)
+@ErrorCode(ExceptionCode.NOT_ALLOWED_TO_DO_ACTION)
 public class NotAllowedException extends TddBoutiqueApiException {
 
     public NotAllowedException (String message) {

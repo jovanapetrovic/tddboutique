@@ -1,5 +1,7 @@
 package com.jovana.resources;
 
+import com.jovana.service.impl.user.RegisterUserRequest;
+import com.jovana.service.impl.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,15 @@ public class RegisterResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterResource.class);
 
-//    @Autowired
-//    private UserService userService;
-//
-//    @RequestMapping(value = "/demo", method = RequestMethod.POST)
-//    public ResponseEntity<Void> registerUserPOST(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
-//
-//        userService.registerUser(registerUserRequest); // will throw an error if username already exists
-//
-//        return ResponseEntity.ok().build();
-//    }
+    @Autowired
+    private UserService userService;
+
+    @RequestMapping(value = "/demo", method = RequestMethod.POST)
+    public ResponseEntity<Void> registerUserPOST(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
+
+        userService.registerUser(registerUserRequest); // will throw an error if username already exists
+
+        return ResponseEntity.ok().build();
+    }
 
 }

@@ -1,6 +1,6 @@
 package com.jovana.auth;
 
-import com.jovana.entity.authority.AuthoritiesConstants;
+import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.token.TokenAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -76,7 +76,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/testget").permitAll()
                 .antMatchers("/api/register/**").permitAll()
                 .antMatchers("/api/authenticate").permitAll()
-                .antMatchers("/api/logs/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/api/logs/**").hasAuthority(AuthorityConstants.ADMIN)
                 .antMatchers("/api/**").authenticated()
             .and()
                 .formLogin().loginPage("/api/login")    // Pre-set login form with default params
