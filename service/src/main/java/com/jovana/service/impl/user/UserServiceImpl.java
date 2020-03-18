@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -32,15 +33,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long userId) {
-//        User user = userRepository.findOne(userId);
-        User user = null;
+        Optional<User> user = userRepository.findById(userId);
 
-        if (user == null) {
+        if (!user.isPresent()) {
             LOGGER.info("User with id = {} was not found in the db.", userId);
             throw new EntityNotFoundException("No user found with id = " + userId);
         }
 
-        return user;
+        return user.get();
     }
 
     @Override
