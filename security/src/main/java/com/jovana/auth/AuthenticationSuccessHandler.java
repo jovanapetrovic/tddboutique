@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
+import java.security.SecureRandom;
 
 /**
  * Created by jovana on 24.02.2020
@@ -24,27 +26,40 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
     @Value("${jwt.expiresIn}")
     private int expiresIn;
-
     @Autowired
-    TokenHelper tokenHelper;
-
+    private TokenHelper tokenHelper;
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         clearAuthenticationAttributes(request);
         User user = (User) authentication.getPrincipal();
-        String jwt = tokenHelper.generateToken(user.getUsername(), user.getAuthorities());
-        UserTokenState userTokenState = new UserTokenState(jwt, expiresIn);
 
+        String fingerprint = generateFingerPrint();
+        // Added fingerprint to avoid Token sideJacking
         try {
+            String jwt = tokenHelper.generateToken(user.getUsername(), fingerprint);
+            UserTokenState userTokenState = new UserTokenState(jwt, expiresIn);
             String jwtResponse = objectMapper.writeValueAsString(userTokenState);
             response.setContentType("application/json");
             response.getWriter().write(jwtResponse);
-        } catch (Exception e){
+            response.addHeader("Set-Cookie", createFingerPrintCookie(fingerprint));
+        } catch (Exception e) {
             LOG.debug("Error occurred while writing jwtResponse to json. Error message: ", e.getMessage());
         }
+    }
+
+    private String generateFingerPrint() {
+        SecureRandom secureRandom = new SecureRandom();
+        // Generate a random string that will constitute the fingerprint for this user
+        byte[] randomFgp = new byte[50];
+        secureRandom.nextBytes(randomFgp);
+        return DatatypeConverter.printHexBinary(randomFgp);
+    }
+
+    private String createFingerPrintCookie(String userFingerprint) {
+        return "_Secure-Fgp=" + userFingerprint + "; path=/"; // Only for production --> HttpOnly; Secure  SameSite=Strict;
     }
 
     private class UserTokenState {

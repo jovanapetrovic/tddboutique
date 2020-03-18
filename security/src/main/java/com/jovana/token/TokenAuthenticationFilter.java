@@ -1,6 +1,7 @@
 package com.jovana.token;
 
 import com.jovana.auth.AnonAuthentication;
+import com.jovana.auth.NotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -15,13 +17,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
- * Created by jovana on 24.02.2020
+ * Created by jovana on 07.12.2017
  */
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
+    private static final String LOGOUT_REQUEST = "/api/logout";
 
     @Value("${jwt.header}")
     private String AUTH_HEADER;
@@ -29,6 +33,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private TokenHelper tokenHelper;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     private String getToken(HttpServletRequest request) {
         String authHeader = request.getHeader(AUTH_HEADER);
@@ -44,39 +51,34 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String authToken = getToken(request);
 
         if (authToken != null) {
-
+            String cookie = tokenHelper.getFingerPrintFromCookie(request);
             // Check the authenticity of the token
-            if (!tokenHelper.validateToken(authToken)) {
-                error = "ERROR: Validation of authenticity for provided token failed.";
-            } else {
-                // Get username from token
-                String username = tokenHelper.getUsernameFromToken(authToken);
+            try {
+                if (!tokenHelper.validateToken(authToken, cookie)) {
+                    error = "ERROR: Validation of authenticity for provided token failed!";
+                    throw new NotAuthorizedException("Your credentials are not correct");
+                } else {
+                    // Get username from token
+                    String username = tokenHelper.getUsernameFromToken(authToken);
 
-                if (username != null) {
-                    // Get user
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    if (username != null) {
+                        // Get user
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                    // Perform a role check
-                    String role = tokenHelper.getRoleFromToken(authToken);
-                    String authority = userDetails.getAuthorities().iterator().next().toString();
-
-                    if (!role.equals(authority)) {
-                        error = "ERROR: Role from token doesn't match the user's role from the db.";
-                    } else {
                         // Create authentication
                         TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails, authToken);
-                        authentication.setToken(authToken);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } else {
+                        error = "ERROR: Username from token can't be found in DB!";
+                        throw new NotAuthorizedException("Your credentials are not correct");
                     }
-                } else {
-                    error = "ERROR: Username from token can't be found in DB.";
                 }
+            } catch (NoSuchAlgorithmException e) {
+                LOG.error("No such Algorithm exception {}", e);
             }
-        } /* else {
-            error = "Authentication failed because no Bearer token is provided."; // no authentication should be set
-        } */
+        }
 
-        if( !error.isEmpty()){
+        if (!error.isEmpty()) {
             LOG.error("Internal filtering threw an error => {}", error);
             SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication()); // authenticated as ANONYMOUS, no authorities
         }

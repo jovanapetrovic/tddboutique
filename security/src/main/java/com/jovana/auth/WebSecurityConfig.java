@@ -5,6 +5,7 @@ import com.jovana.token.TokenAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -23,14 +24,6 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    private static final String USERS_BY_USERNAME_QUERY = "SELECT u.username, u.password, 1 " +
-                                                          "FROM user u " +
-                                                          "WHERE username=?";
-    private static final String AUTHORITIES_BY_USERNAME_QUERY = "SELECT u.username, u2a.authority_name " +
-                                                                "FROM user u " +
-                                                                "JOIN user_authority u2a ON u.id = u2a.user_id " +
-                                                                "WHERE username=?";
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -101,20 +94,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/console/**");
     }
 
-    /**
-     * Login form expects to read the following tables from db: a User which has username and password and a Role with role name.
-     * Override the default behavior here.
-     * Everything else is automated in authenticationSuccessHandler and doFilterInternal.
-     * @param auth
-     * @throws Exception
-     */
-    @Autowired
-    public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailService);
-        auth.jdbcAuthentication().dataSource(dataSource)
-                .passwordEncoder(bCryptPasswordEncoder())
-                .usersByUsernameQuery(USERS_BY_USERNAME_QUERY)
-                .authoritiesByUsernameQuery(AUTHORITIES_BY_USERNAME_QUERY);
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailService);
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder());
+        return authProvider;
     }
 
 }
