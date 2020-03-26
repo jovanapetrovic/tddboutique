@@ -25,7 +25,7 @@ public abstract class AbstractAuditingEntity {
     @NotNull
     @Column(name = "created_by", nullable = false, length = 50, updatable = false)
     @JsonIgnore
-    private String createdBy;
+    private String createdBy = "system";
 
     @CreatedDate
     @NotNull

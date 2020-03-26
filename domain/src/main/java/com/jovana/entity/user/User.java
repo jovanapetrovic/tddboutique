@@ -27,13 +27,24 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Long id;
 
     @NotNull
-    @Size(min = 1, max = 50)
-    @Column(length = 50, unique = true, nullable = false)
+    @Size(min = 2, max = 30)
+    private String firstName;
+
+    @NotNull
+    @Size(min = 2, max = 30)
+    private String lastName;
+
+    @NotNull
+    @Size(min = 5, max = 50)
+    private String email;
+
+    @NotNull
+    @Size(min = 2, max = 30)
     private String username;
 
     @JsonIgnore
+    @NotNull
     @Size(min = 60, max = 60)
-    @Column(length = 60)
     private String password;
 
     @JsonIgnore
@@ -47,12 +58,48 @@ public class User extends AbstractAuditingEntity implements Serializable {
     public User() {
     }
 
+    public static User createUser(String firstName, String lastName, String email, String username,
+                                  String encodedPassword, Set<Authority> authorities) {
+        User user = new User();
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.email = email;
+        user.username = username;
+        user.password = encodedPassword;
+        user.authorities = authorities;
+        return user;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUsername() {
