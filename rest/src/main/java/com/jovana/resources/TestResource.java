@@ -1,6 +1,6 @@
 package com.jovana.resources;
 
-import com.jovana.service.impl.user.RegisterUserRequest;
+import com.jovana.entity.user.dto.RegisterUserRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;

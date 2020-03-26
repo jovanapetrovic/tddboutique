@@ -1,8 +1,10 @@
 package com.jovana.service.impl.user;
 
+import com.google.common.collect.Sets;
 import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.user.User;
+import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.repositories.user.UserRepository;
@@ -34,40 +36,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-
         if (!user.isPresent()) {
             LOGGER.info("User with id = {} was not found in the db.", userId);
             throw new EntityNotFoundException("No user found with id = " + userId);
         }
-
         return user.get();
     }
 
     @Override
     public User getUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
-
         if (user == null) {
             LOGGER.info("User with username {} was not found in the db.", username);
             throw new EntityNotFoundException("No user found. Username tried: " + username);
         }
-
         return user;
     }
 
     @Override
     @Transactional
     public void registerUser(RegisterUserRequest registerUserRequest) {
-        validateUniqueUsername(registerUserRequest.getUsername());
+//        validateUniqueUsername(registerUserRequest.getUsername());
 
-        User user = new User();
-        Set<Authority> authorities = new HashSet<>();
-        authorities.add(new Authority(AuthorityConstants.USER));
+        Set<Authority> authorities = Sets.newHashSet(new Authority(AuthorityConstants.USER));
 
-        user.setUsername(registerUserRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
-        user.setAuthorities(authorities);
-        user.setCreatedBy("system");
+        User user = User.createUser(registerUserRequest.getFirstName(),
+                registerUserRequest.getLastName(),
+                registerUserRequest.getEmail(),
+                registerUserRequest.getUsername(),
+                passwordEncoder.encode(registerUserRequest.getPassword()),
+                authorities);
 
         userRepository.save(user);
     }

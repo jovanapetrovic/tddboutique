@@ -1,6 +1,6 @@
 package com.jovana.resources;
 
-import com.jovana.service.impl.user.RegisterUserRequest;
+import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.service.impl.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

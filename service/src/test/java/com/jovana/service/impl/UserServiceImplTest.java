@@ -1,42 +1,97 @@
 package com.jovana.service.impl;
 
+import com.google.common.collect.Sets;
+import com.jovana.entity.authority.Authority;
+import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.user.User;
+import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.repositories.user.UserRepository;
 import com.jovana.service.impl.user.UserService;
 import com.jovana.service.impl.user.UserServiceImpl;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.mockito.Mockito.*;
 
-
+/**
+ * Created by jovana on 18.03.2020
+ */
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
-    private static final Long DEFAULT_USER_ID = 10L;
-    private static final String DEFAULT_USERNAME = "test";
-    private static final String DEFAULT_PASSWORD = "test";
+    @DisplayName("Given we want to register a new user")
+    @Nested
+    class RegisterUserTest {
 
-    @InjectMocks
-    private UserService userService = new UserServiceImpl();
-    @Mock
-    private UserRepository userRepository;
+        private static final String DEFAULT_ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
 
-    @Test
-    public void test() throws Exception {
-        // prepare
-        User userMock = mock(User.class);
+        @InjectMocks
+        private UserService userService = new UserServiceImpl();
+        @Mock
+        private UserRepository userRepository;
+        @Mock
+        private BCryptPasswordEncoder passwordEncoder;
 
-        when(userRepository.findByUsername(DEFAULT_USERNAME)).thenReturn(userMock);
-        // exercise
-        User userById = userService.getUserByUsername(DEFAULT_USERNAME);
+        private RegisterUserRequest registerUserRequest;
+        private User user;
 
-        // verify
-        Assertions.assertNotNull(userById);
+        @BeforeEach
+        void setUp() {
+            registerUserRequest = RegisterUserRequest.createRegisterUserRequest(
+                    "John",
+                    "Doe",
+                    "johndoe@test.com",
+                    "johndoe",
+                    "123456",
+                    "ASDasd123");
+            user = User.createUser(
+                    "John",
+                    "Doe",
+                    "johndoe@test.com",
+                    "johndoe",
+                    DEFAULT_ENCODED_PASSWORD,
+                    Sets.newHashSet(new Authority(AuthorityConstants.USER)));
+        }
+
+        @DisplayName("Then a new user is created")
+        @Test
+        public void testRegisterUserSuccess() {
+            // prepare
+            when(passwordEncoder.encode(any(String.class))).thenReturn(DEFAULT_ENCODED_PASSWORD);
+            when(userRepository.save(any(User.class))).thenReturn(user);
+
+            // exercise
+            userService.registerUser(registerUserRequest);
+
+            // verify
+            Assertions.assertAll("Verify register user request",
+                    () -> Assertions.assertNotNull(registerUserRequest, "RegisterUserRequest is null"),
+                    () -> Assertions.assertNotNull(registerUserRequest.getFirstName(), "First name is null"),
+                    () -> Assertions.assertNotNull(registerUserRequest.getLastName(), "Last name is null"),
+                    () -> Assertions.assertNotNull(registerUserRequest.getEmail(), "Email is null"),
+                    () -> Assertions.assertNotNull(registerUserRequest.getUsername(), "Username is null"),
+                    () -> Assertions.assertNotNull(registerUserRequest.getPassword(), "Password is null"),
+                    () -> Assertions.assertNotNull(registerUserRequest.getConfirmPassword(), "Confirm password is null")
+            );
+
+            Assertions.assertAll("Verify registered user",
+                    () -> Assertions.assertNotNull(user, "User is null"),
+                    () -> Assertions.assertNotNull(user.getFirstName(), "First name is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getFirstName(), user.getFirstName(), "First name doesn't match"),
+                    () -> Assertions.assertNotNull(user.getLastName(), "Last name is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getLastName(), user.getLastName(), "Last name doesn't match"),
+                    () -> Assertions.assertNotNull(user.getEmail(), "Email is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getEmail(), user.getEmail(), "Email doesn't match"),
+                    () -> Assertions.assertNotNull(user.getUsername(), "Username is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getUsername(), user.getUsername(), "Username doesn't match"),
+                    () -> Assertions.assertNotNull(user.getPassword(), "Password is null"),
+                    () -> Assertions.assertEquals(DEFAULT_ENCODED_PASSWORD, user.getPassword(), "Password doesn't match")
+            );
+        }
     }
 
 }
