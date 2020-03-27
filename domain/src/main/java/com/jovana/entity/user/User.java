@@ -12,6 +12,9 @@ import com.jovana.entity.authority.Authority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Created by jovana on 24.02.2020
@@ -23,11 +26,27 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
+    @Size(min = 2, max = 30)
     private String firstName;
+
+    @NotNull
+    @Size(min = 2, max = 30)
     private String lastName;
+
+    @NotNull
+    @Size(min = 6, max = 50)
+    @Email
     private String email;
+
+    @NotNull
+    @Size(min = 2, max = 30)
     private String username;
+
     @JsonIgnore
+    @NotNull
+    @Size(min = 6, max = 30)
     private String password;
 
     @JsonIgnore

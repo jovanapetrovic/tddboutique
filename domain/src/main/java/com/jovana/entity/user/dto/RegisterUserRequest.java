@@ -9,28 +9,28 @@ import javax.validation.constraints.Size;
  */
 public class RegisterUserRequest {
 
-    @NotNull(message = "First name must not be null")
+    @NotNull
     @Size(min = 2, max = 30)
     private String firstName;
 
-    @NotNull(message = "Last name must not be null")
+    @NotNull
     @Size(min = 2, max = 30)
     private String lastName;
 
-    @NotNull(message = "Email must not be null")
+    @NotNull
     @Size(min = 6, max = 50)
     @Email
     private String email;
 
-    @NotNull(message = "Username must not be null")
+    @NotNull
     @Size(min = 2, max = 30)
     private String username;
 
-    @NotNull(message = "Password must not be null")
+    @NotNull
     @Size(min = 6, max = 30)
     private String password;
 
-    @NotNull(message = "Password must not be null")
+    @NotNull
     @Size(min = 6, max = 30)
     private String confirmPassword;
 
