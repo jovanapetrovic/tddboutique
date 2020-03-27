@@ -5,6 +5,8 @@ import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.RegisterUserRequest;
+import com.jovana.entity.user.exception.EmailAlreadyExistsException;
+import com.jovana.entity.user.exception.PasswordsDontMatchException;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.repositories.user.UserRepository;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ValidatorFactory;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -56,7 +59,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void registerUser(RegisterUserRequest registerUserRequest) {
-//        validateUniqueUsername(registerUserRequest.getUsername());
+        validatePasswords(registerUserRequest.getPassword(), registerUserRequest.getConfirmPassword());
+        validateUsername(registerUserRequest.getUsername());
+        validateEmail(registerUserRequest.getEmail());
 
         Set<Authority> authorities = Sets.newHashSet(new Authority(AuthorityConstants.USER));
 
@@ -70,9 +75,21 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    private void validateUniqueUsername(String username) {
+    private void validatePasswords(String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            throw new PasswordsDontMatchException("Password and confirm password don't match.");
+        }
+    }
+
+    private void validateUsername(String username) {
         if (userRepository.findByUsername(username) != null) {
-            throw new UsernameAlreadyExistsException(username, "User already exists in the db with this username.");
+            throw new UsernameAlreadyExistsException(username, "User already exists in the db with this email.");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (userRepository.findByEmail(email) != null) {
+            throw new EmailAlreadyExistsException(email, "User already exists in the db with this email.");
         }
     }
 
