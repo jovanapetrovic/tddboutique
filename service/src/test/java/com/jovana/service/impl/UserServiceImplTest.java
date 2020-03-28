@@ -1,5 +1,6 @@
 package com.jovana.service.impl;
 
+import static org.junit.jupiter.api.Assertions.*;
 import com.google.common.collect.Sets;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.authority.AuthorityConstants;
@@ -79,7 +80,7 @@ public class UserServiceImplTest {
             userService.registerUser(registerUserRequest);
 
             // verify
-            Assertions.assertAll("Verify register user request",
+            assertAll("Verify register user request",
                     () -> Assertions.assertNotNull(registerUserRequest, "RegisterUserRequest is null"),
                     () -> Assertions.assertNotNull(registerUserRequest.getFirstName(), "First name is null"),
                     () -> Assertions.assertNotNull(registerUserRequest.getLastName(), "Last name is null"),
@@ -90,7 +91,7 @@ public class UserServiceImplTest {
                     () -> Assertions.assertEquals(registerUserRequest.getPassword(), registerUserRequest.getConfirmPassword())
             );
 
-            Assertions.assertAll("Verify registered user",
+            assertAll("Verify registered user",
                     () -> Assertions.assertNotNull(user, "User is null"),
                     () -> Assertions.assertNotNull(user.getFirstName(), "First name is null"),
                     () -> Assertions.assertEquals(registerUserRequest.getFirstName(), user.getFirstName(), "First name doesn't match"),
@@ -109,7 +110,7 @@ public class UserServiceImplTest {
         @Test
         public void testRegisterUserFailsWhenPasswordAndConfirmPasswordDontMatch() {
             // verify
-            Assertions.assertThrows(PasswordsDontMatchException.class, () -> userService.registerUser(wrongPasswordRegisterUserRequest), "Passwords don't match");
+            assertThrows(PasswordsDontMatchException.class, () -> userService.registerUser(wrongPasswordRegisterUserRequest), "Passwords don't match");
         }
 
         @DisplayName("Then register fails when username already exists")
@@ -118,7 +119,7 @@ public class UserServiceImplTest {
             // prepare
             when(userRepository.findByUsername(any(String.class))).thenReturn(user);
             // verify
-            Assertions.assertThrows(UsernameAlreadyExistsException.class, () -> userService.registerUser(registerUserRequest), "Username already exists");
+            assertThrows(UsernameAlreadyExistsException.class, () -> userService.registerUser(registerUserRequest), "Username already exists");
         }
 
         @DisplayName("Then register fails when email already exists")
@@ -127,7 +128,7 @@ public class UserServiceImplTest {
             // prepare
             when(userRepository.findByEmail(any(String.class))).thenReturn(user);
             // verify
-            Assertions.assertThrows(EmailAlreadyExistsException.class, () -> userService.registerUser(registerUserRequest), "Email already exists");
+            assertThrows(EmailAlreadyExistsException.class, () -> userService.registerUser(registerUserRequest), "Email already exists");
         }
     }
 

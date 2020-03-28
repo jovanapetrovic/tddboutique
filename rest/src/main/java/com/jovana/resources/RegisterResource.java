@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 
 /**
  * Created by jovana on 24.02.2020
@@ -27,7 +29,16 @@ public class RegisterResource {
 
         userService.registerUser(registerUserRequest); // will throw an error if username already exists
 
-        return ResponseEntity.ok().build();
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(employee.getId())
+//                .toUri();
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .build()
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
 }
