@@ -15,6 +15,7 @@ public class AppRunner {
     private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
 
     public static void main(String[] args) {
+        checkActiveSpringProfile();
         SpringApplication.run(new Class[]{AppRunner.class}, args);
         
         System.out.println(
