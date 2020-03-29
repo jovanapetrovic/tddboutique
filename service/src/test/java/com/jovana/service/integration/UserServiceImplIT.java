@@ -1,48 +1,37 @@
-package com.jovana.service.impl;
+package com.jovana.service.integration;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.google.common.collect.Sets;
-import com.jovana.entity.authority.Authority;
-import com.jovana.entity.authority.AuthorityConstants;
+
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.entity.user.exception.PasswordsDontMatchException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
-import com.jovana.repositories.user.UserRepository;
 import com.jovana.service.impl.user.UserService;
-import com.jovana.service.impl.user.UserServiceImpl;
+import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.mockito.Mockito.*;
-
 /**
- * Created by jovana on 18.03.2020
+ * Created by jovana on 29.03.2020
  */
-@ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
+@FlywayTest(locationsForMigrate = {"db.additional.userservice"})
+public class UserServiceImplIT extends AbstractTest {
+
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @DisplayName("When we want to register a new user")
     @Nested
-    class RegisterUserTest {
-
-        private static final String DEFAULT_ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
-
-        @InjectMocks
-        private UserService userService = new UserServiceImpl();
-        @Mock
-        private UserRepository userRepository;
-        @Mock
-        private BCryptPasswordEncoder passwordEncoder;
+    class RegisterUserITest {
 
         private RegisterUserRequest registerUserRequest;
         private RegisterUserRequest wrongPasswordRegisterUserRequest;
-        private User user;
+        private RegisterUserRequest usernameExistsRegisterUserRequest;
+        private RegisterUserRequest emailExistsRegisterUserRequest;
 
         @BeforeEach
         void setUp() {
@@ -54,32 +43,37 @@ public class UserServiceImplTest {
                     "123456",
                     "123456");
             wrongPasswordRegisterUserRequest = RegisterUserRequest.createRegisterUserRequest(
-                    "John",
+                    "Jane",
                     "Doe",
-                    "johndoe@test.com",
-                    "johndoe",
+                    "janedoe@test.com",
+                    "janedoe",
                     "123456",
                     "doesntmatch");
-            user = User.createUser(
-                    "John",
-                    "Doe",
-                    "johndoe@test.com",
-                    "johndoe",
-                    DEFAULT_ENCODED_PASSWORD,
-                    Sets.newHashSet(new Authority(AuthorityConstants.USER)));
+            usernameExistsRegisterUserRequest = RegisterUserRequest.createRegisterUserRequest(
+                    "firstname3",
+                    "lastname3",
+                    "testuser33@test.com",
+                    "testuser3",
+                    "123456",
+                    "123456");
+            emailExistsRegisterUserRequest = RegisterUserRequest.createRegisterUserRequest(
+                    "firstname3",
+                    "lastname3",
+                    "testuser3@test.com",
+                    "testuser33",
+                    "123456",
+                    "123456");
         }
 
         @DisplayName("Then a new user is created when valid RegisterUserRequest is passed")
         @Test
         public void testRegisterUserSuccess() {
-            // prepare
-            when(passwordEncoder.encode(any(String.class))).thenReturn(DEFAULT_ENCODED_PASSWORD);
-            when(userRepository.save(any(User.class))).thenReturn(user);
-
             // exercise
-            userService.registerUser(registerUserRequest);
+            Long userId = userService.registerUser(registerUserRequest);
 
             // verify
+            User newUser = userService.getUserById(userId);
+
             assertAll("Verify register user request",
                     () -> Assertions.assertNotNull(registerUserRequest, "RegisterUserRequest is null"),
                     () -> Assertions.assertNotNull(registerUserRequest.getFirstName(), "First name is null"),
@@ -92,17 +86,17 @@ public class UserServiceImplTest {
             );
 
             assertAll("Verify registered user",
-                    () -> Assertions.assertNotNull(user, "User is null"),
-                    () -> Assertions.assertNotNull(user.getFirstName(), "First name is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getFirstName(), user.getFirstName(), "First name doesn't match"),
-                    () -> Assertions.assertNotNull(user.getLastName(), "Last name is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getLastName(), user.getLastName(), "Last name doesn't match"),
-                    () -> Assertions.assertNotNull(user.getEmail(), "Email is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getEmail(), user.getEmail(), "Email doesn't match"),
-                    () -> Assertions.assertNotNull(user.getUsername(), "Username is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getUsername(), user.getUsername(), "Username doesn't match"),
-                    () -> Assertions.assertNotNull(user.getPassword(), "Password is null"),
-                    () -> Assertions.assertEquals(DEFAULT_ENCODED_PASSWORD, user.getPassword(), "Password doesn't match")
+                    () -> Assertions.assertNotNull(newUser, "User is null"),
+                    () -> Assertions.assertNotNull(newUser.getFirstName(), "First name is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getFirstName(), newUser.getFirstName(), "First name doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getLastName(), "Last name is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getLastName(), newUser.getLastName(), "Last name doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getEmail(), "Email is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getEmail(), newUser.getEmail(), "Email doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getUsername(), "Username is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getUsername(), newUser.getUsername(), "Username doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getPassword(), "Password is null"),
+                    () -> Assertions.assertTrue(passwordEncoder.matches(registerUserRequest.getPassword(), newUser.getPassword()))
             );
         }
 
@@ -117,21 +111,17 @@ public class UserServiceImplTest {
         @DisplayName("Then register fails when username already exists")
         @Test
         public void testRegisterUserFailsWhenUsernameAlreadyExists() {
-            // prepare
-            when(userRepository.findByUsername(any(String.class))).thenReturn(user);
             // verify
             assertThrows(UsernameAlreadyExistsException.class,
-                    () -> userService.registerUser(registerUserRequest), "Username already exists");
+                    () -> userService.registerUser(usernameExistsRegisterUserRequest), "Username already exists");
         }
 
         @DisplayName("Then register fails when email already exists")
         @Test
         public void testRegisterUserFailsWhenEmailAlreadyExists() {
-            // prepare
-            when(userRepository.findByEmail(any(String.class))).thenReturn(user);
             // verify
             assertThrows(EmailAlreadyExistsException.class,
-                    () -> userService.registerUser(registerUserRequest), "Email already exists");
+                    () -> userService.registerUser(emailExistsRegisterUserRequest), "Email already exists");
         }
     }
 

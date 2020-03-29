@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void registerUser(RegisterUserRequest registerUserRequest) {
+    public Long registerUser(RegisterUserRequest registerUserRequest) {
         validatePasswords(registerUserRequest.getPassword(), registerUserRequest.getConfirmPassword());
         validateUsername(registerUserRequest.getUsername());
         validateEmail(registerUserRequest.getEmail());
@@ -72,7 +72,8 @@ public class UserServiceImpl implements UserService {
                 passwordEncoder.encode(registerUserRequest.getPassword()),
                 authorities);
 
-        userRepository.save(user);
+        User newUser = userRepository.save(user);
+        return newUser.getId();
     }
 
     private void validatePasswords(String password, String confirmPassword) {
