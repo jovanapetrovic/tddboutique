@@ -1,4 +1,4 @@
-package com.jovana.resources;
+package com.jovana.api;
 
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.service.impl.user.UserService;
@@ -27,12 +27,7 @@ public class RegisterResource {
     @PostMapping(value = "/demo")
     public ResponseEntity<Void> registerUserPOST(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
 
-        userService.registerUser(registerUserRequest); // will throw an error if username already exists
-
-//        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(employee.getId())
-//                .toUri();
+        userService.registerUser(registerUserRequest);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .build()

@@ -1,0 +1,8 @@
+{
+  "validationErrors": [
+    {
+      "fieldName": "email",
+      "message": "must be a well-formed email address"
+    }
+  ]
+}

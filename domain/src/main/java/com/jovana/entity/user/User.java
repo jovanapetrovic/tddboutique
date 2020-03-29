@@ -41,7 +41,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private String email;
 
     @NotNull
-    @Size(min = 2, max = 30)
+    @Size(min = 6, max = 30)
     private String username;
 
     @JsonIgnore

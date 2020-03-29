@@ -1,4 +1,4 @@
-package com.jovana.resources;
+package com.jovana.api;
 
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import org.springframework.http.ResponseEntity;

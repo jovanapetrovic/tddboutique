@@ -19,11 +19,11 @@ public class RegisterUserRequest {
 
     @NotNull
     @Size(min = 6, max = 50)
-    @Email
+    @Email(regexp = "^[a-zA-Z0-9_+]+(?:\\.[a-zA-Z0-9_+]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")
     private String email;
 
     @NotNull
-    @Size(min = 2, max = 30)
+    @Size(min = 6, max = 30)
     private String username;
 
     @NotNull

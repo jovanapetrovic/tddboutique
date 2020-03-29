@@ -1,7 +1,7 @@
 package com.jovana.config;
 
 import com.jovana.exception.ExceptionHandlerPackage;
-import com.jovana.resources.RestPackage;
+import com.jovana.api.RestPackage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +45,7 @@ public class RestConfig {
                                 .build()))
                 .groupName("Users")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jovana.resources"))
+                .apis(RequestHandlerSelectors.basePackage("com.jovana.api"))
                 .paths(PathSelectors.any())
                 .build()
                 .securitySchemes(Arrays.asList(authorization()))
