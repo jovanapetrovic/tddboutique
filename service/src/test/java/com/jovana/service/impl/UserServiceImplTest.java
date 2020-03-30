@@ -1,6 +1,7 @@
 package com.jovana.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import com.google.common.collect.Sets;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.authority.AuthorityConstants;
@@ -9,6 +10,7 @@ import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.entity.user.exception.PasswordsDontMatchException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
+import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.user.UserRepository;
 import com.jovana.service.impl.user.UserService;
 import com.jovana.service.impl.user.UserServiceImpl;
@@ -19,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -26,6 +30,40 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
+
+    @DisplayName("When we want to find a user by id")
+    @Nested
+    class GetUserTest {
+
+        private final Long USER_ID_EXISTS = 2L;
+        private final Long USER_ID_NOT_EXISTS = 9999L;
+
+        @InjectMocks
+        private UserService userService = new UserServiceImpl();
+        @Mock
+        private UserRepository userRepository;
+
+        @DisplayName("Then user is fetched from database")
+        @Test
+        public void testGetUserById() {
+            // prepare
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(User.class)));
+            // exercise
+            User newUser = userService.getUserById(USER_ID_EXISTS);
+            // verify
+            Assertions.assertNotNull(newUser, "User is null");
+        }
+
+        @DisplayName("Then error is thrown when user with passed id doesn't exist")
+        @Test
+        public void testGetUserByIdFailsWhenUserWithPassedIdDoesntExist() {
+            // prepare
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+            // verify
+            assertThrows(EntityNotFoundException.class,
+                    () -> userService.getUserById(USER_ID_NOT_EXISTS), "User with id=" + USER_ID_NOT_EXISTS + " doesn't exist");
+        }
+    }
 
     @DisplayName("When we want to register a new user")
     @Nested

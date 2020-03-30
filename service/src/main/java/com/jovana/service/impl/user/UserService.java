@@ -10,8 +10,6 @@ public interface UserService {
 
     User getUserById(Long userId);
 
-    User getUserByUsername(String login);
-
     Long registerUser(RegisterUserRequest registerUserRequest);
 
 }

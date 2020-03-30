@@ -47,16 +47,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            LOGGER.info("User with username {} was not found in the db.", username);
-            throw new EntityNotFoundException("No user found. Username tried: " + username);
-        }
-        return user;
-    }
-
-    @Override
     @Transactional
     public Long registerUser(RegisterUserRequest registerUserRequest) {
         validatePasswords(registerUserRequest.getPassword(), registerUserRequest.getConfirmPassword());
