@@ -35,7 +35,7 @@ public class UserServiceImplTest {
     @Nested
     class GetUserTest {
 
-        private final Long USER_ID_EXISTS = 2L;
+        private final Long USER_ID_EXISTS = 10L;
         private final Long USER_ID_NOT_EXISTS = 9999L;
 
         @InjectMocks

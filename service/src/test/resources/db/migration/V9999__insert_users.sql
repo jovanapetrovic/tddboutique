@@ -3,6 +3,6 @@
 
 -- Create test user
 INSERT INTO user (id, first_name, last_name, email, username, password, created_by, created_date) VALUES
-(2, 'firstname2', 'lastname2', 'testuser2@test.com', 'testuser2', '$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366', 'system', now());
+(10, 'firstname2', 'lastname2', 'testuser2@test.com', 'testuser2', '$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366', 'system', now());
 
-INSERT INTO user_authority (user_id, authority_name) VALUES (2, 'ROLE_USER');
+INSERT INTO user_authority (user_id, authority_name) VALUES (10, 'ROLE_USER');
