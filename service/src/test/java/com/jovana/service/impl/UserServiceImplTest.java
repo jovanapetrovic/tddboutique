@@ -31,17 +31,21 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
+    private static final String DEFAULT_ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
+
+    @InjectMocks
+    private UserService userService = new UserServiceImpl();
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
+
     @DisplayName("When we want to find a user by id")
     @Nested
     class GetUserTest {
 
         private final Long USER_ID_EXISTS = 10L;
         private final Long USER_ID_NOT_EXISTS = 9999L;
-
-        @InjectMocks
-        private UserService userService = new UserServiceImpl();
-        @Mock
-        private UserRepository userRepository;
 
         @DisplayName("Then user is fetched from database")
         @Test
@@ -69,15 +73,6 @@ public class UserServiceImplTest {
     @Nested
     class RegisterUserTest {
 
-        private static final String DEFAULT_ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
-
-        @InjectMocks
-        private UserService userService = new UserServiceImpl();
-        @Mock
-        private UserRepository userRepository;
-        @Mock
-        private BCryptPasswordEncoder passwordEncoder;
-
         private RegisterUserRequest registerUserRequest;
         private RegisterUserRequest wrongPasswordRegisterUserRequest;
         private User user;
@@ -98,13 +93,14 @@ public class UserServiceImplTest {
                     "johndoe",
                     "123456",
                     "doesntmatch");
-            user = User.createUser(
-                    "John",
-                    "Doe",
-                    "johndoe@test.com",
-                    "johndoe",
-                    DEFAULT_ENCODED_PASSWORD,
-                    Sets.newHashSet(new Authority(AuthorityConstants.USER)));
+            user = new User();
+            user.setId(10L);
+            user.setFirstName("John");
+            user.setLastName("Doe");
+            user.setEmail("johndoe@test.com");
+            user.setUsername("johndoe");
+            user.setPassword(DEFAULT_ENCODED_PASSWORD);
+            user.setAuthorities(Sets.newHashSet(new Authority(AuthorityConstants.USER)));
         }
 
         @DisplayName("Then a new user is created when valid RegisterUserRequest is passed")
@@ -113,34 +109,26 @@ public class UserServiceImplTest {
             // prepare
             when(passwordEncoder.encode(any(String.class))).thenReturn(DEFAULT_ENCODED_PASSWORD);
             when(userRepository.save(any(User.class))).thenReturn(user);
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
 
             // exercise
-            userService.registerUser(registerUserRequest);
+            Long userId = userService.registerUser(registerUserRequest);
 
             // verify
-            assertAll("Verify register user request",
-                    () -> Assertions.assertNotNull(registerUserRequest, "RegisterUserRequest is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getFirstName(), "First name is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getLastName(), "Last name is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getEmail(), "Email is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getUsername(), "Username is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getPassword(), "Password is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getConfirmPassword(), "Confirm password is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getPassword(), registerUserRequest.getConfirmPassword())
-            );
+            User newUser = userService.getUserById(userId);
 
             assertAll("Verify registered user",
-                    () -> Assertions.assertNotNull(user, "User is null"),
-                    () -> Assertions.assertNotNull(user.getFirstName(), "First name is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getFirstName(), user.getFirstName(), "First name doesn't match"),
-                    () -> Assertions.assertNotNull(user.getLastName(), "Last name is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getLastName(), user.getLastName(), "Last name doesn't match"),
-                    () -> Assertions.assertNotNull(user.getEmail(), "Email is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getEmail(), user.getEmail(), "Email doesn't match"),
-                    () -> Assertions.assertNotNull(user.getUsername(), "Username is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getUsername(), user.getUsername(), "Username doesn't match"),
-                    () -> Assertions.assertNotNull(user.getPassword(), "Password is null"),
-                    () -> Assertions.assertEquals(DEFAULT_ENCODED_PASSWORD, user.getPassword(), "Password doesn't match")
+                    () -> Assertions.assertNotNull(newUser, "User is null"),
+                    () -> Assertions.assertNotNull(newUser.getFirstName(), "First name is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getFirstName(), newUser.getFirstName(), "First name doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getLastName(), "Last name is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getLastName(), newUser.getLastName(), "Last name doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getEmail(), "Email is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getEmail(), newUser.getEmail(), "Email doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getUsername(), "Username is null"),
+                    () -> Assertions.assertEquals(registerUserRequest.getUsername(), newUser.getUsername(), "Username doesn't match"),
+                    () -> Assertions.assertNotNull(newUser.getPassword(), "Password is null"),
+                    () -> Assertions.assertEquals(DEFAULT_ENCODED_PASSWORD, newUser.getPassword(), "Password doesn't match")
             );
         }
 

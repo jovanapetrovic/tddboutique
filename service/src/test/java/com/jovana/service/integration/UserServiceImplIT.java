@@ -74,17 +74,6 @@ public class UserServiceImplIT extends AbstractTest {
             // verify
             User newUser = userService.getUserById(userId);
 
-            assertAll("Verify register user request",
-                    () -> Assertions.assertNotNull(registerUserRequest, "RegisterUserRequest is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getFirstName(), "First name is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getLastName(), "Last name is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getEmail(), "Email is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getUsername(), "Username is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getPassword(), "Password is null"),
-                    () -> Assertions.assertNotNull(registerUserRequest.getConfirmPassword(), "Confirm password is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getPassword(), registerUserRequest.getConfirmPassword())
-            );
-
             assertAll("Verify registered user",
                     () -> Assertions.assertNotNull(newUser, "User is null"),
                     () -> Assertions.assertNotNull(newUser.getFirstName(), "First name is null"),
