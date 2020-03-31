@@ -2,9 +2,6 @@ package com.jovana.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.google.common.collect.Sets;
-import com.jovana.entity.authority.Authority;
-import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
@@ -12,6 +9,7 @@ import com.jovana.entity.user.exception.PasswordsDontMatchException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.user.UserRepository;
+import com.jovana.service.util.TestDataProvider;
 import com.jovana.service.impl.user.UserService;
 import com.jovana.service.impl.user.UserServiceImpl;
 import org.junit.jupiter.api.*;
@@ -47,7 +45,7 @@ public class UserServiceImplTest {
         private final Long USER_ID_EXISTS = 10L;
         private final Long USER_ID_NOT_EXISTS = 9999L;
 
-        @DisplayName("Then user is fetched from database")
+        @DisplayName("Then user is fetched from database when id is valid")
         @Test
         public void testGetUserById() {
             // prepare
@@ -93,14 +91,7 @@ public class UserServiceImplTest {
                     "johndoe",
                     "123456",
                     "doesntmatch");
-            user = new User();
-            user.setId(10L);
-            user.setFirstName("John");
-            user.setLastName("Doe");
-            user.setEmail("johndoe@test.com");
-            user.setUsername("johndoe");
-            user.setPassword(DEFAULT_ENCODED_PASSWORD);
-            user.setAuthorities(Sets.newHashSet(new Authority(AuthorityConstants.USER)));
+            user = TestDataProvider.getUsers().get("john");
         }
 
         @DisplayName("Then a new user is created when valid RegisterUserRequest is passed")
