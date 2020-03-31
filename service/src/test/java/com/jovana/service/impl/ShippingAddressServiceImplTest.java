@@ -85,16 +85,16 @@ public class ShippingAddressServiceImplTest {
         @BeforeEach
         void setUp() {
             // set requests
-            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("johnRequest");
-            shippingAddressRequestWithoutNames = RequestTestDataProvider.getShippingAddressRequests().get("noNamesRequest");
+            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("john");
+            shippingAddressRequestWithoutNames = RequestTestDataProvider.getShippingAddressRequests().get("noNames");
 
             // set users
             johnUser = TestDataProvider.getUsers().get("john");
             janeUser = TestDataProvider.getUsers().get("jane");
 
             // set shipping addresses
-            johnShippingAddress = TestDataProvider.getShippingAddresses().get("johnShippingAddress");
-            janeShippingAddress = TestDataProvider.getShippingAddresses().get("janeShippingAddress");
+            johnShippingAddress = TestDataProvider.getShippingAddresses().get("john");
+            janeShippingAddress = TestDataProvider.getShippingAddresses().get("jane");
         }
 
         @DisplayName("Then shipping address is created for user when valid ShippingAddressRequest is passed")

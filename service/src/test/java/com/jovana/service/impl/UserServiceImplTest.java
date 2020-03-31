@@ -9,6 +9,7 @@ import com.jovana.entity.user.exception.PasswordsDontMatchException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.user.UserRepository;
+import com.jovana.service.util.RequestTestDataProvider;
 import com.jovana.service.util.TestDataProvider;
 import com.jovana.service.impl.user.UserService;
 import com.jovana.service.impl.user.UserServiceImpl;
@@ -28,8 +29,6 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
-
-    private static final String DEFAULT_ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
 
     @InjectMocks
     private UserService userService = new UserServiceImpl();
@@ -71,26 +70,14 @@ public class UserServiceImplTest {
     @Nested
     class RegisterUserTest {
 
+        private static final String DEFAULT_ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
+
         private RegisterUserRequest registerUserRequest;
-        private RegisterUserRequest wrongPasswordRegisterUserRequest;
         private User user;
 
         @BeforeEach
         void setUp() {
-            registerUserRequest = RegisterUserRequest.createRegisterUserRequest(
-                    "John",
-                    "Doe",
-                    "johndoe@test.com",
-                    "johndoe",
-                    "123456",
-                    "123456");
-            wrongPasswordRegisterUserRequest = RegisterUserRequest.createRegisterUserRequest(
-                    "John",
-                    "Doe",
-                    "johndoe@test.com",
-                    "johndoe",
-                    "123456",
-                    "doesntmatch");
+            registerUserRequest = RequestTestDataProvider.getRegisterUserRequests().get("john");
             user = TestDataProvider.getUsers().get("john");
         }
 
@@ -126,9 +113,14 @@ public class UserServiceImplTest {
         @DisplayName("Then register fails when password and confirm password don't match")
         @Test
         public void testRegisterUserFailsWhenPasswordAndConfirmPasswordDontMatch() {
+            // prepare
+            RegisterUserRequest registerUserRequest = mock(RegisterUserRequest.class);
+            when(registerUserRequest.getPassword()).thenReturn("123456");
+            when(registerUserRequest.getConfirmPassword()).thenReturn("doesntmatch");
+
             // verify
             assertThrows(PasswordsDontMatchException.class,
-                    () -> userService.registerUser(wrongPasswordRegisterUserRequest), "Passwords don't match");
+                    () -> userService.registerUser(registerUserRequest), "Passwords don't match");
         }
 
         @DisplayName("Then register fails when username already exists")

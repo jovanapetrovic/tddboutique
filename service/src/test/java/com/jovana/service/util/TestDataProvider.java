@@ -68,8 +68,8 @@ public class TestDataProvider {
         janeShipAddress.setCountry("Serbia");
         janeShipAddress.setPhone("+38164123456");
 
-        shippingAddresses.put("johnShippingAddress", johnShipAddress);
-        shippingAddresses.put("janeShippingAddress", janeShipAddress);
+        shippingAddresses.put("john", johnShipAddress);
+        shippingAddresses.put("jane", janeShipAddress);
 
         return shippingAddresses;
     }

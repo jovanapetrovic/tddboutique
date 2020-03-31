@@ -1,6 +1,7 @@
 package com.jovana.service.util;
 
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
+import com.jovana.entity.user.dto.RegisterUserRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,31 +11,48 @@ import java.util.Map;
  */
 public class RequestTestDataProvider {
 
+    public static Map<String, RegisterUserRequest> getRegisterUserRequests() {
+        Map<String, RegisterUserRequest> registerUserRequests = new HashMap<>();
+
+        RegisterUserRequest registerJohnRequest = new RegisterUserRequest();
+        registerJohnRequest.setFirstName("John");
+        registerJohnRequest.setLastName("Doe");
+        registerJohnRequest.setEmail("johndoe@test.com");
+        registerJohnRequest.setUsername("johndoe");
+        registerJohnRequest.setPassword("123456");
+        registerJohnRequest.setConfirmPassword("123456");
+
+        registerUserRequests.put("john", registerJohnRequest);
+
+        return registerUserRequests;
+    }
+
+
     public static Map<String, ShippingAddressRequest> getShippingAddressRequests() {
         Map<String, ShippingAddressRequest> shippingAddressRequests = new HashMap<>();
 
-        ShippingAddressRequest validRequest = new ShippingAddressRequest();
-        validRequest.setUseFirstAndLastNameFromUser(false);
-        validRequest.setFirstName("John");
-        validRequest.setLastName("Doe");
-        validRequest.setAddress("Pobedina 1");
-        validRequest.setZipCode(18000L);
-        validRequest.setCity("Nis");
-        validRequest.setCountry("Serbia");
-        validRequest.setPhoneNumber("+38164123456");
+        ShippingAddressRequest johnRequest = new ShippingAddressRequest();
+        johnRequest.setUseFirstAndLastNameFromUser(false);
+        johnRequest.setFirstName("John");
+        johnRequest.setLastName("Doe");
+        johnRequest.setAddress("Pobedina 1");
+        johnRequest.setZipCode(18000L);
+        johnRequest.setCity("Nis");
+        johnRequest.setCountry("Serbia");
+        johnRequest.setPhoneNumber("+38164123456");
 
-        ShippingAddressRequest requestWithoutFirstAndLastName = new ShippingAddressRequest();
-        requestWithoutFirstAndLastName.setUseFirstAndLastNameFromUser(true);
-        requestWithoutFirstAndLastName.setFirstName(null);
-        requestWithoutFirstAndLastName.setLastName(null);
-        requestWithoutFirstAndLastName.setAddress("Pobedina 1");
-        requestWithoutFirstAndLastName.setZipCode(18000L);
-        requestWithoutFirstAndLastName.setCity("Nis");
-        requestWithoutFirstAndLastName.setCountry("Serbia");
-        requestWithoutFirstAndLastName.setPhoneNumber("+38164123456");
+        ShippingAddressRequest noNamesRequest = new ShippingAddressRequest();
+        noNamesRequest.setUseFirstAndLastNameFromUser(true);
+        noNamesRequest.setFirstName(null);
+        noNamesRequest.setLastName(null);
+        noNamesRequest.setAddress("Pobedina 1");
+        noNamesRequest.setZipCode(18000L);
+        noNamesRequest.setCity("Nis");
+        noNamesRequest.setCountry("Serbia");
+        noNamesRequest.setPhoneNumber("+38164123456");
 
-        shippingAddressRequests.put("johnRequest", validRequest);
-        shippingAddressRequests.put("noNamesRequest", requestWithoutFirstAndLastName);
+        shippingAddressRequests.put("john", johnRequest);
+        shippingAddressRequests.put("noNames", noNamesRequest);
 
         return shippingAddressRequests;
     }
