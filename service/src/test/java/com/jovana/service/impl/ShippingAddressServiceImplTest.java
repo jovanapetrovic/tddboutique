@@ -7,6 +7,7 @@ import com.jovana.entity.user.User;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.exception.ValueMustNotBeNullOrEmptyException;
 import com.jovana.repositories.shippingaddress.ShippingAddressRepository;
+import com.jovana.service.util.RequestTestDataProvider;
 import com.jovana.service.util.TestDataProvider;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
 import com.jovana.service.impl.shippingaddress.ShippingAddressServiceImpl;
@@ -69,79 +70,23 @@ public class ShippingAddressServiceImplTest {
     @Nested
     class RegisterUserAddShippingAddressTest {
 
+        private final String TEST_FIRSTNAME = "firstname";
+        private final String TEST_LASTNAME = "lastname";
+        private final String TEST_INVALID_PHONE_NUMBER = "+38118123456";
+        private final String TEST_UNPARSABLE_PHONE_NUMBER = "unparsable";
+
         private ShippingAddressRequest shippingAddressRequest;
-        private ShippingAddressRequest shippingAddressRequestWhenUserDataIsCopied;
-        private ShippingAddressRequest shippingAddressRequestWithoutFirstName;
-        private ShippingAddressRequest shippingAddressRequestWithoutLastName;
-        private ShippingAddressRequest shippingAddressRequestWithInvalidPhoneNumber;
-        private ShippingAddressRequest shippingAddressRequestWithUnparsablePhoneNumber;
-        private ShippingAddress johnShippingAddress;
-        private ShippingAddress janeShippingAddress;
+        private ShippingAddressRequest shippingAddressRequestWithoutNames;
         private User johnUser;
         private User janeUser;
+        private ShippingAddress johnShippingAddress;
+        private ShippingAddress janeShippingAddress;
 
         @BeforeEach
         void setUp() {
             // set requests
-            shippingAddressRequest = ShippingAddressRequest.createUserShippingAddressRequest(
-                    false,
-                    "John",
-                    "Doe",
-                    "Pobedina 1",
-                    18000L,
-                    "Nis",
-                    "Serbia",
-                    "+38164123456");
-
-            shippingAddressRequestWhenUserDataIsCopied = ShippingAddressRequest.createUserShippingAddressRequest(
-                    true,
-                    null,
-                    null,
-                    "Pobedina 1",
-                    18000L,
-                    "Nis",
-                    "Serbia",
-                    "+38164123456");
-
-            shippingAddressRequestWithoutFirstName = ShippingAddressRequest.createUserShippingAddressRequest(
-                    false,
-                    null,
-                    "Doe",
-                    "Pobedina 1",
-                    18000L,
-                    "Nis",
-                    "Serbia",
-                    "+38164123456");
-
-            shippingAddressRequestWithoutLastName = ShippingAddressRequest.createUserShippingAddressRequest(
-                    false,
-                    "Jane",
-                    null,
-                    "Pobedina 1",
-                    18000L,
-                    "Nis",
-                    "Serbia",
-                    "+38164123456");
-
-            shippingAddressRequestWithInvalidPhoneNumber = ShippingAddressRequest.createUserShippingAddressRequest(
-                    false,
-                    "Jane",
-                    "Doe",
-                    "Pobedina 1",
-                    18000L,
-                    "Nis",
-                    "Serbia",
-                    "+38118123456");
-
-            shippingAddressRequestWithUnparsablePhoneNumber = ShippingAddressRequest.createUserShippingAddressRequest(
-                    false,
-                    "Jane",
-                    "Doe",
-                    "Pobedina 1",
-                    18000L,
-                    "Nis",
-                    "Serbia",
-                    "unparsable");
+            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("johnRequest");
+            shippingAddressRequestWithoutNames = RequestTestDataProvider.getShippingAddressRequests().get("noNamesRequest");
 
             // set users
             johnUser = TestDataProvider.getUsers().get("john");
@@ -193,7 +138,7 @@ public class ShippingAddressServiceImplTest {
             when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(janeShippingAddress));
 
             // exercise
-            Long shippingAddressId = shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequestWhenUserDataIsCopied);
+            Long shippingAddressId = shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequestWithoutNames);
 
             // verify
             ShippingAddress newShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
@@ -201,47 +146,68 @@ public class ShippingAddressServiceImplTest {
             assertAll("Verify Jane's shipping address",
                     () -> Assertions.assertNotNull(newShippingAddress, "ShippingAddress is null"),
                     () -> Assertions.assertNotNull(newShippingAddress.getFirstName(), "First name is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequestWhenUserDataIsCopied.getFirstName(), newShippingAddress.getFirstName(), "First name doesn't match"),
+                    () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getFirstName(), newShippingAddress.getFirstName(), "First name doesn't match"),
                     () -> Assertions.assertNotNull(newShippingAddress.getLastName(), "Last name is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequestWhenUserDataIsCopied.getLastName(), newShippingAddress.getLastName(), "Last name doesn't match"),
-                    () -> Assertions.assertEquals(shippingAddressRequestWhenUserDataIsCopied.getAddress(), newShippingAddress.getAddress(), "Address doesn't match"),
-                    () -> Assertions.assertEquals(shippingAddressRequestWhenUserDataIsCopied.getZipCode(), newShippingAddress.getZipCode(), "Zip code doesn't match"),
-                    () -> Assertions.assertEquals(shippingAddressRequestWhenUserDataIsCopied.getCity(), newShippingAddress.getCity(), "City doesn't match"),
-                    () -> Assertions.assertEquals(shippingAddressRequestWhenUserDataIsCopied.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
-                    () -> Assertions.assertEquals(shippingAddressRequestWhenUserDataIsCopied.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
+                    () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getLastName(), newShippingAddress.getLastName(), "Last name doesn't match"),
+                    () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getAddress(), newShippingAddress.getAddress(), "Address doesn't match"),
+                    () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getZipCode(), newShippingAddress.getZipCode(), "Zip code doesn't match"),
+                    () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getCity(), newShippingAddress.getCity(), "City doesn't match"),
+                    () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
+                    () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
             );
         }
 
         @DisplayName("Then creating shipping address fails when first name is not provided")
         @Test
         public void testAddUserShippingAddressFailsWhenFirstNameIsNotProvided() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getUseFirstAndLastNameFromUser()).thenReturn(false);
+
             // verify
             assertThrows(ValueMustNotBeNullOrEmptyException.class,
-                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequestWithoutFirstName), "First name must be provided");
+                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "First name must be provided");
         }
 
         @DisplayName("Then creating shipping address fails when last name is not provided")
         @Test
         public void testAddUserShippingAddressFailsWhenLastNameIsNotProvided() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getUseFirstAndLastNameFromUser()).thenReturn(false);
+            when(shippingAddressRequest.getFirstName()).thenReturn(TEST_FIRSTNAME);
+
             // verify
             assertThrows(ValueMustNotBeNullOrEmptyException.class,
-                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequestWithoutLastName), "Last name must be provided");
+                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Last name must be provided");
         }
 
         @DisplayName("Then creating shipping address fails when phone number is invalid")
         @Test
         public void testAddUserShippingAddressFailsWhenPhoneNumberIsInvalid() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getFirstName()).thenReturn(TEST_FIRSTNAME);
+            when(shippingAddressRequest.getLastName()).thenReturn(TEST_LASTNAME);
+            when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_INVALID_PHONE_NUMBER);
+
             // verify
             assertThrows(InvalidPhoneNumberException.class,
-                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequestWithInvalidPhoneNumber), "Phone number is not valid.");
+                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Phone number is not valid.");
         }
 
         @DisplayName("Then creating shipping address fails when phone number cannot be parsed")
         @Test
         public void testAddUserShippingAddressFailsWhenPhoneNumberCannotBeParsed() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getFirstName()).thenReturn(TEST_FIRSTNAME);
+            when(shippingAddressRequest.getLastName()).thenReturn(TEST_LASTNAME);
+            when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_UNPARSABLE_PHONE_NUMBER);
+
             // verify
             assertThrows(InvalidPhoneNumberException.class,
-                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequestWithUnparsablePhoneNumber), "Phone number is not valid.");
+                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Phone number is not valid.");
         }
 
     }

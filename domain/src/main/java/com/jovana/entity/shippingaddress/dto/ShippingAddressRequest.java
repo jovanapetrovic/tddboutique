@@ -31,26 +31,15 @@ public class ShippingAddressRequest {
     @NotNull
     private String phoneNumber;
 
-    private ShippingAddressRequest() {
-    }
-
-    public static ShippingAddressRequest createUserShippingAddressRequest(Boolean useUsersFirstAndLastName, String firstName,
-                                                                          String lastName, String address, Long zipCode,
-                                                                          String city, String country, String phoneNumber) {
-        ShippingAddressRequest shippingAddressRequest = new ShippingAddressRequest();
-        shippingAddressRequest.useFirstAndLastNameFromUser = useUsersFirstAndLastName;
-        shippingAddressRequest.firstName = firstName;
-        shippingAddressRequest.lastName = lastName;
-        shippingAddressRequest.address = address;
-        shippingAddressRequest.zipCode = zipCode;
-        shippingAddressRequest.city = city;
-        shippingAddressRequest.country = country;
-        shippingAddressRequest.phoneNumber = phoneNumber;
-        return shippingAddressRequest;
+    public ShippingAddressRequest() {
     }
 
     public Boolean getUseFirstAndLastNameFromUser() {
         return useFirstAndLastNameFromUser;
+    }
+
+    public void setUseFirstAndLastNameFromUser(Boolean useFirstAndLastNameFromUser) {
+        this.useFirstAndLastNameFromUser = useFirstAndLastNameFromUser;
     }
 
     public String getFirstName() {
@@ -73,20 +62,40 @@ public class ShippingAddressRequest {
         return address;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public Long getZipCode() {
         return zipCode;
+    }
+
+    public void setZipCode(Long zipCode) {
+        this.zipCode = zipCode;
     }
 
     public String getCity() {
         return city;
     }
 
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public String getCountry() {
         return country;
     }
 
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
 }
