@@ -39,7 +39,7 @@ public class ShippingAddressServiceImplTest {
 
     @DisplayName("When we want to find a ShippingAddress by id")
     @Nested
-    class GetUserTest {
+    class GetShippingAddressTest {
 
         private final Long SHIPPING_ADDRESS_ID_EXISTS = 10L;
         private final Long SHIPPING_ADDRESS_ID_NOT_EXISTS = 9999L;
@@ -172,6 +172,20 @@ public class ShippingAddressServiceImplTest {
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
+        @DisplayName("Then creating shipping address fails when first name is empty")
+        @Test
+        public void testAddUserShippingAddressFailsWhenFirstNameIsEmpty() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getUseFirstAndLastNameFromUser()).thenReturn(false);
+            when(shippingAddressRequest.getFirstName()).thenReturn("");
+
+            // verify
+            assertThrows(ValueMustNotBeNullOrEmptyException.class,
+                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "First name must not be empty");
+            verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
+        }
+
         @DisplayName("Then creating shipping address fails when last name is not provided")
         @Test
         public void testAddUserShippingAddressFailsWhenLastNameIsNotProvided() {
@@ -183,6 +197,21 @@ public class ShippingAddressServiceImplTest {
             // verify
             assertThrows(ValueMustNotBeNullOrEmptyException.class,
                     () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Last name must be provided");
+            verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
+        }
+
+        @DisplayName("Then creating shipping address fails when last name is empty")
+        @Test
+        public void testAddUserShippingAddressFailsWhenLastNameIsEmpty() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getUseFirstAndLastNameFromUser()).thenReturn(false);
+            when(shippingAddressRequest.getFirstName()).thenReturn(TEST_FIRSTNAME);
+            when(shippingAddressRequest.getLastName()).thenReturn("");
+
+            // verify
+            assertThrows(ValueMustNotBeNullOrEmptyException.class,
+                    () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Last name must not be empty");
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 

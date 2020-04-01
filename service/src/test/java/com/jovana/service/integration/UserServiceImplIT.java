@@ -22,6 +22,22 @@ public class UserServiceImplIT extends AbstractTest {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @DisplayName("When we want to find a user by id")
+    @Nested
+    class GetUserTest {
+
+        private final Long TEST_USER_ID = 10L;
+
+        @DisplayName("Then user is fetched from database when id is valid")
+        @Test
+        public void testGetUserById() {
+            // exercise
+            User newUser = userService.getUserById(TEST_USER_ID);
+            // verify
+            Assertions.assertNotNull(newUser, "User is null");
+        }
+    }
+
     @DisplayName("When we want to register a new user")
     @Nested
     class RegisterUserITest {

@@ -1,6 +1,7 @@
 package com.jovana.entity.shippingaddress.dto;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 /**
@@ -17,7 +18,7 @@ public class ShippingAddressRequest {
     private String address;
 
     @NotNull
-    @Size(min = 5, max = 10)
+    @Positive
     private Long zipCode;
 
     @NotNull

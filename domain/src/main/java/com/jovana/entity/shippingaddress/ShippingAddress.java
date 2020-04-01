@@ -5,6 +5,7 @@ import com.jovana.entity.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -36,7 +37,7 @@ public class ShippingAddress extends AbstractAuditingEntity implements Serializa
     private String address;
 
     @NotNull
-    @Size(min = 5, max = 10)
+    @Positive
     private Long zipCode;
 
     @NotNull
