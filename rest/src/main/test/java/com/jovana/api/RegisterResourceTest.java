@@ -1,5 +1,6 @@
 package com.jovana.api;
 
+import com.jovana.entity.PathConstants;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.service.impl.user.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +13,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
  */
 public class RegisterResourceTest extends AbstractTest {
 
-    private static final String REGISTER_API_PATH = "/api/register/demo";
+    private static final String REGISTER_API = PathConstants.API + PathConstants.REGISTER;
     private static final String REGISTER_USER_RESPONSE_WHEN_PARAMS_ARE_NULL = "registerUserResponseWhenParamsAreNull.json";
     private static final String REGISTER_USER_RESPONSE_WHEN_PARAMS_SIZE_IS_WRONG = "registerUserResponseWhenParamsSizeIsWrong.json";
     private static final String REGISTER_USER_RESPONSE_WHEN_EMAIL_HAS_WRONG_FORMAT = "registerUserResponseWhenEmailHasWrongFormat.json";
@@ -32,7 +33,7 @@ public class RegisterResourceTest extends AbstractTest {
                 "123456");
 
         performSimplePost(
-                REGISTER_API_PATH,
+                REGISTER_API,
                 registerUserRequest,
                 MockMvcResultMatchers.status().isCreated());
     }
@@ -49,7 +50,7 @@ public class RegisterResourceTest extends AbstractTest {
                 null);
 
         performPostAndExpectResponse(
-                REGISTER_API_PATH,
+                REGISTER_API,
                 registerUserRequest,
                 REGISTER_USER_RESPONSE_WHEN_PARAMS_ARE_NULL,
                 MockMvcResultMatchers.status().isBadRequest());
@@ -67,7 +68,7 @@ public class RegisterResourceTest extends AbstractTest {
                 "123");
 
         performPostAndExpectResponse(
-                REGISTER_API_PATH,
+                REGISTER_API,
                 registerUserRequest,
                 REGISTER_USER_RESPONSE_WHEN_PARAMS_SIZE_IS_WRONG,
                 MockMvcResultMatchers.status().isBadRequest());
@@ -85,7 +86,7 @@ public class RegisterResourceTest extends AbstractTest {
                 "123456");
 
         performPostAndExpectResponse(
-                REGISTER_API_PATH,
+                REGISTER_API,
                 registerUserRequest,
                 REGISTER_USER_RESPONSE_WHEN_EMAIL_HAS_WRONG_FORMAT,
                 MockMvcResultMatchers.status().isBadRequest());
