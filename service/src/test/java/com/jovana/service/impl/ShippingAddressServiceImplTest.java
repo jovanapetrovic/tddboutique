@@ -127,6 +127,7 @@ public class ShippingAddressServiceImplTest {
                     () -> Assertions.assertNotNull(newShippingAddress.getPhone().getPhoneNumber(), "Phone number is null"),
                     () -> Assertions.assertEquals(shippingAddressRequest.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
             );
+            verify(shippingAddressRepository, times(1)).save(any(ShippingAddress.class));
         }
 
         @DisplayName("Then shipping address is created for user and first and last name are copied from user")
@@ -155,6 +156,7 @@ public class ShippingAddressServiceImplTest {
                     () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
                     () -> Assertions.assertEquals(shippingAddressRequestWithoutNames.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
             );
+            verify(shippingAddressRepository, times(1)).save(any(ShippingAddress.class));
         }
 
         @DisplayName("Then creating shipping address fails when first name is not provided")
@@ -167,6 +169,7 @@ public class ShippingAddressServiceImplTest {
             // verify
             assertThrows(ValueMustNotBeNullOrEmptyException.class,
                     () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "First name must be provided");
+            verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
         @DisplayName("Then creating shipping address fails when last name is not provided")
@@ -180,6 +183,7 @@ public class ShippingAddressServiceImplTest {
             // verify
             assertThrows(ValueMustNotBeNullOrEmptyException.class,
                     () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Last name must be provided");
+            verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
         @DisplayName("Then creating shipping address fails when phone number is invalid")
@@ -194,6 +198,7 @@ public class ShippingAddressServiceImplTest {
             // verify
             assertThrows(InvalidPhoneNumberException.class,
                     () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Phone number is not valid.");
+            verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
         @DisplayName("Then creating shipping address fails when phone number cannot be parsed")
@@ -208,6 +213,7 @@ public class ShippingAddressServiceImplTest {
             // verify
             assertThrows(InvalidPhoneNumberException.class,
                     () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Phone number is not valid.");
+            verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
     }

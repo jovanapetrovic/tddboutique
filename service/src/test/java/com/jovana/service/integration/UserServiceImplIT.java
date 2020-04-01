@@ -4,10 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.RegisterUserRequest;
-import com.jovana.entity.user.exception.EmailAlreadyExistsException;
-import com.jovana.entity.user.exception.PasswordsDontMatchException;
-import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.service.impl.user.UserService;
+import com.jovana.service.util.RequestTestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,40 +27,10 @@ public class UserServiceImplIT extends AbstractTest {
     class RegisterUserITest {
 
         private RegisterUserRequest registerUserRequest;
-        private RegisterUserRequest wrongPasswordRegisterUserRequest;
-        private RegisterUserRequest usernameExistsRegisterUserRequest;
-        private RegisterUserRequest emailExistsRegisterUserRequest;
 
         @BeforeEach
         void setUp() {
-            registerUserRequest = RegisterUserRequest.createRegisterUserRequest(
-                    "John",
-                    "Doe",
-                    "johndoe@test.com",
-                    "johndoe",
-                    "123456",
-                    "123456");
-            wrongPasswordRegisterUserRequest = RegisterUserRequest.createRegisterUserRequest(
-                    "Jane",
-                    "Doe",
-                    "janedoe@test.com",
-                    "janedoe",
-                    "123456",
-                    "doesntmatch");
-            usernameExistsRegisterUserRequest = RegisterUserRequest.createRegisterUserRequest(
-                    "firstname3",
-                    "lastname3",
-                    "testuser33@test.com",
-                    "testuser3",
-                    "123456",
-                    "123456");
-            emailExistsRegisterUserRequest = RegisterUserRequest.createRegisterUserRequest(
-                    "firstname3",
-                    "lastname3",
-                    "testuser3@test.com",
-                    "testuser33",
-                    "123456",
-                    "123456");
+            registerUserRequest = RequestTestDataProvider.getRegisterUserRequests().get("john");
         }
 
         @DisplayName("Then a new user is created when valid RegisterUserRequest is passed")
@@ -87,31 +55,9 @@ public class UserServiceImplIT extends AbstractTest {
                     () -> Assertions.assertNotNull(newUser.getPassword(), "Password is null"),
                     () -> Assertions.assertTrue(passwordEncoder.matches(registerUserRequest.getPassword(), newUser.getPassword()))
             );
+
         }
 
-        @DisplayName("Then register fails when password and confirm password don't match")
-        @Test
-        public void testRegisterUserFailsWhenPasswordAndConfirmPasswordDontMatch() {
-            // verify
-            assertThrows(PasswordsDontMatchException.class,
-                    () -> userService.registerUser(wrongPasswordRegisterUserRequest), "Passwords don't match");
-        }
-
-        @DisplayName("Then register fails when username already exists")
-        @Test
-        public void testRegisterUserFailsWhenUsernameAlreadyExists() {
-            // verify
-            assertThrows(UsernameAlreadyExistsException.class,
-                    () -> userService.registerUser(usernameExistsRegisterUserRequest), "Username already exists");
-        }
-
-        @DisplayName("Then register fails when email already exists")
-        @Test
-        public void testRegisterUserFailsWhenEmailAlreadyExists() {
-            // verify
-            assertThrows(EmailAlreadyExistsException.class,
-                    () -> userService.registerUser(emailExistsRegisterUserRequest), "Email already exists");
-        }
     }
 
 }

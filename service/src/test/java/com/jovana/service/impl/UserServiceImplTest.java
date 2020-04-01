@@ -108,6 +108,7 @@ public class UserServiceImplTest {
                     () -> Assertions.assertNotNull(newUser.getPassword(), "Password is null"),
                     () -> Assertions.assertEquals(DEFAULT_ENCODED_PASSWORD, newUser.getPassword(), "Password doesn't match")
             );
+            verify(userRepository, times(1)).save(any(User.class));
         }
 
         @DisplayName("Then register fails when password and confirm password don't match")
@@ -121,6 +122,7 @@ public class UserServiceImplTest {
             // verify
             assertThrows(PasswordsDontMatchException.class,
                     () -> userService.registerUser(registerUserRequest), "Passwords don't match");
+            verify(userRepository, times(0)).save(any(User.class));
         }
 
         @DisplayName("Then register fails when username already exists")
@@ -128,9 +130,11 @@ public class UserServiceImplTest {
         public void testRegisterUserFailsWhenUsernameAlreadyExists() {
             // prepare
             when(userRepository.findByUsername(any(String.class))).thenReturn(user);
+
             // verify
             assertThrows(UsernameAlreadyExistsException.class,
                     () -> userService.registerUser(registerUserRequest), "Username already exists");
+            verify(userRepository, times(0)).save(any(User.class));
         }
 
         @DisplayName("Then register fails when email already exists")
@@ -138,9 +142,11 @@ public class UserServiceImplTest {
         public void testRegisterUserFailsWhenEmailAlreadyExists() {
             // prepare
             when(userRepository.findByEmail(any(String.class))).thenReturn(user);
+
             // verify
             assertThrows(EmailAlreadyExistsException.class,
                     () -> userService.registerUser(registerUserRequest), "Email already exists");
+            verify(userRepository, times(0)).save(any(User.class));
         }
     }
 
