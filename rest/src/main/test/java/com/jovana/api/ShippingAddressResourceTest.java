@@ -15,8 +15,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class ShippingAddressResourceTest extends AbstractTest {
 
     private static final String TEST_USER_ID = "10";
+
     private static final String SHIPPING_ADDRESS_ADD_PATH = PathConstants.API
             + PathConstants.SHIPPING_ADDRESS_ADD.replace(PathConstants.PH_USER_ID, TEST_USER_ID);
+
+    private static final String SHIPPING_ADDRESS_ADD_RESPONSE_WHEN_PARAMS_ARE_NULL = "shippingAddressResponseWhenParamsAreNull.json";
+    private static final String SHIPPING_ADDRESS_ADD_RESPONSE_WHEN_PARAMS_SIZE_IS_WRONG = "shippingAddressResponseWhenParamsSizeIsWrong.json";
 
     @MockBean
     private ShippingAddressService shippingAddressService;
@@ -40,6 +44,38 @@ public class ShippingAddressResourceTest extends AbstractTest {
                 SHIPPING_ADDRESS_ADD_PATH,
                 shippingAddressRequest,
                 MockMvcResultMatchers.status().isCreated());
+    }
+
+    @DisplayName("Add shipping address fails when request params are null")
+    @Test
+    public void testAddShippingAddressFailsWhenParamsAreNull() throws Exception {
+        ShippingAddressRequest shippingAddressRequest = new ShippingAddressRequest();
+
+        performPostAndExpectResponse(
+                SHIPPING_ADDRESS_ADD_PATH,
+                shippingAddressRequest,
+                SHIPPING_ADDRESS_ADD_RESPONSE_WHEN_PARAMS_ARE_NULL,
+                MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @DisplayName("Add shipping address fails when request params size is wrong")
+    @Test
+    public void testAddShippingAddressFailsWhenParamsSizeIsWrong() throws Exception {
+        ShippingAddressRequest shippingAddressRequest = new ShippingAddressRequest();
+        shippingAddressRequest.setUseFirstAndLastNameFromUser(false);
+        shippingAddressRequest.setFirstName("John");
+        shippingAddressRequest.setLastName("Doe");
+        shippingAddressRequest.setAddress("P 1");
+        shippingAddressRequest.setZipCode(0L);
+        shippingAddressRequest.setCity("N");
+        shippingAddressRequest.setCountry("S");
+        shippingAddressRequest.setPhoneNumber("+38164123456");
+
+        performPostAndExpectResponse(
+                SHIPPING_ADDRESS_ADD_PATH,
+                shippingAddressRequest,
+                SHIPPING_ADDRESS_ADD_RESPONSE_WHEN_PARAMS_SIZE_IS_WRONG,
+                MockMvcResultMatchers.status().isBadRequest());
     }
 
 }
