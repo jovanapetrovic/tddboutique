@@ -16,20 +16,17 @@ import java.net.URI;
  */
 @RestController
 @RequestMapping(value = PathConstants.API)
-public class RegisterResource {
+public class UserResource {
 
     @Autowired
     private UserService userService;
 
     @PostMapping(value = PathConstants.REGISTER)
     public ResponseEntity<Void> registerUserPOST(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
-
         userService.registerUser(registerUserRequest);
-
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .build()
                 .toUri();
-
         return ResponseEntity.created(location).build();
     }
 
