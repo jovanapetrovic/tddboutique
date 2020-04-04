@@ -1,11 +1,14 @@
 package com.jovana.api;
 
 import com.jovana.config.RestConfig;
+import com.jovana.service.impl.shippingaddress.ShippingAddressService;
+import com.jovana.service.impl.user.UserService;
 import com.jovana.util.FileUtil;
 import com.jovana.util.ObjectToJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -31,7 +34,11 @@ public class AbstractTest {
     public CsrfToken csrfToken = httpSessionCsrfTokenRepository.generateToken(new MockHttpServletRequest());
 
     @Autowired
-    public MockMvc mockMvc;
+    private MockMvc mockMvc;
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private ShippingAddressService service;
 
     public void performSimpleGet(String path, String jsonFileName) throws Exception {
         mockMvc.perform(get(path)
