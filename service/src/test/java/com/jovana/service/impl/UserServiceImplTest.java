@@ -1,6 +1,7 @@
 package com.jovana.service.impl;
 
 import com.jovana.entity.user.User;
+import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.entity.user.exception.PasswordsDontMatchException;
@@ -159,23 +160,29 @@ public class UserServiceImplTest {
 
         private User user;
         private User updatedUser;
+        private ChangeEmailAddressRequest changeEmailAddressRequest;
 
         @BeforeEach
         void setUp() {
             user = TestDataProvider.getUsers().get("april");
+
             updatedUser = TestDataProvider.getUsers().get("april");
             updatedUser.setEmail(NEW_EMAIL_ADDRESS);
+
+            changeEmailAddressRequest = new ChangeEmailAddressRequest();
         }
 
         @DisplayName("Then email is changed when new email is passed")
         @Test
         public void testChangeEmailAddressSuccess() {
             // prepare
+            changeEmailAddressRequest.setNewEmailAddress(NEW_EMAIL_ADDRESS);
+
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
             when(userRepository.findByEmail(any(String.class))).thenReturn(null);
 
             // exercise
-            userService.changeEmailAddress(TEST_USER_ID, NEW_EMAIL_ADDRESS);
+            userService.changeEmailAddress(TEST_USER_ID, changeEmailAddressRequest);
 
             // verify
             User userAfter = userService.getUserById(TEST_USER_ID);
@@ -187,10 +194,12 @@ public class UserServiceImplTest {
         @Test
         public void testChangeEmailAddressSkipsWhenEmailAlreadyExists() {
             // prepare
+            changeEmailAddressRequest.setNewEmailAddress(NEW_EMAIL_ADDRESS_IS_SAME_AS_OLD);
+
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
 
             // exercise
-            userService.changeEmailAddress(TEST_USER_ID, NEW_EMAIL_ADDRESS_IS_SAME_AS_OLD);
+            userService.changeEmailAddress(TEST_USER_ID, changeEmailAddressRequest);
 
             // verify
             verify(userRepository, times(0)).save(any(User.class));
@@ -200,12 +209,13 @@ public class UserServiceImplTest {
         @Test
         public void testChangeEmailAddressFailsWhenEmailAlreadyExists() {
             // prepare
+            changeEmailAddressRequest.setNewEmailAddress(NEW_EMAIL_ADDRESS_WHICH_EXISTS);
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
             when(userRepository.findByEmail(any(String.class))).thenReturn(mock(User.class));
 
             // verify
             assertThrows(EmailAlreadyExistsException.class,
-                    () -> userService.changeEmailAddress(TEST_USER_ID, NEW_EMAIL_ADDRESS_WHICH_EXISTS), "Email address already exists");
+                    () -> userService.changeEmailAddress(TEST_USER_ID, changeEmailAddressRequest), "Email address already exists");
             verify(userRepository, times(0)).save(any(User.class));
         }
 

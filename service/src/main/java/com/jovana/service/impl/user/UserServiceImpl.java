@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.user.User;
+import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.entity.user.exception.PasswordsDontMatchException;
@@ -17,8 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ValidatorFactory;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -67,11 +66,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeEmailAddress(Long userId, String newEmailAddress) {
+    public void changeEmailAddress(Long userId, ChangeEmailAddressRequest changeEmailAddressRequest) {
         User user = getUserById(userId);
-        if (!user.getEmail().equals(newEmailAddress)) {
-            validateEmail(newEmailAddress);
-            user.setEmail(newEmailAddress);
+        if (!user.getEmail().equals(changeEmailAddressRequest.getNewEmailAddress())) {
+            validateEmail(changeEmailAddressRequest.getNewEmailAddress());
+            user.setEmail(changeEmailAddressRequest.getNewEmailAddress());
             userRepository.save(user);
         }
     }

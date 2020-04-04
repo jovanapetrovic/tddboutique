@@ -1,6 +1,7 @@
 package com.jovana.service.integration;
 
 import com.jovana.entity.user.User;
+import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.service.impl.user.UserService;
@@ -89,7 +90,9 @@ public class UserServiceImplIT extends AbstractTest {
 
             // exercise
             String newEmailAddress = "test_user_4@test.com";
-            userService.changeEmailAddress(TEST_USER_ID, newEmailAddress);
+            ChangeEmailAddressRequest changeEmailAddressRequest = new ChangeEmailAddressRequest();
+            changeEmailAddressRequest.setNewEmailAddress(newEmailAddress);
+            userService.changeEmailAddress(TEST_USER_ID, changeEmailAddressRequest);
 
             // verify
             User user = userService.getUserById(TEST_USER_ID);
@@ -105,11 +108,13 @@ public class UserServiceImplIT extends AbstractTest {
 
             // exercise
             String newEmailAddress = "testuser3@test.com";
+            ChangeEmailAddressRequest changeEmailAddressRequest = new ChangeEmailAddressRequest();
+            changeEmailAddressRequest.setNewEmailAddress(newEmailAddress);
 
             // verify
             User userAfter = userService.getUserById(TEST_USER_ID);
             assertThrows(EmailAlreadyExistsException.class,
-                    () -> userService.changeEmailAddress(TEST_USER_ID, newEmailAddress), "Email address already exists");
+                    () -> userService.changeEmailAddress(TEST_USER_ID, changeEmailAddressRequest), "Email address already exists");
             assertEquals(userBefore.getEmail(), userAfter.getEmail());
         }
 

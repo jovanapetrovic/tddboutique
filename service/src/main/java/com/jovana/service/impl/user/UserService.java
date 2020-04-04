@@ -1,6 +1,7 @@
 package com.jovana.service.impl.user;
 
 import com.jovana.entity.user.User;
+import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 
 /**
@@ -12,6 +13,6 @@ public interface UserService {
 
     Long registerUser(RegisterUserRequest registerUserRequest);
 
-    void changeEmailAddress(Long userId, String newEmailAddress);
+    void changeEmailAddress(Long userId, ChangeEmailAddressRequest changeEmailAddressRequest);
 
 }
