@@ -29,7 +29,7 @@ public class TestDataProvider {
         userJohn.setAuthorities(Sets.newHashSet(new Authority(AuthorityConstants.USER)));
 
         User userJane = new User();
-        userJane.setId(10L);
+        userJane.setId(11L);
         userJane.setFirstName("Jane");
         userJane.setLastName("Doe");
         userJane.setEmail("janedoe@test.com");
@@ -37,8 +37,18 @@ public class TestDataProvider {
         userJane.setPassword(DEFAULT_ENCODED_PASSWORD);
         userJane.setAuthorities(Sets.newHashSet(new Authority(AuthorityConstants.USER)));
 
+        User userApril = new User();
+        userApril.setId(12L);
+        userApril.setFirstName("April");
+        userApril.setLastName("O Neal");
+        userApril.setEmail("apriloneal@test.com");
+        userApril.setUsername("apriloneal");
+        userApril.setPassword(DEFAULT_ENCODED_PASSWORD);
+        userApril.setAuthorities(Sets.newHashSet(new Authority(AuthorityConstants.USER)));
+
         users.put("john", userJohn);
         users.put("jane", userJane);
+        users.put("april", userApril);
 
         return users;
     }

@@ -30,4 +30,11 @@ public class UserResource {
         return ResponseEntity.created(location).build();
     }
 
+    @PutMapping(value = PathConstants.USER_CHANGE_EMAIL_ADDRESS)
+    public ResponseEntity<Void> changeEmailAddressPUT(@PathVariable("userId") Long userId,
+                                                      @Valid @RequestParam String newEmailAddress) {
+        userService.changeEmailAddress(userId, newEmailAddress);
+        return ResponseEntity.ok().build();
+    }
+
 }

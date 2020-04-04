@@ -66,6 +66,16 @@ public class UserServiceImpl implements UserService {
         return newUser.getId();
     }
 
+    @Override
+    public void changeEmailAddress(Long userId, String newEmailAddress) {
+        User user = getUserById(userId);
+        if (!user.getEmail().equals(newEmailAddress)) {
+            validateEmail(newEmailAddress);
+            user.setEmail(newEmailAddress);
+            userRepository.save(user);
+        }
+    }
+
     private void validatePasswords(String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
             throw new PasswordsDontMatchException("Password and confirm password don't match.");

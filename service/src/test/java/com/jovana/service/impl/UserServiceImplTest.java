@@ -1,7 +1,5 @@
 package com.jovana.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
@@ -22,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -41,28 +40,27 @@ public class UserServiceImplTest {
     @Nested
     class GetUserTest {
 
-        private final Long USER_ID_EXISTS = 10L;
-        private final Long USER_ID_NOT_EXISTS = 9999L;
-
         @DisplayName("Then user is fetched from database when id is valid")
         @Test
         public void testGetUserById() {
             // prepare
+            Long testUserId = 10L;
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(User.class)));
             // exercise
-            User newUser = userService.getUserById(USER_ID_EXISTS);
+            User newUser = userService.getUserById(testUserId);
             // verify
-            Assertions.assertNotNull(newUser, "User is null");
+            assertNotNull(newUser, "User is null");
         }
 
         @DisplayName("Then error is thrown when user with passed id doesn't exist")
         @Test
         public void testGetUserByIdFailsWhenUserWithPassedIdDoesntExist() {
             // prepare
+            Long testUserId = 9999L;
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
             // verify
             assertThrows(EntityNotFoundException.class,
-                    () -> userService.getUserById(USER_ID_NOT_EXISTS), "User with id=" + USER_ID_NOT_EXISTS + " doesn't exist");
+                    () -> userService.getUserById(testUserId), "User with id=" + testUserId + " doesn't exist");
         }
     }
 
@@ -96,17 +94,17 @@ public class UserServiceImplTest {
             User newUser = userService.getUserById(userId);
 
             assertAll("Verify registered user",
-                    () -> Assertions.assertNotNull(newUser, "User is null"),
-                    () -> Assertions.assertNotNull(newUser.getFirstName(), "First name is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getFirstName(), newUser.getFirstName(), "First name doesn't match"),
-                    () -> Assertions.assertNotNull(newUser.getLastName(), "Last name is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getLastName(), newUser.getLastName(), "Last name doesn't match"),
-                    () -> Assertions.assertNotNull(newUser.getEmail(), "Email is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getEmail(), newUser.getEmail(), "Email doesn't match"),
-                    () -> Assertions.assertNotNull(newUser.getUsername(), "Username is null"),
-                    () -> Assertions.assertEquals(registerUserRequest.getUsername(), newUser.getUsername(), "Username doesn't match"),
-                    () -> Assertions.assertNotNull(newUser.getPassword(), "Password is null"),
-                    () -> Assertions.assertEquals(DEFAULT_ENCODED_PASSWORD, newUser.getPassword(), "Password doesn't match")
+                    () -> assertNotNull(newUser, "User is null"),
+                    () -> assertNotNull(newUser.getFirstName(), "First name is null"),
+                    () -> assertEquals(registerUserRequest.getFirstName(), newUser.getFirstName(), "First name doesn't match"),
+                    () -> assertNotNull(newUser.getLastName(), "Last name is null"),
+                    () -> assertEquals(registerUserRequest.getLastName(), newUser.getLastName(), "Last name doesn't match"),
+                    () -> assertNotNull(newUser.getEmail(), "Email is null"),
+                    () -> assertEquals(registerUserRequest.getEmail(), newUser.getEmail(), "Email doesn't match"),
+                    () -> assertNotNull(newUser.getUsername(), "Username is null"),
+                    () -> assertEquals(registerUserRequest.getUsername(), newUser.getUsername(), "Username doesn't match"),
+                    () -> assertNotNull(newUser.getPassword(), "Password is null"),
+                    () -> assertEquals(DEFAULT_ENCODED_PASSWORD, newUser.getPassword(), "Password doesn't match")
             );
             verify(userRepository, times(1)).save(any(User.class));
         }
@@ -148,6 +146,69 @@ public class UserServiceImplTest {
                     () -> userService.registerUser(registerUserRequest), "Email already exists");
             verify(userRepository, times(0)).save(any(User.class));
         }
+    }
+
+    @DisplayName("When we want to update user account")
+    @Nested
+    class UpdateUserAccountTest {
+
+        private final Long TEST_USER_ID = 12L;
+        private final String NEW_EMAIL_ADDRESS = "april_o_neal@test.com";
+        private final String NEW_EMAIL_ADDRESS_IS_SAME_AS_OLD = "apriloneal@test.com";
+        private final String NEW_EMAIL_ADDRESS_WHICH_EXISTS = "johndoe@test.com";
+
+        private User user;
+        private User updatedUser;
+
+        @BeforeEach
+        void setUp() {
+            user = TestDataProvider.getUsers().get("april");
+            updatedUser = TestDataProvider.getUsers().get("april");
+            updatedUser.setEmail(NEW_EMAIL_ADDRESS);
+        }
+
+        @DisplayName("Then email is changed when new email is passed")
+        @Test
+        public void testChangeEmailAddressSuccess() {
+            // prepare
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+            when(userRepository.findByEmail(any(String.class))).thenReturn(null);
+
+            // exercise
+            userService.changeEmailAddress(TEST_USER_ID, NEW_EMAIL_ADDRESS);
+
+            // verify
+            User userAfter = userService.getUserById(TEST_USER_ID);
+            assertEquals(NEW_EMAIL_ADDRESS, userAfter.getEmail(), "Email wasn't changed");
+            verify(userRepository, times(1)).save(any(User.class));
+        }
+
+        @DisplayName("Then change email skips when new and old emails are equal")
+        @Test
+        public void testChangeEmailAddressSkipsWhenEmailAlreadyExists() {
+            // prepare
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+
+            // exercise
+            userService.changeEmailAddress(TEST_USER_ID, NEW_EMAIL_ADDRESS_IS_SAME_AS_OLD);
+
+            // verify
+            verify(userRepository, times(0)).save(any(User.class));
+        }
+
+        @DisplayName("Then change email fails when email already exists")
+        @Test
+        public void testChangeEmailAddressFailsWhenEmailAlreadyExists() {
+            // prepare
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+            when(userRepository.findByEmail(any(String.class))).thenReturn(mock(User.class));
+
+            // verify
+            assertThrows(EmailAlreadyExistsException.class,
+                    () -> userService.changeEmailAddress(TEST_USER_ID, NEW_EMAIL_ADDRESS_WHICH_EXISTS), "Email address already exists");
+            verify(userRepository, times(0)).save(any(User.class));
+        }
+
     }
 
 }

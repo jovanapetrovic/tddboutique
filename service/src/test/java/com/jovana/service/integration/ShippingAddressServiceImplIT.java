@@ -9,7 +9,7 @@ import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by jovana on 01.04.2020
@@ -34,7 +34,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             // exercise
             ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(SHIPPING_ADDRESS_ID_EXISTS);
             // verify
-            Assertions.assertNotNull(shippingAddress, "ShippingAddress is null");
+            assertNotNull(shippingAddress, "ShippingAddress is null");
         }
 
     }
@@ -63,21 +63,21 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             ShippingAddress newShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
 
             assertAll("Verify John's shipping address",
-                    () -> Assertions.assertNotNull(newShippingAddress, "ShippingAddress is null"),
-                    () -> Assertions.assertNotNull(newShippingAddress.getFirstName(), "First name is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequest.getFirstName(), newShippingAddress.getFirstName(), "First name doesn't match"),
-                    () -> Assertions.assertNotNull(newShippingAddress.getLastName(), "Last name is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequest.getLastName(), newShippingAddress.getLastName(), "Last name doesn't match"),
-                    () -> Assertions.assertNotNull(newShippingAddress.getAddress(), "Address is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequest.getAddress(), newShippingAddress.getAddress(), "Address doesn't match"),
-                    () -> Assertions.assertNotNull(newShippingAddress.getZipCode(), "Zip code is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequest.getZipCode(), newShippingAddress.getZipCode(), "Zip code doesn't match"),
-                    () -> Assertions.assertNotNull(newShippingAddress.getCity(), "City is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequest.getCity(), newShippingAddress.getCity(), "City doesn't match"),
-                    () -> Assertions.assertNotNull(newShippingAddress.getCountry(), "Country is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequest.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
-                    () -> Assertions.assertNotNull(newShippingAddress.getPhone().getPhoneNumber(), "Phone number is null"),
-                    () -> Assertions.assertEquals(shippingAddressRequest.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
+                    () -> assertNotNull(newShippingAddress, "ShippingAddress is null"),
+                    () -> assertNotNull(newShippingAddress.getFirstName(), "First name is null"),
+                    () -> assertEquals(shippingAddressRequest.getFirstName(), newShippingAddress.getFirstName(), "First name doesn't match"),
+                    () -> assertNotNull(newShippingAddress.getLastName(), "Last name is null"),
+                    () -> assertEquals(shippingAddressRequest.getLastName(), newShippingAddress.getLastName(), "Last name doesn't match"),
+                    () -> assertNotNull(newShippingAddress.getAddress(), "Address is null"),
+                    () -> assertEquals(shippingAddressRequest.getAddress(), newShippingAddress.getAddress(), "Address doesn't match"),
+                    () -> assertNotNull(newShippingAddress.getZipCode(), "Zip code is null"),
+                    () -> assertEquals(shippingAddressRequest.getZipCode(), newShippingAddress.getZipCode(), "Zip code doesn't match"),
+                    () -> assertNotNull(newShippingAddress.getCity(), "City is null"),
+                    () -> assertEquals(shippingAddressRequest.getCity(), newShippingAddress.getCity(), "City doesn't match"),
+                    () -> assertNotNull(newShippingAddress.getCountry(), "Country is null"),
+                    () -> assertEquals(shippingAddressRequest.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
+                    () -> assertNotNull(newShippingAddress.getPhone().getPhoneNumber(), "Phone number is null"),
+                    () -> assertEquals(shippingAddressRequest.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
             );
         }
     }

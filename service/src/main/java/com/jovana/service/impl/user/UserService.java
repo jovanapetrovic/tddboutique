@@ -12,4 +12,6 @@ public interface UserService {
 
     Long registerUser(RegisterUserRequest registerUserRequest);
 
+    void changeEmailAddress(Long userId, String newEmailAddress);
+
 }
