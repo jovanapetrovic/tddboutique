@@ -2,6 +2,7 @@ package com.jovana.api;
 
 import com.jovana.entity.PathConstants;
 import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
+import com.jovana.entity.user.dto.ChangeUsernameRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.service.impl.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,13 @@ public class UserResource {
     public ResponseEntity<Void> changeEmailAddressPUT(@PathVariable("userId") Long userId,
                                                       @Valid @RequestBody ChangeEmailAddressRequest changeEmailAddressRequest) {
         userService.changeEmailAddress(userId, changeEmailAddressRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = PathConstants.USER_CHANGE_USERNAME)
+    public ResponseEntity<Void> changeUsernamePUT(@PathVariable("userId") Long userId,
+                                                      @Valid @RequestBody ChangeUsernameRequest changeUsernameRequest) {
+        userService.changeUsername(userId, changeUsernameRequest);
         return ResponseEntity.ok().build();
     }
 

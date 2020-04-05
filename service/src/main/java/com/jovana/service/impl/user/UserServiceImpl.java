@@ -5,6 +5,7 @@ import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
+import com.jovana.entity.user.dto.ChangeUsernameRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.entity.user.exception.PasswordsDontMatchException;
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             LOGGER.info("User with id = {} was not found in the db.", userId);
             throw new EntityNotFoundException("No user found with id = " + userId);
         }
@@ -71,6 +72,16 @@ public class UserServiceImpl implements UserService {
         if (!user.getEmail().equals(changeEmailAddressRequest.getNewEmailAddress())) {
             validateEmail(changeEmailAddressRequest.getNewEmailAddress());
             user.setEmail(changeEmailAddressRequest.getNewEmailAddress());
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void changeUsername(Long userId, ChangeUsernameRequest changeUsernameRequest) {
+        User user = getUserById(userId);
+        if (!user.getUsername().equals(changeUsernameRequest.getUsername())) {
+            validateUsername(changeUsernameRequest.getUsername());
+            user.setUsername(changeUsernameRequest.getUsername());
             userRepository.save(user);
         }
     }

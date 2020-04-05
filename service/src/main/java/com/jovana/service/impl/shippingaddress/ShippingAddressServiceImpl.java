@@ -36,7 +36,7 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
     @Override
     public ShippingAddress getUserShippingAddressById(Long shippingAddressId) {
         Optional<ShippingAddress> shippingAddress = shippingAddressRepository.findById(shippingAddressId);
-        if (!shippingAddress.isPresent()) {
+        if (shippingAddress.isEmpty()) {
             LOGGER.info("ShippingAddress with id = {} was not found in the db.", shippingAddressId);
             throw new EntityNotFoundException("No ShippingAddress found with id = " + shippingAddressId);
         }

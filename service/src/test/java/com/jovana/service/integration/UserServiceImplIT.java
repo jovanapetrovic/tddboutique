@@ -2,8 +2,10 @@ package com.jovana.service.integration;
 
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
+import com.jovana.entity.user.dto.ChangeUsernameRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
+import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.service.impl.user.UserService;
 import com.jovana.service.util.RequestTestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
@@ -82,7 +84,7 @@ public class UserServiceImplIT extends AbstractTest {
     @Nested
     class UpdateUserAccountTest {
 
-        @DisplayName("Then email is changed when new email is passed")
+        @DisplayName("Then email is changed when valid new email is passed")
         @Test
         public void testChangeEmailAddressSuccess() {
             // prepare
@@ -116,6 +118,42 @@ public class UserServiceImplIT extends AbstractTest {
             assertThrows(EmailAlreadyExistsException.class,
                     () -> userService.changeEmailAddress(TEST_USER_ID, changeEmailAddressRequest), "Email address already exists");
             assertEquals(userBefore.getEmail(), userAfter.getEmail());
+        }
+
+        @DisplayName("Then username is changed when valid new username is passed")
+        @Test
+        public void testChangeUsernameSuccess() {
+            // prepare
+            Long TEST_USER_ID = 14L;
+
+            // exercise
+            String newUsername = "test_user_5";
+            ChangeUsernameRequest changeUsernameRequest = new ChangeUsernameRequest();
+            changeUsernameRequest.setUsername(newUsername);
+            userService.changeUsername(TEST_USER_ID, changeUsernameRequest);
+
+            // verify
+            User user = userService.getUserById(TEST_USER_ID);
+            assertEquals(newUsername, user.getUsername(), "Username wasn't changed");
+        }
+
+        @DisplayName("Then change username fails when username already exists")
+        @Test
+        public void testChangeUsernameFailsWhenUsernameAlreadyExists() {
+            // prepare
+            Long TEST_USER_ID = 14L;
+            User userBefore = userService.getUserById(TEST_USER_ID);
+
+            // exercise
+            String newUsername = "testuser3";
+            ChangeUsernameRequest changeUsernameRequest = new ChangeUsernameRequest();
+            changeUsernameRequest.setUsername(newUsername);
+
+            // verify
+            User userAfter = userService.getUserById(TEST_USER_ID);
+            assertThrows(UsernameAlreadyExistsException.class,
+                    () -> userService.changeUsername(TEST_USER_ID, changeUsernameRequest), "Username already exists");
+            assertEquals(userBefore.getUsername(), userAfter.getUsername());
         }
 
     }

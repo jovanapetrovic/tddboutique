@@ -2,6 +2,7 @@ package com.jovana.service.impl;
 
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
+import com.jovana.entity.user.dto.ChangeUsernameRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.entity.user.exception.PasswordsDontMatchException;
@@ -157,10 +158,14 @@ public class UserServiceImplTest {
         private final String NEW_EMAIL_ADDRESS = "april_o_neal@test.com";
         private final String NEW_EMAIL_ADDRESS_IS_SAME_AS_OLD = "apriloneal@test.com";
         private final String NEW_EMAIL_ADDRESS_WHICH_EXISTS = "johndoe@test.com";
+        private final String NEW_USERNAME = "april_o_neal";
+        private final String NEW_USERNAME_IS_SAME_AS_OLD = "apriloneal";
+        private final String NEW_USERNAME_WHICH_EXISTS = "johndoe";
 
         private User user;
         private User updatedUser;
         private ChangeEmailAddressRequest changeEmailAddressRequest;
+        private ChangeUsernameRequest changeUsernameRequest;
 
         @BeforeEach
         void setUp() {
@@ -170,9 +175,10 @@ public class UserServiceImplTest {
             updatedUser.setEmail(NEW_EMAIL_ADDRESS);
 
             changeEmailAddressRequest = new ChangeEmailAddressRequest();
+            changeUsernameRequest = new ChangeUsernameRequest();
         }
 
-        @DisplayName("Then email is changed when new email is passed")
+        @DisplayName("Then email is changed when valid new email is passed")
         @Test
         public void testChangeEmailAddressSuccess() {
             // prepare
@@ -192,7 +198,7 @@ public class UserServiceImplTest {
 
         @DisplayName("Then change email skips when new and old emails are equal")
         @Test
-        public void testChangeEmailAddressSkipsWhenEmailAlreadyExists() {
+        public void testChangeEmailAddressSkipsWhenEmailsAreEqual() {
             // prepare
             changeEmailAddressRequest.setNewEmailAddress(NEW_EMAIL_ADDRESS_IS_SAME_AS_OLD);
 
@@ -216,6 +222,53 @@ public class UserServiceImplTest {
             // verify
             assertThrows(EmailAlreadyExistsException.class,
                     () -> userService.changeEmailAddress(TEST_USER_ID, changeEmailAddressRequest), "Email address already exists");
+            verify(userRepository, times(0)).save(any(User.class));
+        }
+
+        @DisplayName("Then username is changed when valid new username is passed")
+        @Test
+        public void testChangeUsernameSuccess() {
+            // prepare
+            changeUsernameRequest.setUsername(NEW_USERNAME);
+
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+            when(userRepository.findByUsername(any(String.class))).thenReturn(null);
+
+            // exercise
+            userService.changeUsername(TEST_USER_ID, changeUsernameRequest);
+
+            // verify
+            User userAfter = userService.getUserById(TEST_USER_ID);
+            assertEquals(NEW_USERNAME, userAfter.getUsername(), "Username wasn't changed");
+            verify(userRepository, times(1)).save(any(User.class));
+        }
+
+        @DisplayName("Then change username skips when new and old usernames are equal")
+        @Test
+        public void testChangeUsernameSkipsWhenUsernamesAreEqual() {
+            // prepare
+            changeUsernameRequest.setUsername(NEW_USERNAME_IS_SAME_AS_OLD);
+
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+
+            // exercise
+            userService.changeUsername(TEST_USER_ID, changeUsernameRequest);
+
+            // verify
+            verify(userRepository, times(0)).save(any(User.class));
+        }
+
+        @DisplayName("Then change username fails when username already exists")
+        @Test
+        public void testChangeUsernameFailsWhenUsernameAlreadyExists() {
+            // prepare
+            changeUsernameRequest.setUsername(NEW_USERNAME_WHICH_EXISTS);
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+            when(userRepository.findByUsername(any(String.class))).thenReturn(mock(User.class));
+
+            // verify
+            assertThrows(UsernameAlreadyExistsException.class,
+                    () -> userService.changeUsername(TEST_USER_ID, changeUsernameRequest), "Username already exists");
             verify(userRepository, times(0)).save(any(User.class));
         }
 
