@@ -78,8 +78,20 @@ public class TestDataProvider {
         janeShipAddress.setCountry("Serbia");
         janeShipAddress.setPhone("+38164123456");
 
+        ShippingAddress johnUpdatedShipAddress = new ShippingAddress();
+        johnUpdatedShipAddress.setId(12L);
+        johnUpdatedShipAddress.setUser(TestDataProvider.getUsers().get("john"));
+        johnUpdatedShipAddress.setFirstName("John");
+        johnUpdatedShipAddress.setLastName("Doe");
+        johnUpdatedShipAddress.setAddress("Knez Mihajlova 1");
+        johnUpdatedShipAddress.setZipCode(11000L);
+        johnUpdatedShipAddress.setCity("Belgrade");
+        johnUpdatedShipAddress.setCountry("Serbia");
+        johnUpdatedShipAddress.setPhone("+38164123456");
+
         shippingAddresses.put("john", johnShipAddress);
         shippingAddresses.put("jane", janeShipAddress);
+        shippingAddresses.put("johnUpdate", johnUpdatedShipAddress);
 
         return shippingAddresses;
     }

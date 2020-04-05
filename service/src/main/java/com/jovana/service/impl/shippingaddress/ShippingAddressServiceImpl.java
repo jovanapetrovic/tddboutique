@@ -48,17 +48,40 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
         validateFirstAndLastName(userId, shippingAddressRequest);
         validatePhoneNumber(shippingAddressRequest.getPhoneNumber());
 
-        ShippingAddress shippingAddress = ShippingAddress.createUserShippingAddress(
-                shippingAddressRequest.getFirstName(),
-                shippingAddressRequest.getLastName(),
-                shippingAddressRequest.getAddress(),
-                shippingAddressRequest.getZipCode(),
-                shippingAddressRequest.getCity(),
-                shippingAddressRequest.getCountry(),
-                shippingAddressRequest.getPhoneNumber());
+        User user = userService.getUserById(userId);
+        ShippingAddress shippingAddress = new ShippingAddress();
+        shippingAddress.setUser(user);
+        shippingAddress.setFirstName(shippingAddressRequest.getFirstName());
+        shippingAddress.setLastName(shippingAddressRequest.getLastName());
+        shippingAddress.setAddress(shippingAddressRequest.getAddress());
+        shippingAddress.setZipCode(shippingAddressRequest.getZipCode());
+        shippingAddress.setCity(shippingAddressRequest.getCity());
+        shippingAddress.setCountry(shippingAddressRequest.getCountry());
+        shippingAddress.setPhone(shippingAddressRequest.getPhoneNumber());
 
         ShippingAddress newShippingAddress = shippingAddressRepository.save(shippingAddress);
         return newShippingAddress.getId();
+    }
+
+    @Override
+    public Long updateUserShippingAddress(Long shippingAddressId, ShippingAddressRequest shippingAddressRequest) {
+        validatePhoneNumber(shippingAddressRequest.getPhoneNumber());
+
+        ShippingAddress shippingAddress = getUserShippingAddressById(shippingAddressId);
+        if (shippingAddressRequest.getFirstName() != null || shippingAddressRequest.getFirstName().isEmpty()) {
+            shippingAddress.setFirstName(shippingAddressRequest.getFirstName());
+        }
+        if (shippingAddressRequest.getLastName() != null || shippingAddressRequest.getFirstName().isEmpty()) {
+            shippingAddress.setLastName(shippingAddressRequest.getLastName());
+        }
+        shippingAddress.setAddress(shippingAddressRequest.getAddress());
+        shippingAddress.setZipCode(shippingAddressRequest.getZipCode());
+        shippingAddress.setCity(shippingAddressRequest.getCity());
+        shippingAddress.setCountry(shippingAddressRequest.getCountry());
+        shippingAddress.setPhone(shippingAddressRequest.getPhoneNumber());
+
+        ShippingAddress updatedShippingAddress = shippingAddressRepository.save(shippingAddress);
+        return updatedShippingAddress.getId();
     }
 
     private ShippingAddressRequest validateFirstAndLastName(Long userId, ShippingAddressRequest shippingAddressRequest) {

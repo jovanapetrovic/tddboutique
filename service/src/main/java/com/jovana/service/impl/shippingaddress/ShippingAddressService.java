@@ -12,4 +12,6 @@ public interface ShippingAddressService {
     
     Long addUserShippingAddress(Long userId, ShippingAddressRequest shippingAddressRequest);
 
+    Long updateUserShippingAddress(Long shippingAddressId, ShippingAddressRequest shippingAddressRequest);
+
 }

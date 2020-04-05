@@ -51,8 +51,19 @@ public class RequestTestDataProvider {
         noNamesRequest.setCountry("Serbia");
         noNamesRequest.setPhoneNumber("+38164123456");
 
+        ShippingAddressRequest johnUpdate = new ShippingAddressRequest();
+        johnUpdate.setUseFirstAndLastNameFromUser(false);
+        johnUpdate.setFirstName("John");
+        johnUpdate.setLastName("Doe");
+        johnUpdate.setAddress("Knez Mihajlova 1");
+        johnUpdate.setZipCode(11000L);
+        johnUpdate.setCity("Belgrade");
+        johnUpdate.setCountry("Serbia");
+        johnUpdate.setPhoneNumber("+38164123456");
+
         shippingAddressRequests.put("john", johnRequest);
         shippingAddressRequests.put("noNames", noNamesRequest);
+        shippingAddressRequests.put("updateRequest", johnUpdate);
 
         return shippingAddressRequests;
     }

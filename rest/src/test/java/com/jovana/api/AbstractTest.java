@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Created by jovana on 28.03.2020
  */
+@ActiveProfiles("test")
 @WebMvcTest(controllers = {UserResource.class, ShippingAddressResource.class}, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @SpringJUnitWebConfig(RestConfig.class)
 public class AbstractTest {
@@ -39,15 +41,6 @@ public class AbstractTest {
     private UserService userService;
     @MockBean
     private ShippingAddressService service;
-
-    public void performSimpleGet(String path, String jsonFileName) throws Exception {
-        mockMvc.perform(get(path)
-                .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-                .param(csrfToken.getParameterName(), csrfToken.getToken())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().json(FileUtil.readFileAndConvertItToString(jsonFileName)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
 
     public void performSimplePost(String path, Object requestBody, ResultMatcher expectedStatus) throws Exception {
         mockMvc.perform(post(path, requestBody)

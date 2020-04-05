@@ -67,7 +67,7 @@ public class ShippingAddressServiceImplTest {
 
     @DisplayName("When we want to add shipping address for newly registered user")
     @Nested
-    class RegisterUserAddShippingAddressTest {
+    class UserAddShippingAddressTest {
 
         private final String TEST_FIRSTNAME = "firstname";
         private final String TEST_LASTNAME = "lastname";
@@ -242,6 +242,60 @@ public class ShippingAddressServiceImplTest {
             assertThrows(InvalidPhoneNumberException.class,
                     () -> shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequest), "Phone number is not valid.");
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
+        }
+
+    }
+
+    @DisplayName("When we want to update shipping address for registered user")
+    @Nested
+    class UserUpdateShippingAddressTest {
+
+        private final String TEST_FIRSTNAME = "firstname";
+        private final String TEST_LASTNAME = "lastname";
+        private final String TEST_INVALID_PHONE_NUMBER = "+38118123456";
+        private final String TEST_UNPARSABLE_PHONE_NUMBER = "unparsable";
+
+        private ShippingAddressRequest shippingAddressRequest;
+        private User johnUser;
+        private ShippingAddress johnShippingAddress;
+        private ShippingAddress johnUpdatedShippingAddress;
+
+        @BeforeEach
+        void setUp() {
+            // set requests
+            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
+
+            // set users
+            johnUser = TestDataProvider.getUsers().get("john");
+
+            // set shipping addresses
+            johnShippingAddress = TestDataProvider.getShippingAddresses().get("john");
+            johnUpdatedShippingAddress = TestDataProvider.getShippingAddresses().get("johnUpdate");
+        }
+
+        @DisplayName("Then shipping address is updated for user when valid ShippingAddressRequest is passed")
+        @Test
+        public void testUpdateUserShippingAddressSuccess() {
+            // prepare
+            when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
+            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+
+            // exercise
+            Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
+
+            // verify
+            ShippingAddress newShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+
+            assertAll("Verify updated shipping address",
+                    () -> assertEquals(shippingAddressRequest.getFirstName(), newShippingAddress.getFirstName(), "First name doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getLastName(), newShippingAddress.getLastName(), "Last name doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getAddress(), newShippingAddress.getAddress(), "Address doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getZipCode(), newShippingAddress.getZipCode(), "Zip code doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getCity(), newShippingAddress.getCity(), "City doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
+            );
+            verify(shippingAddressRepository, times(1)).save(any(ShippingAddress.class));
         }
 
     }

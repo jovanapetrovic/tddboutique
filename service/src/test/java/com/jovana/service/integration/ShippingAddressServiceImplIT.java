@@ -41,7 +41,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
 
     @DisplayName("When we want to add shipping address for newly registered user")
     @Nested
-    class RegisterUserAddShippingAddressTest {
+    class AddUserShippingAddressTest {
 
         private final Long TEST_USER_ID = 10L;
 
@@ -62,8 +62,9 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             // verify
             ShippingAddress newShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
 
-            assertAll("Verify John's shipping address",
+            assertAll("Verify new shipping address",
                     () -> assertNotNull(newShippingAddress, "ShippingAddress is null"),
+                    () -> assertNotNull(newShippingAddress.getUser(), "User is null"),
                     () -> assertNotNull(newShippingAddress.getFirstName(), "First name is null"),
                     () -> assertEquals(shippingAddressRequest.getFirstName(), newShippingAddress.getFirstName(), "First name doesn't match"),
                     () -> assertNotNull(newShippingAddress.getLastName(), "Last name is null"),
@@ -78,6 +79,41 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
                     () -> assertEquals(shippingAddressRequest.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
                     () -> assertNotNull(newShippingAddress.getPhone().getPhoneNumber(), "Phone number is null"),
                     () -> assertEquals(shippingAddressRequest.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
+            );
+        }
+    }
+
+    @DisplayName("When we want to update shipping address for registered user")
+    @Nested
+    class UpdateUserShippingAddressTest {
+
+        private final Long TEST_SHIPPING_ADDRESS_ID = 11L;
+
+        private ShippingAddressRequest shippingAddressRequest;
+
+        @BeforeEach
+        void setUp() {
+            // set requests
+            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
+        }
+
+        @DisplayName("Then shipping address is updated when valid ShippingAddressRequest is passed")
+        @Test
+        public void testUpdateUserShippingAddressSuccess() {
+            // exercise
+            shippingAddressService.updateUserShippingAddress(TEST_SHIPPING_ADDRESS_ID, shippingAddressRequest);
+
+            // verify
+            ShippingAddress updatedShippingAddress = shippingAddressService.getUserShippingAddressById(TEST_SHIPPING_ADDRESS_ID);
+
+            assertAll("Verify updated shipping address",
+                    () -> assertEquals(shippingAddressRequest.getFirstName(), updatedShippingAddress.getFirstName(), "First name doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getLastName(), updatedShippingAddress.getLastName(), "Last name doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getAddress(), updatedShippingAddress.getAddress(), "Address doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getZipCode(), updatedShippingAddress.getZipCode(), "Zip code doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getCity(), updatedShippingAddress.getCity(), "City doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getCountry(), updatedShippingAddress.getCountry(), "Country doesn't match"),
+                    () -> assertEquals(shippingAddressRequest.getPhoneNumber(), updatedShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
             );
         }
     }

@@ -54,19 +54,6 @@ public class ShippingAddress extends AbstractAuditingEntity implements Serializa
     public ShippingAddress() {
     }
 
-    public static ShippingAddress createUserShippingAddress(String firstName, String lastName, String address,
-                                                            Long zipCode, String city, String country, String phoneNumber) {
-        ShippingAddress shippingAddress = new ShippingAddress();
-        shippingAddress.firstName = firstName;
-        shippingAddress.lastName = lastName;
-        shippingAddress.address = address;
-        shippingAddress.zipCode = zipCode;
-        shippingAddress.city = city;
-        shippingAddress.country = country;
-        shippingAddress.phone = Phone.createPhoneNumber(phoneNumber);
-        return shippingAddress;
-    }
-
     public Long getId() {
         return id;
     }

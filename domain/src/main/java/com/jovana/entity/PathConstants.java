@@ -4,6 +4,7 @@ public final class PathConstants {
 
     // API path placeholders (PH)
     public static final String PH_USER_ID = "{userId}";
+    public static final String PH_SHIPPING_ADDRESS_ID = "{shippingAddressId}";
 
     // Syntax
     public static final String SEPARATOR = "/";
@@ -19,6 +20,7 @@ public final class PathConstants {
 
     public static final String SHIPPING_ADDRESS = "/shipping-address";
     public static final String SHIPPING_ADDRESS_ADD = SHIPPING_ADDRESS + SEPARATOR + PH_USER_ID;
+    public static final String SHIPPING_ADDRESS_UPDATE = SHIPPING_ADDRESS + "/update/" + PH_SHIPPING_ADDRESS_ID;
 
     private PathConstants() {
     }
