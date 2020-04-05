@@ -1,5 +1,7 @@
 package com.jovana.service.impl;
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.entity.shippingaddress.exception.InvalidPhoneNumberException;
@@ -250,23 +252,16 @@ public class ShippingAddressServiceImplTest {
     @Nested
     class UserUpdateShippingAddressTest {
 
-        private final String TEST_FIRSTNAME = "firstname";
-        private final String TEST_LASTNAME = "lastname";
-        private final String TEST_INVALID_PHONE_NUMBER = "+38118123456";
-        private final String TEST_UNPARSABLE_PHONE_NUMBER = "unparsable";
+        private final String TEST_PHONE_NUMBER = "+38164123456";
 
-        private ShippingAddressRequest shippingAddressRequest;
-        private User johnUser;
+        private ShippingAddressRequest updateShippingAddressRequest;
         private ShippingAddress johnShippingAddress;
         private ShippingAddress johnUpdatedShippingAddress;
 
         @BeforeEach
         void setUp() {
             // set requests
-            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
-
-            // set users
-            johnUser = TestDataProvider.getUsers().get("john");
+            updateShippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
 
             // set shipping addresses
             johnShippingAddress = TestDataProvider.getShippingAddresses().get("john");
@@ -281,21 +276,93 @@ public class ShippingAddressServiceImplTest {
             when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
 
             // exercise
+            Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), updateShippingAddressRequest);
+
+            // verify
+            ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+
+            assertAll("Verify updated shipping address",
+                    () -> assertEquals(updateShippingAddressRequest.getFirstName(), shippingAddress.getFirstName(), "First name doesn't match"),
+                    () -> assertEquals(updateShippingAddressRequest.getLastName(), shippingAddress.getLastName(), "Last name doesn't match"),
+                    () -> assertEquals(updateShippingAddressRequest.getAddress(), shippingAddress.getAddress(), "Address doesn't match"),
+                    () -> assertEquals(updateShippingAddressRequest.getZipCode(), shippingAddress.getZipCode(), "Zip code doesn't match"),
+                    () -> assertEquals(updateShippingAddressRequest.getCity(), shippingAddress.getCity(), "City doesn't match"),
+                    () -> assertEquals(updateShippingAddressRequest.getCountry(), shippingAddress.getCountry(), "Country doesn't match"),
+                    () -> assertEquals(updateShippingAddressRequest.getPhoneNumber(), shippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
+            );
+            verify(shippingAddressRepository, times(1)).save(any(ShippingAddress.class));
+        }
+
+        @DisplayName("Then shipping address update skips first name update when it's not provided")
+        @Test
+        public void testUpdateUserShippingAddressSuccessWhenFirstNameIsNotProvided() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_PHONE_NUMBER);
+            when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
+            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+
+            // exercise
             Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
 
             // verify
-            ShippingAddress newShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+            ShippingAddress updatedShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+            assertEquals(johnShippingAddress.getFirstName(), updatedShippingAddress.getFirstName());
+        }
 
-            assertAll("Verify updated shipping address",
-                    () -> assertEquals(shippingAddressRequest.getFirstName(), newShippingAddress.getFirstName(), "First name doesn't match"),
-                    () -> assertEquals(shippingAddressRequest.getLastName(), newShippingAddress.getLastName(), "Last name doesn't match"),
-                    () -> assertEquals(shippingAddressRequest.getAddress(), newShippingAddress.getAddress(), "Address doesn't match"),
-                    () -> assertEquals(shippingAddressRequest.getZipCode(), newShippingAddress.getZipCode(), "Zip code doesn't match"),
-                    () -> assertEquals(shippingAddressRequest.getCity(), newShippingAddress.getCity(), "City doesn't match"),
-                    () -> assertEquals(shippingAddressRequest.getCountry(), newShippingAddress.getCountry(), "Country doesn't match"),
-                    () -> assertEquals(shippingAddressRequest.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
-            );
-            verify(shippingAddressRepository, times(1)).save(any(ShippingAddress.class));
+        @DisplayName("Then shipping address update skips first name update when it's empty")
+        @Test
+        public void testUpdateUserShippingAddressSuccessWhenFirstNameIsEmpty() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_PHONE_NUMBER);
+            when(shippingAddressRequest.getFirstName()).thenReturn("");
+            when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
+            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+
+            // exercise
+            Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
+
+            // verify
+            ShippingAddress updatedShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+            assertEquals(johnShippingAddress.getFirstName(), updatedShippingAddress.getFirstName());
+        }
+
+        @DisplayName("Then shipping address update skips last name update when it's not provided")
+        @Test
+        public void testUpdateUserShippingAddressSuccessWhenLastNameIsNotProvided() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_PHONE_NUMBER);
+            when(shippingAddressRequest.getFirstName()).thenReturn("John");
+            when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
+            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+
+            // exercise
+            Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
+
+            // verify
+            ShippingAddress updatedShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+            assertEquals(johnShippingAddress.getLastName(), updatedShippingAddress.getLastName());
+        }
+
+        @DisplayName("Then shipping address update skips last name update when it's empty")
+        @Test
+        public void testUpdateUserShippingAddressSuccessWhenLastNameIsEmpty() {
+            // prepare
+            ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
+            when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_PHONE_NUMBER);
+            when(shippingAddressRequest.getFirstName()).thenReturn("John");
+            when(shippingAddressRequest.getLastName()).thenReturn("");
+            when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
+            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+
+            // exercise
+            Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
+
+            // verify
+            ShippingAddress updatedShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+            assertEquals(johnUpdatedShippingAddress.getLastName(), updatedShippingAddress.getLastName());
         }
 
     }

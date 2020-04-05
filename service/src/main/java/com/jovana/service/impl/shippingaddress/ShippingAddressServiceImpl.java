@@ -68,10 +68,10 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
         validatePhoneNumber(shippingAddressRequest.getPhoneNumber());
 
         ShippingAddress shippingAddress = getUserShippingAddressById(shippingAddressId);
-        if (shippingAddressRequest.getFirstName() != null || shippingAddressRequest.getFirstName().isEmpty()) {
+        if (shippingAddressRequest.getFirstName() != null && !shippingAddressRequest.getFirstName().isEmpty()) {
             shippingAddress.setFirstName(shippingAddressRequest.getFirstName());
         }
-        if (shippingAddressRequest.getLastName() != null || shippingAddressRequest.getFirstName().isEmpty()) {
+        if (shippingAddressRequest.getLastName() != null && !shippingAddressRequest.getLastName().isEmpty()) {
             shippingAddress.setLastName(shippingAddressRequest.getLastName());
         }
         shippingAddress.setAddress(shippingAddressRequest.getAddress());

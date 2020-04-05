@@ -42,3 +42,9 @@ INSERT INTO user (id, first_name, last_name, email, username, password, created_
 (1, 'admin', 'admin', 'tddboutique@mailinator.com', 'admin', '$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366', 'system', now());
 
 INSERT INTO user_authority (user_id, authority_name) VALUES (1, 'ROLE_ADMIN');
+
+-- Create test user
+INSERT INTO user (id, first_name, last_name, email, username, password, created_by, created_date) VALUES
+(2, 'test', 'test', 'tddboutiquetest@mailinator.com', 'test', '$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366', 'system', now());
+
+INSERT INTO user_authority (user_id, authority_name) VALUES (2, 'ROLE_USER');
