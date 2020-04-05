@@ -5,6 +5,7 @@ import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
+import com.jovana.entity.user.dto.ChangePasswordRequest;
 import com.jovana.entity.user.dto.ChangeUsernameRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
@@ -82,6 +83,16 @@ public class UserServiceImpl implements UserService {
         if (!user.getUsername().equals(changeUsernameRequest.getUsername())) {
             validateUsername(changeUsernameRequest.getUsername());
             user.setUsername(changeUsernameRequest.getUsername());
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void changePassword(Long userId, ChangePasswordRequest changePasswordRequest) {
+        validatePasswords(changePasswordRequest.getPassword(), changePasswordRequest.getConfirmPassword());
+        User user = getUserById(userId);
+        if (!passwordEncoder.matches(changePasswordRequest.getPassword(), user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
             userRepository.save(user);
         }
     }

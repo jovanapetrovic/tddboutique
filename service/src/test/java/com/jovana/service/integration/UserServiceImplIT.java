@@ -2,6 +2,7 @@ package com.jovana.service.integration;
 
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
+import com.jovana.entity.user.dto.ChangePasswordRequest;
 import com.jovana.entity.user.dto.ChangeUsernameRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
@@ -154,6 +155,25 @@ public class UserServiceImplIT extends AbstractTest {
             assertThrows(UsernameAlreadyExistsException.class,
                     () -> userService.changeUsername(TEST_USER_ID, changeUsernameRequest), "Username already exists");
             assertEquals(userBefore.getUsername(), userAfter.getUsername());
+        }
+
+        @DisplayName("Then password is changed when valid new password is passed")
+        @Test
+        public void testChangePasswordSuccess() {
+            // prepare
+            Long TEST_USER_ID = 15L;
+
+            // exercise
+            String newPassword = "password123";
+            String confirmPassword = "password123";
+            ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+            changePasswordRequest.setPassword(newPassword);
+            changePasswordRequest.setConfirmPassword(confirmPassword);
+            userService.changePassword(TEST_USER_ID, changePasswordRequest);
+
+            // verify
+            User user = userService.getUserById(TEST_USER_ID);
+            assertTrue(passwordEncoder.matches(newPassword, user.getPassword()));
         }
 
     }

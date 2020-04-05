@@ -2,6 +2,7 @@ package com.jovana.service.impl;
 
 import com.jovana.entity.user.User;
 import com.jovana.entity.user.dto.ChangeEmailAddressRequest;
+import com.jovana.entity.user.dto.ChangePasswordRequest;
 import com.jovana.entity.user.dto.ChangeUsernameRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
@@ -70,7 +71,7 @@ public class UserServiceImplTest {
     @Nested
     class RegisterUserTest {
 
-        private static final String DEFAULT_ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
+        private static final String ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
 
         private RegisterUserRequest registerUserRequest;
         private User user;
@@ -85,7 +86,7 @@ public class UserServiceImplTest {
         @Test
         public void testRegisterUserSuccess() {
             // prepare
-            when(passwordEncoder.encode(any(String.class))).thenReturn(DEFAULT_ENCODED_PASSWORD);
+            when(passwordEncoder.encode(any(String.class))).thenReturn(ENCODED_PASSWORD);
             when(userRepository.save(any(User.class))).thenReturn(user);
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
 
@@ -106,7 +107,7 @@ public class UserServiceImplTest {
                     () -> assertNotNull(newUser.getUsername(), "Username is null"),
                     () -> assertEquals(registerUserRequest.getUsername(), newUser.getUsername(), "Username doesn't match"),
                     () -> assertNotNull(newUser.getPassword(), "Password is null"),
-                    () -> assertEquals(DEFAULT_ENCODED_PASSWORD, newUser.getPassword(), "Password doesn't match")
+                    () -> assertEquals(ENCODED_PASSWORD, newUser.getPassword(), "Password doesn't match")
             );
             verify(userRepository, times(1)).save(any(User.class));
         }
@@ -155,17 +156,26 @@ public class UserServiceImplTest {
     class UpdateUserAccountTest {
 
         private final Long TEST_USER_ID = 12L;
+
         private final String NEW_EMAIL_ADDRESS = "april_o_neal@test.com";
         private final String NEW_EMAIL_ADDRESS_IS_SAME_AS_OLD = "apriloneal@test.com";
         private final String NEW_EMAIL_ADDRESS_WHICH_EXISTS = "johndoe@test.com";
+
         private final String NEW_USERNAME = "april_o_neal";
         private final String NEW_USERNAME_IS_SAME_AS_OLD = "apriloneal";
         private final String NEW_USERNAME_WHICH_EXISTS = "johndoe";
+
+        private static final String ENCODED_PASSWORD = "$2a$10$DI9yT93ik2gCJcJh1AH3PexczQWNO7nvVDndSMl/yRUzdKHvGo366";
+        private final String NEW_PASSWORD = "password123";
+        private final String CONFIRM_PASSWORD = "password123";
+        private final String CONFIRM_PASSWORD_WRONG = "doesntmatch";
+
 
         private User user;
         private User updatedUser;
         private ChangeEmailAddressRequest changeEmailAddressRequest;
         private ChangeUsernameRequest changeUsernameRequest;
+        private ChangePasswordRequest changePasswordRequest;
 
         @BeforeEach
         void setUp() {
@@ -176,6 +186,7 @@ public class UserServiceImplTest {
 
             changeEmailAddressRequest = new ChangeEmailAddressRequest();
             changeUsernameRequest = new ChangeUsernameRequest();
+            changePasswordRequest = new ChangePasswordRequest();
         }
 
         @DisplayName("Then email is changed when valid new email is passed")
@@ -269,6 +280,55 @@ public class UserServiceImplTest {
             // verify
             assertThrows(UsernameAlreadyExistsException.class,
                     () -> userService.changeUsername(TEST_USER_ID, changeUsernameRequest), "Username already exists");
+            verify(userRepository, times(0)).save(any(User.class));
+        }
+
+        @DisplayName("Then password is changed when valid new password is passed")
+        @Test
+        public void testChangePasswordSuccess() {
+            // prepare
+            changePasswordRequest.setPassword(NEW_PASSWORD);
+            changePasswordRequest.setConfirmPassword(CONFIRM_PASSWORD);
+
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+            when(passwordEncoder.encode(any(String.class))).thenReturn(ENCODED_PASSWORD);
+
+            // exercise
+            userService.changePassword(TEST_USER_ID, changePasswordRequest);
+
+            // verify
+            User userAfter = userService.getUserById(TEST_USER_ID);
+            assertEquals(ENCODED_PASSWORD, userAfter.getPassword());
+            verify(userRepository, times(1)).save(any(User.class));
+        }
+
+        @DisplayName("Then change username skips when password and confirm password don't match")
+        @Test
+        public void testChangePasswordFailsPasswordAndConfirmPasswordDontMatch() {
+            // prepare
+            changePasswordRequest.setPassword(NEW_PASSWORD);
+            changePasswordRequest.setConfirmPassword(CONFIRM_PASSWORD_WRONG);
+
+            // verify
+            assertThrows(PasswordsDontMatchException.class,
+                    () -> userService.changePassword(TEST_USER_ID, changePasswordRequest), "Passwords don't match");
+            verify(userRepository, times(0)).save(any(User.class));
+        }
+
+        @DisplayName("Then change username skips when new and old passwords are equal")
+        @Test
+        public void testChangePasswordSkipsWhenPasswordsAreEqual() {
+            // prepare
+            changePasswordRequest.setPassword("123456");
+            changePasswordRequest.setConfirmPassword("123456");
+
+            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+            when(passwordEncoder.matches(any(String.class), anyString())).thenReturn(true);
+
+            // exercise
+            userService.changePassword(TEST_USER_ID, changePasswordRequest);
+
+            // verify
             verify(userRepository, times(0)).save(any(User.class));
         }
 
