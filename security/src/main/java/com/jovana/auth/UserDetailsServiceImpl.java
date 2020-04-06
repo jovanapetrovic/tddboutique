@@ -40,7 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Set<String> authorityNames = getAuthorityNamesByUserId(user.getId());
         Set<SimpleGrantedAuthority> authorities = authorityNames.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        return new com.jovana.auth.UserDetails(user.getId(), user.getUsername(), user.getPassword(), authorities);
     }
 
     private User getUserByUsername(String username) {
