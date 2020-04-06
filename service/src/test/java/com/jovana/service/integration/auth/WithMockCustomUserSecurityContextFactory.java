@@ -1,20 +1,11 @@
 package com.jovana.service.integration.auth;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.jovana.auth.UserDetailsServiceImpl;
-import com.jovana.entity.authority.Authority;
-import com.jovana.entity.authority.AuthorityConstants;
-import com.jovana.repositories.user.UserRepository;
 import com.jovana.token.TokenBasedAuthentication;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
 import java.util.Arrays;
