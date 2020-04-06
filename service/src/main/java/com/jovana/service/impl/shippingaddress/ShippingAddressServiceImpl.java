@@ -11,6 +11,9 @@ import com.jovana.exception.EntityNotFoundException;
 import com.jovana.exception.ValueMustNotBeNullOrEmptyException;
 import com.jovana.repositories.shippingaddress.ShippingAddressRepository;
 import com.jovana.service.impl.user.UserService;
+import com.jovana.service.security.IsAdmin;
+import com.jovana.service.security.IsAdminOrUser;
+import com.jovana.service.security.IsUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,7 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
     @Autowired
     private UserService userService;
 
+    @IsAdminOrUser
     @Override
     public ShippingAddress getUserShippingAddressById(Long shippingAddressId) {
         Optional<ShippingAddress> shippingAddress = shippingAddressRepository.findById(shippingAddressId);
@@ -43,6 +47,7 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
         return shippingAddress.get();
     }
 
+    @IsUser
     @Override
     public Long addUserShippingAddress(Long userId, ShippingAddressRequest shippingAddressRequest) {
         validateFirstAndLastName(userId, shippingAddressRequest);
@@ -63,6 +68,7 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
         return newShippingAddress.getId();
     }
 
+    @IsUser
     @Override
     public Long updateUserShippingAddress(Long shippingAddressId, ShippingAddressRequest shippingAddressRequest) {
         validatePhoneNumber(shippingAddressRequest.getPhoneNumber());

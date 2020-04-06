@@ -4,10 +4,12 @@ import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.repositories.shippingaddress.ShippingAddressRepository;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
+import com.jovana.service.integration.auth.WithMockCustomUser;
 import com.jovana.service.util.RequestTestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,6 +30,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
 
         private final Long SHIPPING_ADDRESS_ID_EXISTS = 10L;
 
+        @WithMockCustomUser
         @DisplayName("Then ShippingAddress is fetched from database when id is valid")
         @Test
         public void testGetShippingAddressById() {
@@ -39,6 +42,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
 
     }
 
+    @WithMockCustomUser
     @DisplayName("When we want to add shipping address for newly registered user")
     @Nested
     class AddUserShippingAddressTest {
@@ -53,6 +57,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("john");
         }
 
+        @WithMockCustomUser
         @DisplayName("Then shipping address is created for user when valid ShippingAddressRequest is passed")
         @Test
         public void testAddUserShippingAddressSuccess() {
@@ -97,6 +102,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
         }
 
+        @WithMockCustomUser
         @DisplayName("Then shipping address is updated when valid ShippingAddressRequest is passed")
         @Test
         public void testUpdateUserShippingAddressSuccess() {

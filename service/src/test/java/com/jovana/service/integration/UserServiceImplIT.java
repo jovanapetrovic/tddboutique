@@ -8,6 +8,7 @@ import com.jovana.entity.user.dto.RegisterUserRequest;
 import com.jovana.entity.user.exception.EmailAlreadyExistsException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.service.impl.user.UserService;
+import com.jovana.service.integration.auth.WithMockCustomUser;
 import com.jovana.service.util.RequestTestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.*;
@@ -33,6 +34,7 @@ public class UserServiceImplIT extends AbstractTest {
 
         private final Long TEST_USER_ID = 10L;
 
+        @WithMockCustomUser
         @DisplayName("Then user is fetched from database when id is valid")
         @Test
         public void testGetUserById() {
@@ -43,6 +45,7 @@ public class UserServiceImplIT extends AbstractTest {
         }
     }
 
+    @WithMockCustomUser
     @DisplayName("When we want to register a new user")
     @Nested
     class RegisterUserITest {
@@ -54,6 +57,7 @@ public class UserServiceImplIT extends AbstractTest {
             registerUserRequest = RequestTestDataProvider.getRegisterUserRequests().get("john");
         }
 
+        @WithMockCustomUser
         @DisplayName("Then a new user is created when valid RegisterUserRequest is passed")
         @Test
         public void testRegisterUserSuccess() {
@@ -85,6 +89,7 @@ public class UserServiceImplIT extends AbstractTest {
     @Nested
     class UpdateUserAccountTest {
 
+        @WithMockCustomUser
         @DisplayName("Then email is changed when valid new email is passed")
         @Test
         public void testChangeEmailAddressSuccess() {
@@ -102,6 +107,7 @@ public class UserServiceImplIT extends AbstractTest {
             assertEquals(newEmailAddress, user.getEmail(), "Email wasn't changed");
         }
 
+        @WithMockCustomUser
         @DisplayName("Then change email fails when email already exists")
         @Test
         public void testChangeEmailAddressFailsWhenEmailAlreadyExists() {
@@ -121,6 +127,7 @@ public class UserServiceImplIT extends AbstractTest {
             assertEquals(userBefore.getEmail(), userAfter.getEmail());
         }
 
+        @WithMockCustomUser
         @DisplayName("Then username is changed when valid new username is passed")
         @Test
         public void testChangeUsernameSuccess() {
@@ -138,6 +145,7 @@ public class UserServiceImplIT extends AbstractTest {
             assertEquals(newUsername, user.getUsername(), "Username wasn't changed");
         }
 
+        @WithMockCustomUser
         @DisplayName("Then change username fails when username already exists")
         @Test
         public void testChangeUsernameFailsWhenUsernameAlreadyExists() {
@@ -157,6 +165,7 @@ public class UserServiceImplIT extends AbstractTest {
             assertEquals(userBefore.getUsername(), userAfter.getUsername());
         }
 
+        @WithMockCustomUser
         @DisplayName("Then password is changed when valid new password is passed")
         @Test
         public void testChangePasswordSuccess() {

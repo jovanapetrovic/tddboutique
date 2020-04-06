@@ -13,6 +13,8 @@ import com.jovana.entity.user.exception.PasswordsDontMatchException;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.entity.user.exception.UsernameAlreadyExistsException;
 import com.jovana.repositories.user.UserRepository;
+import com.jovana.service.security.IsAdminOrUser;
+import com.jovana.service.security.IsUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @IsAdminOrUser
     @Override
     public User getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
@@ -67,6 +70,7 @@ public class UserServiceImpl implements UserService {
         return newUser.getId();
     }
 
+    @IsUser
     @Override
     public void changeEmailAddress(Long userId, ChangeEmailAddressRequest changeEmailAddressRequest) {
         User user = getUserById(userId);
@@ -77,6 +81,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @IsUser
     @Override
     public void changeUsername(Long userId, ChangeUsernameRequest changeUsernameRequest) {
         User user = getUserById(userId);
@@ -87,6 +92,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @IsUser
     @Override
     public void changePassword(Long userId, ChangePasswordRequest changePasswordRequest) {
         validatePasswords(changePasswordRequest.getPassword(), changePasswordRequest.getConfirmPassword());

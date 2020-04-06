@@ -6,19 +6,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Created by jovana on 17.03.2020
+ * Created by jovana on 06.04.2020
  */
 @Retention(RetentionPolicy.RUNTIME)
 @WithSecurityContext(factory = WithMockCustomUserSecurityContextFactory.class)
 public @interface WithMockCustomUser {
-    /**
-     * The username to be used. The default is test.
-     */
+
+    String userId() default "2";
+
     String username() default "test";
 
-    /**
-     * The password to be used. The default is test.
-     */
-    String password() default "test";
+    String password() default "123456";
+
+    String[] authorities() default {"ROLE_USER"};
 
 }
