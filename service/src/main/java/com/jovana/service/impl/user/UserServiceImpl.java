@@ -57,14 +57,13 @@ public class UserServiceImpl implements UserService {
         validateUsername(registerUserRequest.getUsername());
         validateEmail(registerUserRequest.getEmail());
 
-        Set<Authority> authorities = Sets.newHashSet(new Authority(AuthorityConstants.USER));
-
-        User user = User.createUser(registerUserRequest.getFirstName(),
-                registerUserRequest.getLastName(),
-                registerUserRequest.getEmail(),
-                registerUserRequest.getUsername(),
-                passwordEncoder.encode(registerUserRequest.getPassword()),
-                authorities);
+        User user = new User();
+        user.setFirstName(registerUserRequest.getFirstName());
+        user.setLastName(registerUserRequest.getLastName());
+        user.setEmail(registerUserRequest.getEmail());
+        user.setUsername(registerUserRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
+        user.setAuthorities(Sets.newHashSet(new Authority(AuthorityConstants.USER)));
 
         User newUser = userRepository.save(user);
         return newUser.getId();

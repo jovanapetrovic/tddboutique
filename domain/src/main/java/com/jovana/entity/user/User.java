@@ -65,18 +65,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     public User() {
     }
 
-    public static User createUser(String firstName, String lastName, String email, String username,
-                                  String encodedPassword, Set<Authority> authorities) {
-        User user = new User();
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.email = email;
-        user.username = username;
-        user.password = encodedPassword;
-        user.authorities = authorities;
-        return user;
-    }
-
     public Long getId() {
         return id;
     }

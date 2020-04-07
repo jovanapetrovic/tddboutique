@@ -1,7 +1,5 @@
 package com.jovana.service.impl;
 
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.entity.shippingaddress.exception.InvalidPhoneNumberException;
