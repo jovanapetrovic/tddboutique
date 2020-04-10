@@ -1,0 +1,132 @@
+package com.jovana.service.impl;
+
+import com.jovana.entity.product.Product;
+import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
+import com.jovana.exception.EntityNotFoundException;
+import com.jovana.repositories.product.ProductRepository;
+import com.jovana.service.impl.product.ProductService;
+import com.jovana.service.impl.product.ProductServiceImpl;
+import com.jovana.service.util.RequestTestDataProvider;
+import com.jovana.service.util.TestDataProvider;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+
+/**
+ * Created by jovana on 07.04.2020
+ */
+@ExtendWith(MockitoExtension.class)
+public class ProductServiceImplTest {
+
+    @InjectMocks
+    private ProductService productService = new ProductServiceImpl();
+    @Mock
+    private ProductRepository productRepository;
+
+    @DisplayName("When we want to find a Product by id")
+    @Nested
+    class GetProductTest {
+
+        private final Long PRODUCT_ID_EXISTS = 10L;
+        private final Long PRODUCT_ID_NOT_EXISTS = 9999L;
+
+        @DisplayName("Then Product is fetched from database when id is valid")
+        @Test
+        public void testGetProductById() {
+            // prepare
+            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(Product.class)));
+            // exercise
+            Product product = productService.getProductById(PRODUCT_ID_EXISTS);
+            // verify
+            assertNotNull(product, "Product is null");
+        }
+
+        @DisplayName("Then error is thrown when Product with passed id doesn't exist")
+        @Test
+        public void testGetProductByIdFailsWhenUserWithPassedIdDoesntExist() {
+            // prepare
+            when(productRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+            // verify
+            assertThrows(EntityNotFoundException.class,
+                    () -> productService.getProductById(PRODUCT_ID_NOT_EXISTS), "Product with id=" + PRODUCT_ID_NOT_EXISTS + " doesn't exist");
+        }
+    }
+
+    @DisplayName("When we want to add a new product")
+    @Nested
+    class AddProductTest {
+
+        private ProductRequest casualDressRequest;
+        private Product casualDressProduct;
+
+        @BeforeEach
+        void setUp() {
+            // set requests
+            casualDressRequest = RequestTestDataProvider.getProductRequests().get("casualDress");
+
+            // set products
+            casualDressProduct = TestDataProvider.getProducts().get("casualDress");
+        }
+
+        @DisplayName("Then product is created when valid ProductRequest is passed")
+        @Test
+        public void testAddProductSuccess() {
+            // prepare
+            when(productRepository.save(any(Product.class))).thenReturn(casualDressProduct);
+            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressProduct));
+
+            // exercise
+            Long productId = productService.addProduct(casualDressRequest);
+
+            // verify
+            Product newProduct = productService.getProductById(productId);
+
+            assertAll("Verify new product",
+                    () -> assertNotNull(newProduct),
+                    () -> assertNotNull(newProduct.getName()),
+                    () -> assertEquals(newProduct.getName(), casualDressRequest.getName()),
+                    () -> assertNotNull(newProduct.getMaterial()),
+                    () -> assertEquals(newProduct.getMaterial(), casualDressRequest.getMaterial()),
+                    () -> assertNotNull(newProduct.getDescription()),
+                    () -> assertEquals(newProduct.getDescription(), casualDressRequest.getDescription()),
+                    () -> assertNotNull(newProduct.getPrice()),
+                    () -> assertEquals(newProduct.getPrice(), casualDressRequest.getPrice()),
+                    () -> assertNotNull(newProduct.getSizes()),
+                    () -> assertEquals(newProduct.getSizes().size(), casualDressRequest.getSizes().size()),
+                    () -> assertNotNull(newProduct.getColors()),
+                    () -> assertEquals(newProduct.getColors().size(), casualDressRequest.getColors().size()),
+                    () -> assertNotNull(newProduct.getStock()),
+                    () -> assertEquals(newProduct.getStock().getNumberOfUnitsInStock(), casualDressRequest.getNumberOfUnitsInStock())
+            );
+            verify(productRepository, times(1)).save(any(Product.class));
+        }
+
+        @DisplayName("Then creating a product fails when name already exists")
+        @Test
+        public void testAddProductFailsWhenNameAlreadyExists() {
+            // prepare
+            when(productRepository.findByName(any(String.class))).thenReturn(casualDressProduct);
+
+            // verify
+            assertThrows(ProductNameAlreadyExistsException.class,
+                    () -> productService.addProduct(casualDressRequest), "Name already exists");
+            verify(productRepository, times(0)).save(any(Product.class));
+        }
+
+    }
+
+}

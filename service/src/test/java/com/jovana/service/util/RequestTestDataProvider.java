@@ -1,8 +1,13 @@
 package com.jovana.service.util;
 
+import com.google.common.collect.Sets;
+import com.jovana.entity.product.ColorCode;
+import com.jovana.entity.product.SizeCode;
+import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +71,23 @@ public class RequestTestDataProvider {
         shippingAddressRequests.put("updateRequest", johnUpdate);
 
         return shippingAddressRequests;
+    }
+
+    public static Map<String, ProductRequest> getProductRequests() {
+        Map<String, ProductRequest> productRequests = new HashMap<>();
+
+        ProductRequest casualDressRequest = new ProductRequest();
+        casualDressRequest.setName("Casual dress");
+        casualDressRequest.setMaterial("viscose, cotton, polyester");
+        casualDressRequest.setDescription("A beautiful everyday dress");
+        casualDressRequest.setPrice(new BigDecimal("30.00"));
+        casualDressRequest.setSizes(Sets.newHashSet(SizeCode.S, SizeCode.M, SizeCode.L, SizeCode.XL));
+        casualDressRequest.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.RED));
+        casualDressRequest.setNumberOfUnitsInStock(70L);
+
+        productRequests.put("casualDress", casualDressRequest);
+
+        return productRequests;
     }
 
 }

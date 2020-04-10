@@ -1,14 +1,11 @@
 package com.jovana.api;
 
 import com.jovana.config.RestConfig;
-import com.jovana.service.impl.shippingaddress.ShippingAddressService;
-import com.jovana.service.impl.user.UserService;
 import com.jovana.util.FileUtil;
 import com.jovana.util.ObjectToJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -19,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
@@ -28,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ActiveProfiles("test")
 @WebMvcTest(controllers = {UserResource.class, ShippingAddressResource.class}, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @SpringJUnitWebConfig(RestConfig.class)
-public class AbstractTest {
+public class AbstractTest extends ServiceBeanMocks {
 
     public static final String TOKEN_ATTR_NAME = "org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN";
 
@@ -37,10 +33,6 @@ public class AbstractTest {
 
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
-    private UserService userService;
-    @MockBean
-    private ShippingAddressService service;
 
     public void performSimplePost(String path, Object requestBody, ResultMatcher expectedStatus) throws Exception {
         mockMvc.perform(post(path, requestBody)

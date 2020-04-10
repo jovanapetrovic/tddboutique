@@ -3,9 +3,13 @@ package com.jovana.service.util;
 import com.google.common.collect.Sets;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.authority.AuthorityConstants;
+import com.jovana.entity.product.ColorCode;
+import com.jovana.entity.product.Product;
+import com.jovana.entity.product.SizeCode;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.user.User;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,6 +98,24 @@ public class TestDataProvider {
         shippingAddresses.put("johnUpdate", johnUpdatedShipAddress);
 
         return shippingAddresses;
+    }
+
+    public static Map<String, Product> getProducts() {
+        Map<String, Product> productRequests = new HashMap<>();
+
+        Product casualDress = new Product();
+        casualDress.setId(10L);
+        casualDress.setName("Casual dress");
+        casualDress.setMaterial("viscose, cotton, polyester");
+        casualDress.setDescription("A beautiful everyday dress");
+        casualDress.setPrice(new BigDecimal("30.00"));
+        casualDress.setSizes(Sets.newHashSet(SizeCode.S, SizeCode.M, SizeCode.L, SizeCode.XL));
+        casualDress.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.RED));
+        casualDress.setStock(70L);
+
+        productRequests.put("casualDress", casualDress);
+
+        return productRequests;
     }
 
 }
