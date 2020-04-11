@@ -6,6 +6,8 @@ import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
+import com.jovana.entity.product.image.Image;
+import com.jovana.entity.product.image.ImageType;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.user.User;
 
@@ -101,7 +103,7 @@ public class TestDataProvider {
     }
 
     public static Map<String, Product> getProducts() {
-        Map<String, Product> productRequests = new HashMap<>();
+        Map<String, Product> products = new HashMap<>();
 
         Product casualDress = new Product();
         casualDress.setId(10L);
@@ -113,9 +115,24 @@ public class TestDataProvider {
         casualDress.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.RED));
         casualDress.setStock(70L);
 
-        productRequests.put("casualDress", casualDress);
+        products.put("casualDress", casualDress);
 
-        return productRequests;
+        return products;
+    }
+
+    public static Map<String, Image> getImages() {
+        Map<String, Image> images = new HashMap<>();
+
+        Image casualDressImage = new Image();
+        casualDressImage.setId(10L);
+        casualDressImage.setProduct(TestDataProvider.getProducts().get("casualDress"));
+        casualDressImage.setName("10_test.png");
+        casualDressImage.setType(ImageType.PNG);
+        casualDressImage.setSize(12345L);
+
+        images.put("casualDressImage", casualDressImage);
+
+        return images;
     }
 
 }

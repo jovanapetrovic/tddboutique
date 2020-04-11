@@ -22,6 +22,19 @@ spring:
             hibernate.cache.use_query_cache: false
             hibernate.generate_statistics: false
 
+    # MultipartProperties: Enable multipart uploads
+    servlet:
+        multipart:
+            enabled: true
+            file-size-threshold: 2KB    # Threshold after which files are written to disk.
+            max-file-size: 25MB         # Max file size.
+            max-request-size: 100MB # Max Request Size
+
+# File Storage Properties
+# All files uploaded through the REST API will be stored in this directory
+file:
+    upload-dir: ${java.io.tmpdir}/tddboutique/images
+
 app:
     name: tddboutique
 

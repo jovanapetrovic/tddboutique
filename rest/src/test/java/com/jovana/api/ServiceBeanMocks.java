@@ -1,6 +1,7 @@
 package com.jovana.api;
 
 import com.jovana.service.impl.product.ProductService;
+import com.jovana.service.impl.product.image.ImageStorageService;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
 import com.jovana.service.impl.user.UserService;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,5 +17,7 @@ public class ServiceBeanMocks {
     private ShippingAddressService service;
     @MockBean
     private ProductService productService;
+    @MockBean
+    private ImageStorageService imageStorageService;
 
 }

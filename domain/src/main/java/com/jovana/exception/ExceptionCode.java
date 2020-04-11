@@ -23,6 +23,9 @@ public enum ExceptionCode {
     // product
     PRODUCT_ALREADY_EXISTS(1300),
 
+    IMAGE_STORAGE_EXCEPTION(1400),
+    IMAGE_NOT_FOUND_EXCEPTION(1401),
+
     ;
 
     private Integer code;

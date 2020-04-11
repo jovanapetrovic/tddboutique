@@ -1,6 +1,7 @@
 package com.jovana.entity.product;
 
 import com.jovana.entity.AbstractAuditingEntity;
+import com.jovana.entity.product.image.Image;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
@@ -9,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,8 +52,11 @@ public class Product extends AbstractAuditingEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private Set<ColorCode> colors;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE)
     private Stock stock;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
+    private List<Image> images;
 
     public Product() {
     }
@@ -119,6 +123,14 @@ public class Product extends AbstractAuditingEntity implements Serializable {
 
     public void setStock(Long numberOfUnitsInStock) {
         this.stock = new Stock(this, numberOfUnitsInStock);
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
 }
