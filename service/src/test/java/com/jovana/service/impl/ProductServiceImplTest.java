@@ -1,10 +1,13 @@
 package com.jovana.service.impl;
 
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.product.ProductRepository;
+import com.jovana.repositories.product.StockRepository;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.impl.product.ProductServiceImpl;
 import com.jovana.service.util.RequestTestDataProvider;
@@ -36,6 +39,8 @@ public class ProductServiceImplTest {
     private ProductService productService = new ProductServiceImpl();
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private StockRepository stockRepository;
 
     @DisplayName("When we want to find a Product by id")
     @Nested
@@ -125,6 +130,70 @@ public class ProductServiceImplTest {
             assertThrows(ProductNameAlreadyExistsException.class,
                     () -> productService.addProduct(casualDressRequest), "Name already exists");
             verify(productRepository, times(0)).save(any(Product.class));
+        }
+
+    }
+
+    @DisplayName("When we want to update product Stock")
+    @Nested
+    class UpdateProductStockTest {
+
+        @DisplayName("Then Stock is updated when request is valid")
+        @Test
+        public void testUpdateProductStock() {
+            // prepare
+            final Long TEST_PRODUCT_ID = 10L;
+            Product casualDressProduct = TestDataProvider.getProducts().get("casualDress");
+            UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
+            Stock casualDressStock = TestDataProvider.getStocks().get("casualDressStock");
+
+            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressProduct));
+            when(stockRepository.findByProductId(any(Long.class))).thenReturn(mock(Stock.class));
+            when(stockRepository.save(any(Stock.class))).thenReturn(casualDressStock);
+
+            when(stockRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressStock));
+
+            // exercise
+            Long stockId = productService.updateProductStock(TEST_PRODUCT_ID, updateStockRequest);
+
+            // verify
+            Stock stockFound = stockRepository.findById(stockId).get();
+
+            assertAll("Verify updated stock",
+                    () -> assertNotNull(stockFound),
+                    () -> assertEquals(TEST_PRODUCT_ID, stockFound.getProduct().getId()),
+                    () -> assertEquals(50L, stockFound.getNumberOfUnitsInStock())
+            );
+            verify(stockRepository, times(1)).save(any(Stock.class));
+        }
+
+        @DisplayName("Then Stock is created and updated when request is valid")
+        @Test
+        public void testUpdateProductStockAndNewStockIsCreated() {
+            // prepare
+            final Long TEST_PRODUCT_ID = 10L;
+            Product casualDressProduct = TestDataProvider.getProducts().get("casualDress");
+            UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
+            Stock casualDressStock = TestDataProvider.getStocks().get("casualDressStock");
+
+            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressProduct));
+            when(stockRepository.findByProductId(any(Long.class))).thenReturn(null);
+            when(stockRepository.save(any(Stock.class))).thenReturn(casualDressStock);
+
+            when(stockRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressStock));
+
+            // exercise
+            Long stockId = productService.updateProductStock(TEST_PRODUCT_ID, updateStockRequest);
+
+            // verify
+            Stock stockFound = stockRepository.findById(stockId).get();
+
+            assertAll("Verify updated stock",
+                    () -> assertNotNull(stockFound),
+                    () -> assertEquals(TEST_PRODUCT_ID, stockFound.getProduct().getId()),
+                    () -> assertEquals(50L, stockFound.getNumberOfUnitsInStock())
+            );
+            verify(stockRepository, times(1)).save(any(Stock.class));
         }
 
     }

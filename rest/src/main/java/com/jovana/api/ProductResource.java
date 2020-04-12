@@ -2,8 +2,10 @@ package com.jovana.api;
 
 import com.jovana.entity.PathConstants;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.image.dto.ImageResponse;
 import com.jovana.entity.product.image.exception.ImageStorageException;
+import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.impl.product.image.ImageStorageService;
 import org.slf4j.Logger;
@@ -51,6 +53,15 @@ public class ProductResource {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @PutMapping(value = PathConstants.PRODUCT_STOCK_UPDATE)
+    public ResponseEntity<Void> updateProductStockPUT(@PathVariable("productId") Long productId,
+                                                      @Valid @RequestBody UpdateStockRequest updateStockRequest) {
+
+        productService.updateProductStock(productId, updateStockRequest);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping(PathConstants.UPLOAD_IMAGE)

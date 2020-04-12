@@ -6,6 +6,7 @@ import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
+import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.image.Image;
 import com.jovana.entity.product.image.ImageType;
 import com.jovana.entity.shippingaddress.ShippingAddress;
@@ -105,17 +106,17 @@ public class TestDataProvider {
     public static Map<String, Product> getProducts() {
         Map<String, Product> products = new HashMap<>();
 
-        Product casualDress = new Product();
-        casualDress.setId(10L);
-        casualDress.setName("Casual dress");
-        casualDress.setMaterial("viscose, cotton, polyester");
-        casualDress.setDescription("A beautiful everyday dress");
-        casualDress.setPrice(new BigDecimal("30.00"));
-        casualDress.setSizes(Sets.newHashSet(SizeCode.S, SizeCode.M, SizeCode.L, SizeCode.XL));
-        casualDress.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.RED));
-        casualDress.setStock(70L);
+        Product casualDressProduct = new Product();
+        casualDressProduct.setId(10L);
+        casualDressProduct.setName("Casual dress");
+        casualDressProduct.setMaterial("viscose, cotton, polyester");
+        casualDressProduct.setDescription("A beautiful everyday dress");
+        casualDressProduct.setPrice(new BigDecimal("30.00"));
+        casualDressProduct.setSizes(Sets.newHashSet(SizeCode.S, SizeCode.M, SizeCode.L, SizeCode.XL));
+        casualDressProduct.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.RED));
+        casualDressProduct.setStock(70L);
 
-        products.put("casualDress", casualDress);
+        products.put("casualDress", casualDressProduct);
 
         return products;
     }
@@ -134,5 +135,18 @@ public class TestDataProvider {
 
         return images;
     }
+    public static Map<String, Stock> getStocks() {
+        Map<String, Stock> images = new HashMap<>();
+
+        Stock casualDressStock = new Stock();
+        casualDressStock.setId(10L);
+        casualDressStock.setProduct(TestDataProvider.getProducts().get("casualDress"));
+        casualDressStock.setNumberOfUnitsInStock(50L);
+
+        images.put("casualDressStock", casualDressStock);
+
+        return images;
+    }
+
 
 }

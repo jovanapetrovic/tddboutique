@@ -28,9 +28,7 @@ public class Stock extends AbstractAuditingEntity {
 
     public Stock(Product product, Long numberOfUnitsInStock) {
         this.product = product;
-        if (numberOfUnitsInStock != null && numberOfUnitsInStock >= 0 && numberOfUnitsInStock <= 3000) {
-            this.numberOfUnitsInStock = numberOfUnitsInStock;
-        }
+        setNumberOfUnitsInStock(numberOfUnitsInStock);
     }
 
     public Long getId() {
@@ -54,7 +52,9 @@ public class Stock extends AbstractAuditingEntity {
     }
 
     public void setNumberOfUnitsInStock(Long numberOfUnitsInStock) {
-        this.numberOfUnitsInStock = numberOfUnitsInStock;
+        if (numberOfUnitsInStock != null && numberOfUnitsInStock >= 0 && numberOfUnitsInStock <= 3000) {
+            this.numberOfUnitsInStock = numberOfUnitsInStock;
+        }
     }
 
 }

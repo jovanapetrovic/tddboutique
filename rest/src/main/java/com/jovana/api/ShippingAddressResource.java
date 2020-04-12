@@ -35,16 +35,12 @@ public class ShippingAddressResource {
     }
 
     @PutMapping(value = PathConstants.SHIPPING_ADDRESS_UPDATE)
-    public ResponseEntity<Void> updateShippingAddressPOST(@PathVariable("shippingAddressId") Long shippingAddressId,
+    public ResponseEntity<Void> updateShippingAddressPUT(@PathVariable("shippingAddressId") Long shippingAddressId,
                                                           @Valid @RequestBody ShippingAddressRequest shippingAddressRequest) {
 
         shippingAddressService.updateUserShippingAddress(shippingAddressId, shippingAddressRequest);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .build()
-                .toUri();
-
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.ok().build();
     }
 
 }

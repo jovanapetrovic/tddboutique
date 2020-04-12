@@ -3,7 +3,9 @@ package com.jovana.service.util;
 import com.google.common.collect.Sets;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.SizeCode;
+import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 
@@ -88,6 +90,17 @@ public class RequestTestDataProvider {
         productRequests.put("casualDress", casualDressRequest);
 
         return productRequests;
+    }
+
+    public static Map<String, UpdateStockRequest> getStockRequests() {
+        Map<String, UpdateStockRequest> stockRequests = new HashMap<>();
+
+        UpdateStockRequest updateStockRequest = new UpdateStockRequest();
+        updateStockRequest.setNumberOfUnitsInStock(50L);
+
+        stockRequests.put("updateStockRequest", updateStockRequest);
+
+        return stockRequests;
     }
 
 }

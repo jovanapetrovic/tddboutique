@@ -1,10 +1,13 @@
 package com.jovana.service.impl.product;
 
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.product.ProductRepository;
+import com.jovana.repositories.product.StockRepository;
 import com.jovana.service.security.IsAdmin;
 import com.jovana.service.security.IsAdminOrUser;
 import org.slf4j.Logger;
@@ -26,6 +29,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private StockRepository stockRepository;
 
     @IsAdminOrUser
     @Override
@@ -54,6 +59,19 @@ public class ProductServiceImpl implements ProductService {
 
         Product newProduct = productRepository.save(product);
         return newProduct.getId();
+    }
+
+    @Override
+    public Long updateProductStock(Long productId, UpdateStockRequest updateStockRequest) {
+        Product product = getProductById(productId);
+        Stock stock = stockRepository.findByProductId(updateStockRequest.getNumberOfUnitsInStock());
+        if (stock != null) {
+            stock.setNumberOfUnitsInStock(updateStockRequest.getNumberOfUnitsInStock());
+        } else {
+            stock = new Stock(product, updateStockRequest.getNumberOfUnitsInStock());
+        }
+        Stock updatedStock = stockRepository.save(stock);
+        return updatedStock.getId();
     }
 
     private void validateProductName(String name) {
