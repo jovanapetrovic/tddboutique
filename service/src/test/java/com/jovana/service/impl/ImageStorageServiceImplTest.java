@@ -100,11 +100,14 @@ public class ImageStorageServiceImplTest {
             // verify
             Image newImage = imageRepository.findById(IMAGE_ID).get();
 
-            // TODO: verify more data
             assertAll("Verify new image",
                     () -> assertNotNull(newImage),
-                    () -> assertNotNull(newImage.getName()),
-                    () -> assertEquals(newImage.getName(), imageName)
+                    () -> assertNotNull(newImage.getId()),
+                    () -> assertNotNull(newImage.getProduct()),
+                    () -> assertEquals(PRODUCT_ID_EXISTS, image.getProduct().getId()),
+                    () -> assertEquals(PRODUCT_ID_EXISTS + "_" + IMAGE_NAME, image.getName()),
+                    () -> assertEquals(IMAGE_CONTENT_TYPE, image.getType().getType()),
+                    () -> assertNotNull(image.getSize())
             );
             verify(imageRepository, times(1)).save(any(Image.class));
         }
@@ -129,11 +132,14 @@ public class ImageStorageServiceImplTest {
             // verify
             Image newImage = imageRepository.findById(IMAGE_ID).get();
 
-            // TODO: verify more data
             assertAll("Verify new image",
                     () -> assertNotNull(newImage),
-                    () -> assertNotNull(newImage.getName()),
-                    () -> assertEquals(newImage.getName(), imageName)
+                    () -> assertNotNull(newImage.getId()),
+                    () -> assertNotNull(newImage.getProduct()),
+                    () -> assertEquals(PRODUCT_ID_EXISTS, image.getProduct().getId()),
+                    () -> assertEquals(PRODUCT_ID_EXISTS + "_" + IMAGE_NAME, image.getName()),
+                    () -> assertEquals(IMAGE_CONTENT_TYPE, image.getType().getType()),
+                    () -> assertNotNull(image.getSize())
             );
             verify(imageRepository, times(0)).save(any(Image.class));
         }
@@ -235,13 +241,10 @@ public class ImageStorageServiceImplTest {
             when(imageRepository.findByProductIdAndName(anyLong(), anyString())).thenReturn(imageMock);
 
             // exercise
-            Resource imageFile = imageStorageService.getAndLoadImageAsResource(PRODUCT_ID_EXISTS, IMAGE_NAME);
+            Resource resource = imageStorageService.getAndLoadImageAsResource(PRODUCT_ID_EXISTS, IMAGE_NAME);
 
-            // TODO: verify more data
             // verify
-            assertAll("Verify fetched image",
-                    () -> assertNotNull(imageFile)
-            );
+            assertNotNull(resource);
         }
 
         @DisplayName("Then get image fails when product doesn't exist")
