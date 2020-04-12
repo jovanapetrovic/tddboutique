@@ -49,7 +49,6 @@ public class ProductServiceImplIT extends AbstractTest {
 
     }
 
-    @WithMockCustomUser
     @DisplayName("When we want to add a new product")
     @Nested
     class AddProductTest {
@@ -62,7 +61,7 @@ public class ProductServiceImplIT extends AbstractTest {
             productRequest = RequestTestDataProvider.getProductRequests().get("casualDress");
         }
 
-        @WithMockCustomUser(username = "admin")
+        @WithMockCustomUser(username = "admin", authorities = {"ROLE_ADMIN"})
         @DisplayName("Then product is created when valid ProductRequest is passed")
         @Test
         public void testAddProductSuccess() {

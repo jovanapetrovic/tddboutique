@@ -52,7 +52,7 @@ public class Product extends AbstractAuditingEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private Set<ColorCode> colors;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Stock stock;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
