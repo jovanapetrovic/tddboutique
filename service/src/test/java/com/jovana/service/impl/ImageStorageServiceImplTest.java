@@ -24,8 +24,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,8 +38,7 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 public class ImageStorageServiceImplTest {
 
-    private static final String IMAGE_STORAGE_LOCATION = "C:\\Users\\User\\AppData\\Local\\Temp\\tddboutique\\images";
-    private Path imageStorageLocation = Paths.get(IMAGE_STORAGE_LOCATION).toAbsolutePath().normalize();
+    private static final String IMAGE_UPLOAD_DIR = "C:\\Users\\User\\AppData\\Local\\Temp\\tddboutique\\images";
 
     @InjectMocks
     private ImageStorageService imageStorageService = new ImageStorageServiceImpl();
@@ -110,6 +107,35 @@ public class ImageStorageServiceImplTest {
                     () -> assertEquals(newImage.getName(), imageName)
             );
             verify(imageRepository, times(1)).save(any(Image.class));
+        }
+
+        @DisplayName("Then image is created when valid image file is passed")
+        @Test
+        public void testAddImageSuccessButImageEntityAlreadyExists() throws Exception {
+            // prepare
+            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+
+            when(imageFileMock.getOriginalFilename()).thenReturn(IMAGE_NAME);
+            when(imageFileMock.getContentType()).thenReturn(IMAGE_CONTENT_TYPE);
+            when(imageFileMock.getInputStream()).thenReturn(inputStream); // mock image persisting
+
+            when(imageRepository.findByProductIdAndName(anyLong(), anyString())).thenReturn(image);
+
+            when(imageRepository.findById(any(Long.class))).thenReturn(Optional.of(image));
+
+            // exercise
+            String imageName = imageStorageService.addAndStoreImage(PRODUCT_ID_EXISTS, imageFileMock);
+
+            // verify
+            Image newImage = imageRepository.findById(IMAGE_ID).get();
+
+            // TODO: verify more data
+            assertAll("Verify new image",
+                    () -> assertNotNull(newImage),
+                    () -> assertNotNull(newImage.getName()),
+                    () -> assertEquals(newImage.getName(), imageName)
+            );
+            verify(imageRepository, times(0)).save(any(Image.class));
         }
 
         @DisplayName("Then image creating fails when product doesn't exist")
@@ -187,12 +213,12 @@ public class ImageStorageServiceImplTest {
         void setUp() {
             initPrivateVariablesForImageStorageService();
 
-            // TODO: find another way
+            // TODO: find a better solution
             try {
-                String sCourrier ="asdf";
-                fileExists = new File(IMAGE_STORAGE_LOCATION + "\\" + IMAGE_NAME);
+                String someBytes ="asdf";
+                fileExists = new File(IMAGE_UPLOAD_DIR + "\\" + IMAGE_NAME);
                 FileOutputStream fos = new FileOutputStream(fileExists);
-                fos.write(sCourrier.getBytes());
+                fos.write(someBytes.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -257,7 +283,7 @@ public class ImageStorageServiceImplTest {
 
     private void initPrivateVariablesForImageStorageService() {
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(imageStorageService, "imageStorageLocation", imageStorageLocation, Path.class);
+        ReflectionTestUtils.setField(imageStorageService, "getImageUploadDir", IMAGE_UPLOAD_DIR, String.class);
     }
 
 }

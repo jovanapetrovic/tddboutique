@@ -1,12 +1,10 @@
 package com.jovana.service.impl.product.image;
 
-import com.jovana.config.ImageStorageProperties;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.image.Image;
 import com.jovana.entity.product.image.ImageType;
 import com.jovana.entity.product.image.exception.ImageNotFoundException;
 import com.jovana.entity.product.image.exception.ImageStorageException;
-import com.jovana.exception.ValueMustNotBeNullOrEmptyException;
 import com.jovana.repositories.product.ImageRepository;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.security.IsAdmin;
@@ -33,7 +31,8 @@ import java.nio.file.StandardCopyOption;
 @Transactional
 public class ImageStorageServiceImpl implements ImageStorageService {
 
-    private final Path imageStorageLocation;
+    @Autowired
+    private String getImageUploadDir;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -43,19 +42,8 @@ public class ImageStorageServiceImpl implements ImageStorageService {
     // Use for test purposes only
     @Deprecated
     public ImageStorageServiceImpl() {
-        imageStorageLocation = null;
     }
 
-    @Autowired
-    public ImageStorageServiceImpl(ImageStorageProperties imageStorageProperties) {
-        this.imageStorageLocation = Paths.get(imageStorageProperties.getUploadDir()).toAbsolutePath().normalize();
-
-        try {
-            Files.createDirectories(this.imageStorageLocation);
-        } catch (Exception ex) {
-            throw new ImageStorageException("Could not create the directory where the uploaded images will be stored.");
-        }
-    }
 
     @IsAdmin
     @Override
@@ -65,9 +53,10 @@ public class ImageStorageServiceImpl implements ImageStorageService {
         String newImageName = validateAndResolveImageName(productId, imageFile.getOriginalFilename());
         String contentType = validateExtension(imageFile.getContentType());
 
+        Path imageUploadDir = getImageUploadDir();
         try {
             // If image file already exists in storage, it will be replaced with new file
-            Path targetLocation = this.imageStorageLocation.resolve(newImageName);
+            Path targetLocation = imageUploadDir.resolve(newImageName);
             Files.copy(imageFile.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             // Add new image to db only if it's not there already; no need for update
@@ -95,8 +84,9 @@ public class ImageStorageServiceImpl implements ImageStorageService {
             throw new ImageNotFoundException("Image " + imageName + " doesn't exist for productId = " + productId);
         }
 
+        Path imageUploadDir = getImageUploadDir();
         try {
-            Path imagePath = this.imageStorageLocation.resolve(imageName).normalize();
+            Path imagePath = imageUploadDir.resolve(imageName).normalize();
             Resource resource = new UrlResource(imagePath.toUri());
             if (resource.exists()) {
                 return resource;
@@ -132,6 +122,20 @@ public class ImageStorageServiceImpl implements ImageStorageService {
             }
         }
         throw new ImageStorageException("Only image files (png, jpg, jpeg, gif) can be uploaded!");
+    }
+
+    /**
+     * Attempt to create image upload directory. A no-op if it already exists.
+     */
+    private Path getImageUploadDir() {
+        Path imageUploadDir = Paths.get(getImageUploadDir).toAbsolutePath().normalize();
+
+        try {
+            Files.createDirectories(imageUploadDir);
+        } catch (Exception ex) {
+            throw new ImageStorageException("Could not create the directory where the uploaded images will be stored.");
+        }
+        return imageUploadDir;
     }
 
 }
