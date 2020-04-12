@@ -111,7 +111,7 @@ public class ImageStorageServiceImplTest {
 
         @DisplayName("Then image is created when valid image file is passed")
         @Test
-        public void testAddImageSuccessButImageEntityAlreadyExists() throws Exception {
+        public void testAddImageSuccessAndImageEntityAlreadyExists() throws Exception {
             // prepare
             when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
 

@@ -39,12 +39,6 @@ public class ImageStorageServiceImpl implements ImageStorageService {
     @Autowired
     private ProductService productService;
 
-    // Use for test purposes only
-    @Deprecated
-    public ImageStorageServiceImpl() {
-    }
-
-
     @IsAdmin
     @Override
     public String addAndStoreImage(Long productId, MultipartFile imageFile) {

@@ -9,7 +9,6 @@ import com.jovana.service.util.RequestTestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,12 +27,12 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
     @Nested
     class GetShippingAddressTest {
 
-        private final Long SHIPPING_ADDRESS_ID_EXISTS = 10L;
-
         @WithMockCustomUser
         @DisplayName("Then ShippingAddress is fetched from database when id is valid")
         @Test
         public void testGetShippingAddressById() {
+            // prepare
+            Long SHIPPING_ADDRESS_ID_EXISTS = 10L;
             // exercise
             ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(SHIPPING_ADDRESS_ID_EXISTS);
             // verify
@@ -47,20 +46,14 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
     @Nested
     class AddUserShippingAddressTest {
 
-        private final Long TEST_USER_ID = 10L;
-
-        private ShippingAddressRequest shippingAddressRequest;
-
-        @BeforeEach
-        void setUp() {
-            // set requests
-            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("john");
-        }
-
         @WithMockCustomUser
         @DisplayName("Then shipping address is created for user when valid ShippingAddressRequest is passed")
         @Test
         public void testAddUserShippingAddressSuccess() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            ShippingAddressRequest shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("john");
+
             // exercise
             Long shippingAddressId = shippingAddressService.addUserShippingAddress(TEST_USER_ID, shippingAddressRequest);
 
@@ -92,20 +85,14 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
     @Nested
     class UpdateUserShippingAddressTest {
 
-        private final Long TEST_SHIPPING_ADDRESS_ID = 11L;
-
-        private ShippingAddressRequest shippingAddressRequest;
-
-        @BeforeEach
-        void setUp() {
-            // set requests
-            shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
-        }
-
         @WithMockCustomUser
         @DisplayName("Then shipping address is updated when valid ShippingAddressRequest is passed")
         @Test
         public void testUpdateUserShippingAddressSuccess() {
+            // prepare
+            Long TEST_SHIPPING_ADDRESS_ID = 11L;
+            ShippingAddressRequest shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
+
             // exercise
             shippingAddressService.updateUserShippingAddress(TEST_SHIPPING_ADDRESS_ID, shippingAddressRequest);
 

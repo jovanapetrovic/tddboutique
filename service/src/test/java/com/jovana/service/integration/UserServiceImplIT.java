@@ -32,12 +32,12 @@ public class UserServiceImplIT extends AbstractTest {
     @Nested
     class GetUserTest {
 
-        private final Long TEST_USER_ID = 10L;
-
         @WithMockCustomUser
         @DisplayName("Then user is fetched from database when id is valid")
         @Test
         public void testGetUserById() {
+            // prepare
+            Long TEST_USER_ID = 10L;
             // exercise
             User newUser = userService.getUserById(TEST_USER_ID);
             // verify
@@ -50,17 +50,13 @@ public class UserServiceImplIT extends AbstractTest {
     @Nested
     class RegisterUserITest {
 
-        private RegisterUserRequest registerUserRequest;
-
-        @BeforeEach
-        void setUp() {
-            registerUserRequest = RequestTestDataProvider.getRegisterUserRequests().get("john");
-        }
-
         @WithMockCustomUser
         @DisplayName("Then a new user is created when valid RegisterUserRequest is passed")
         @Test
         public void testRegisterUserSuccess() {
+            // prepare
+            RegisterUserRequest registerUserRequest = RequestTestDataProvider.getRegisterUserRequests().get("john");
+
             // exercise
             Long userId = userService.registerUser(registerUserRequest);
 

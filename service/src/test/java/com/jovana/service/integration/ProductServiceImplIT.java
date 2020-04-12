@@ -8,7 +8,6 @@ import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.integration.auth.WithMockCustomUser;
 import com.jovana.service.util.RequestTestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,12 +33,12 @@ public class ProductServiceImplIT extends AbstractTest {
     @Nested
     class GetProductTest {
 
-        private final Long PRODUCT_ID_EXISTS = 10L;
-
         @WithMockCustomUser
         @DisplayName("Then Product is fetched from database when id is valid")
         @Test
         public void testGetProductById() {
+            // prepare
+            Long PRODUCT_ID_EXISTS = 10L;
             // exercise
             Product product = productService.getProductById(PRODUCT_ID_EXISTS);
             // verify
@@ -53,18 +52,13 @@ public class ProductServiceImplIT extends AbstractTest {
     @Nested
     class AddProductTest {
 
-        private ProductRequest productRequest;
-
-        @BeforeEach
-        void setUp() {
-            // set requests
-            productRequest = RequestTestDataProvider.getProductRequests().get("casualDress");
-        }
-
         @WithMockCustomUser(username = "admin", authorities = {"ROLE_ADMIN"})
         @DisplayName("Then product is created when valid ProductRequest is passed")
         @Test
         public void testAddProductSuccess() {
+            // prepare
+            ProductRequest productRequest = RequestTestDataProvider.getProductRequests().get("casualDress");
+
             // exercise
             Long productId = productService.addProduct(productRequest);
 
