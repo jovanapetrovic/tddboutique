@@ -84,7 +84,7 @@ public class ProductServiceImplIT extends AbstractTest {
         }
 
         @WithMockCustomUser
-        @DisplayName("Then Product is fetched from database when id is valid")
+        @DisplayName("Then all products are fetched from database if there are any")
         @Test
         public void testViewAllProductsSuccess() {
             // exercise
@@ -106,12 +106,14 @@ public class ProductServiceImplIT extends AbstractTest {
         public void testAddProductSuccess() {
             // prepare
             ProductRequest productRequest = RequestTestDataProvider.getProductRequests().get("casualDress");
+            Set<ProductResponse> productsBefore = productService.viewAllProducts();
 
             // exercise
             Long productId = productService.addProduct(productRequest);
 
             // verify
             Product newProduct = productService.getProductById(productId);
+            Set<ProductResponse> productsAfter = productService.viewAllProducts();
 
             assertAll("Verify new product",
                     () -> assertNotNull(newProduct),
@@ -130,6 +132,7 @@ public class ProductServiceImplIT extends AbstractTest {
                     () -> assertNotNull(newProduct.getStock()),
                     () -> assertEquals(newProduct.getStock().getNumberOfUnitsInStock(), productRequest.getNumberOfUnitsInStock())
             );
+            assertEquals(1, productsAfter.size() - productsBefore.size());
         }
     }
 

@@ -1,7 +1,9 @@
 package com.jovana.service.integration;
 
+import com.jovana.entity.product.dto.ProductResponse;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
+import com.jovana.entity.shippingaddress.dto.ShippingAddressResponse;
 import com.jovana.repositories.shippingaddress.ShippingAddressRepository;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
 import com.jovana.service.integration.auth.WithMockCustomUser;
@@ -9,6 +11,8 @@ import com.jovana.service.util.RequestTestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +43,19 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             assertNotNull(shippingAddress, "ShippingAddress is null");
         }
 
+        @WithMockCustomUser
+        @DisplayName("Then all shipping addresses are fetched from database if there are any")
+        @Test
+        public void testViewAllShippingAddressesSuccess() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            // exercise
+            Set<ShippingAddressResponse> shippingAddresses = shippingAddressService.viewAllShippingAddresses(TEST_USER_ID);
+            // verify
+            assertNotNull(shippingAddresses);
+            assertEquals(1, shippingAddresses.size());
+        }
+
     }
 
     @WithMockCustomUser
@@ -53,12 +70,14 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             // prepare
             Long TEST_USER_ID = 10L;
             ShippingAddressRequest shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("john");
+            Set<ShippingAddress> shippingAddressesBefore = shippingAddressRepository.findAllByUserId(TEST_USER_ID);
 
             // exercise
             Long shippingAddressId = shippingAddressService.addUserShippingAddress(TEST_USER_ID, shippingAddressRequest);
 
             // verify
             ShippingAddress newShippingAddress = shippingAddressService.getUserShippingAddressById(shippingAddressId);
+            Set<ShippingAddress> shippingAddressesAfter = shippingAddressRepository.findAllByUserId(TEST_USER_ID);
 
             assertAll("Verify new shipping address",
                     () -> assertNotNull(newShippingAddress, "ShippingAddress is null"),
@@ -78,6 +97,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
                     () -> assertNotNull(newShippingAddress.getPhone().getPhoneNumber(), "Phone number is null"),
                     () -> assertEquals(shippingAddressRequest.getPhoneNumber(), newShippingAddress.getPhone().getPhoneNumber(), "Phone number doesn't match")
             );
+            assertEquals(1, shippingAddressesAfter.size() - shippingAddressesBefore.size());
         }
     }
 
