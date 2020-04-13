@@ -1,6 +1,9 @@
 package com.jovana.service.impl.product;
 
+import com.google.common.collect.Sets;
+import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.SizeCode;
 import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.UpdateStockRequest;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by jovana on 07.04.2020
@@ -53,8 +57,8 @@ public class ProductServiceImpl implements ProductService {
         product.setMaterial(productRequest.getMaterial());
         product.setDescription(productRequest.getDescription());
         product.setPrice(productRequest.getPrice());
-        product.setSizes(productRequest.getSizes());
-        product.setColors(productRequest.getColors());
+        product.setSizes(SizeCode.getSizeCodesFromSizeStrings(productRequest.getSizes()));
+        product.setColors(ColorCode.getColorCodesFromColorStrings(productRequest.getColors()));
         product.setStock(productRequest.getNumberOfUnitsInStock());
 
         Product newProduct = productRepository.save(product);

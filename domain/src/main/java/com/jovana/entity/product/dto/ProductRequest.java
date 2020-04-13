@@ -1,13 +1,11 @@
 package com.jovana.entity.product.dto;
 
-import com.jovana.entity.product.ColorCode;
-import com.jovana.entity.product.SizeCode;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by jovana on 10.04.2020
@@ -31,10 +29,10 @@ public class ProductRequest {
     private BigDecimal price;
 
     @Size(min = 1)
-    private Set<SizeCode> sizes;
+    private List<String> sizes;
 
     @Size(min = 1)
-    private Set<ColorCode> colors;
+    private List<String> colors;
 
     private Long numberOfUnitsInStock;
 
@@ -73,19 +71,19 @@ public class ProductRequest {
         this.price = price;
     }
 
-    public Set<SizeCode> getSizes() {
+    public List<String> getSizes() {
         return sizes;
     }
 
-    public void setSizes(Set<SizeCode> sizes) {
+    public void setSizes(List<String> sizes) {
         this.sizes = sizes;
     }
 
-    public Set<ColorCode> getColors() {
+    public List<String> getColors() {
         return colors;
     }
 
-    public void setColors(Set<ColorCode> colors) {
+    public void setColors(List<String> colors) {
         this.colors = colors;
     }
 

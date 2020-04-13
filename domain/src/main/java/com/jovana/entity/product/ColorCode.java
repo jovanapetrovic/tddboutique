@@ -1,5 +1,10 @@
 package com.jovana.entity.product;
 
+import com.google.common.collect.Sets;
+
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by jovana on 07.04.2020
  */
@@ -18,14 +23,23 @@ public enum ColorCode {
     BROWN("Brown"),
     COLORFUL("Colorful");
 
-    private String colorCode;
+    private String code;
 
-    ColorCode(String colorCode) {
-        this.colorCode = colorCode;
+    ColorCode(String code) {
+        this.code = code;
     }
 
-    public String getColorCode() {
-        return colorCode;
+    public String getCode() {
+        return code;
+    }
+
+    public static Set<ColorCode> getColorCodesFromColorStrings(List<String> colorStrings) {
+        Set<ColorCode> colors = Sets.newHashSet();
+        for (String s : colorStrings) {
+            ColorCode colorCode = ColorCode.valueOf(s);
+            colors.add(colorCode);
+        }
+        return colors;
     }
 
 }
