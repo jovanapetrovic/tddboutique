@@ -1,14 +1,17 @@
 package com.jovana.service.impl.product;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
-import com.jovana.entity.product.Stock;
+import com.jovana.entity.product.dto.ProductFullResponse;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.ProductResponse;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
-import com.jovana.entity.shippingaddress.ShippingAddress;
+import com.jovana.entity.product.image.Image;
+import com.jovana.entity.product.image.dto.ImageResponse;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -105,6 +109,39 @@ public class ProductServiceImpl implements ProductService {
         Product deletedProduct = productRepository.save(product);
         return deletedProduct.isDeleted();
     }
+
+    @IsAdminOrUser
+    @Override
+    public ProductFullResponse viewOneProduct(Long productId) {
+        Product product = productRepository.findOneWithImages(productId);
+        if (product == null) {
+            throw new EntityNotFoundException("No product found with id = " + productId);
+        }
+
+        List<ImageResponse> imageResponses = Lists.newArrayList();
+        for (Image i : product.getImages()) {
+            imageResponses.add(ImageResponse.createFromImage(i));
+        }
+        return ProductFullResponse.createFromProduct(product, imageResponses);
+    }
+
+    @IsAdminOrUser
+    @Override
+    public Set<ProductResponse> viewAllProducts() {
+        Set<Product> products = productRepository.findAllWithImages();
+
+        Set<ProductResponse> productResponses = Sets.newHashSet();
+        for (Product product : products) {
+            List<ImageResponse> imageResponses = Lists.newArrayList();
+            for (Image i : product.getImages()) {
+                imageResponses.add(ImageResponse.createFromImage(i));
+            }
+            productResponses.add(ProductResponse.createFromProduct(product, imageResponses));
+        }
+        LOGGER.debug("Found {} products.", productResponses.size());
+        return productResponses;
+    }
+
 
     private void validateProductName(String name) {
         if (productRepository.findByName(name) != null) {

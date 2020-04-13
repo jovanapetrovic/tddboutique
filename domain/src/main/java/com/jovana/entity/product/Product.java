@@ -57,8 +57,8 @@ public class Product extends AbstractAuditingEntity implements Serializable {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Stock stock;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
-    private List<Image> images;
+    @OneToMany(mappedBy = "product")
+    private Set<Image> images;
 
     public Product() {
     }
@@ -139,11 +139,11 @@ public class Product extends AbstractAuditingEntity implements Serializable {
         }
     }
 
-    public List<Image> getImages() {
+    public Set<Image> getImages() {
         return images;
     }
 
-    public void setImages(List<Image> images) {
+    public void setImages(Set<Image> images) {
         this.images = images;
     }
 

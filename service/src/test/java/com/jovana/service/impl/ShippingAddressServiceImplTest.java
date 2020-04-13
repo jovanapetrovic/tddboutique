@@ -56,7 +56,7 @@ public class ShippingAddressServiceImplTest {
 
         @DisplayName("Then error is thrown when ShippingAddress with passed id doesn't exist")
         @Test
-        public void testGetShippingAddressByIdFailsWhenUserWithPassedIdDoesntExist() {
+        public void testGetShippingAddressByIdFailsWhenPassedIdDoesntExist() {
             // prepare
             when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.empty());
             // verify

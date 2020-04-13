@@ -1,5 +1,6 @@
 package com.jovana.entity.product;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.List;
@@ -42,6 +43,15 @@ public enum ColorCode {
             colors.add(colorCode);
         }
         return colors;
+    }
+
+    public static List<String> getStringsFromColorCodes(Set<ColorCode> colorCodes) {
+        List<String> sizeStrings = Lists.newArrayList();
+        for (ColorCode c : colorCodes) {
+            String colorCode = c.getCode();
+            sizeStrings.add(colorCode);
+        }
+        return sizeStrings;
     }
 
 }

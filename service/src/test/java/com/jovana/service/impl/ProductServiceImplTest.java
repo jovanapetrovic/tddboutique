@@ -1,9 +1,14 @@
 package com.jovana.service.impl;
 
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.Stock;
+import com.jovana.entity.product.dto.ProductFullResponse;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.ProductResponse;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
+import com.jovana.entity.product.image.Image;
+import com.jovana.entity.product.image.ImageType;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
@@ -18,9 +23,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,9 +48,9 @@ public class ProductServiceImplTest {
     @Mock
     private StockRepository stockRepository;
 
-    @DisplayName("When we want to find a Product by id")
+    @DisplayName("When we want to get a Product by id")
     @Nested
-    class GetProductTest {
+    class GetAndViewProductTest {
 
         private final Long TEST_PRODUCT_ID = 10L;
         private final Long PRODUCT_ID_NOT_EXISTS = 9999L;
@@ -61,12 +68,73 @@ public class ProductServiceImplTest {
 
         @DisplayName("Then error is thrown when Product with passed id doesn't exist")
         @Test
-        public void testGetProductByIdFailsWhenUserWithPassedIdDoesntExist() {
+        public void testGetProductByIdFailsWhenPassedIdDoesntExist() {
             // prepare
             when(productRepository.findById(any(Long.class))).thenReturn(Optional.empty());
             // verify
             assertThrows(EntityNotFoundException.class,
                     () -> productService.getProductById(PRODUCT_ID_NOT_EXISTS), "Product with id=" + PRODUCT_ID_NOT_EXISTS + " doesn't exist");
+        }
+
+        @DisplayName("Then one Product is fetched from database when id is valid")
+        @Test
+        public void testViewOneProductSuccess() {
+            // prepare
+            Product productMock = mock(Product.class);
+            Stock stockMock = mock(Stock.class);
+            Image imageMock = mock(Image.class);
+            Set<Image> imageSet = Sets.newSet(imageMock);
+
+            when(productRepository.findOneWithImages(any(Long.class))).thenReturn(productMock);
+            when(productMock.getImages()).thenReturn(imageSet);
+            when(imageMock.getType()).thenReturn(ImageType.PNG);
+            when(productMock.getStock()).thenReturn(stockMock);
+            // exercise
+            ProductFullResponse product = productService.viewOneProduct(TEST_PRODUCT_ID);
+            // verify
+            assertNotNull(product, "Product is null");
+        }
+
+        @DisplayName("Then error is thrown when Product with passed id doesn't exist")
+        @Test
+        public void testViewOneProductFailsWhenPassedIdDoesntExist() {
+            when(productRepository.findOneWithImages(any(Long.class))).thenReturn(null);
+            // verify
+            assertThrows(EntityNotFoundException.class,
+                    () -> productService.viewOneProduct(PRODUCT_ID_NOT_EXISTS), "Product with id=" + PRODUCT_ID_NOT_EXISTS + " doesn't exist");
+        }
+
+        @DisplayName("Then all products are fetched from database if there are any")
+        @Test
+        public void testViewAllProductsSuccess() {
+            // prepare
+            Product productMock1 = mock(Product.class);
+            Product productMock2 = mock(Product.class);
+            Product productMock3 = mock(Product.class);
+            Set<Product> products = Sets.newSet(productMock1, productMock2, productMock3);
+
+            Stock stockMock = mock(Stock.class);
+            Image imageMock = mock(Image.class);
+            Set<Image> imageSet = Sets.newSet(imageMock);
+
+            when(productRepository.findAllWithImages()).thenReturn(products);
+
+            when(imageMock.getType()).thenReturn(ImageType.PNG);
+            when(productMock1.getImages()).thenReturn(imageSet);
+            when(productMock1.getStock()).thenReturn(stockMock);
+
+            when(productMock2.getImages()).thenReturn(imageSet);
+            when(productMock2.getStock()).thenReturn(stockMock);
+
+            when(productMock3.getImages()).thenReturn(imageSet);
+            when(productMock3.getStock()).thenReturn(stockMock);
+
+            // exercise
+            Set<ProductResponse> productResponses = productService.viewAllProducts();
+
+            // verify
+            assertNotNull(productResponses);
+            assertEquals(3, productResponses.size());
         }
     }
 

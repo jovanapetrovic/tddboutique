@@ -1,5 +1,6 @@
 package com.jovana.entity.product;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.List;
@@ -32,6 +33,15 @@ public enum SizeCode {
             sizes.add(sizeCode);
         }
         return sizes;
+    }
+
+    public static List<String> getStringsFromSizeCodes(Set<SizeCode> sizeCodes) {
+        List<String> sizeStrings = Lists.newArrayList();
+        for (SizeCode c : sizeCodes) {
+            String sizeCode = c.getCode();
+            sizeStrings.add(sizeCode);
+        }
+        return sizeStrings;
     }
 
 }

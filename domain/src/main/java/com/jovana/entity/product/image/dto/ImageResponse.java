@@ -1,5 +1,8 @@
 package com.jovana.entity.product.image.dto;
 
+import com.jovana.entity.PathConstants;
+import com.jovana.entity.product.image.Image;
+
 /**
  * Created by jovana on 11.04.2020
  */
@@ -17,6 +20,17 @@ public class ImageResponse {
         this.imageDownloadUri = imageDownloadUri;
         this.imageType = imageType;
         this.size = size;
+    }
+
+    public static ImageResponse createFromImage(Image image) {
+        // http://localhost:8080/api/download-image/1_test.png
+        String downloadUri = PathConstants.API + PathConstants.DOWNLOAD_IMAGE + image.getName();
+        return new ImageResponse(
+                image.getName(),
+                downloadUri,
+                image.getType().getType(),
+                image.getSize()
+        );
     }
 
     public String getImageName() {

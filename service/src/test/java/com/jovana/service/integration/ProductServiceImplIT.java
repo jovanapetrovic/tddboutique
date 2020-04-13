@@ -1,7 +1,9 @@
 package com.jovana.service.integration;
 
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.dto.ProductFullResponse;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.ProductResponse;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +47,50 @@ public class ProductServiceImplIT extends AbstractTest {
             // verify
             assertNotNull(product, "Product is null");
             assertNotNull(product.getStock(), "Stock is null");
+        }
+
+        @WithMockCustomUser
+        @DisplayName("Then Product is fetched from database when id is valid")
+        @Test
+        public void testViewOneProductSuccess() {
+            // prepare
+            Long TEST_PRODUCT_ID = 10L;
+
+            // exercise
+            ProductFullResponse productResponse = productService.viewOneProduct(TEST_PRODUCT_ID);
+
+            // verify
+            Product product = productService.getProductById(TEST_PRODUCT_ID);
+
+            assertAll("Verify product response",
+                    () -> assertNotNull(productResponse),
+                    () -> assertNotNull(productResponse.getName()),
+                    () -> assertEquals(productResponse.getName(), product.getName()),
+                    () -> assertNotNull(productResponse.getMaterial()),
+                    () -> assertEquals(productResponse.getMaterial(), product.getMaterial()),
+                    () -> assertNotNull(productResponse.getDescription()),
+                    () -> assertEquals(productResponse.getDescription(), product.getDescription()),
+                    () -> assertNotNull(productResponse.getPrice()),
+                    () -> assertEquals(productResponse.getPrice(), product.getPrice()),
+                    () -> assertNotNull(productResponse.getSizes()),
+                    () -> assertEquals(productResponse.getSizes().size(), product.getSizes().size()),
+                    () -> assertNotNull(productResponse.getColors()),
+                    () -> assertEquals(productResponse.getColors().size(), product.getColors().size()),
+                    () -> assertTrue(productResponse.isInStock()),
+                    () -> assertEquals(productResponse.isInStock(), product.getStock().getNumberOfUnitsInStock() > 0),
+                    () -> assertNotNull(productResponse.getImages())
+            );
+        }
+
+        @WithMockCustomUser
+        @DisplayName("Then Product is fetched from database when id is valid")
+        @Test
+        public void testViewAllProductsSuccess() {
+            // exercise
+            Set<ProductResponse> products = productService.viewAllProducts();
+            // verify
+            assertNotNull(products);
+            assertEquals(4, products.size());
         }
 
     }
