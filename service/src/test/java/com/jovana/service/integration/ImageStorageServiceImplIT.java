@@ -66,7 +66,7 @@ public class ImageStorageServiceImplIT extends AbstractTest {
                     () -> assertEquals(TEST_PRODUCT_ID + "_" + IMAGE_NAME, image.getName()),
                     () -> assertEquals(IMAGE_TYPE, image.getType().getType()),
                     () -> assertNotNull(image.getSize()),
-                    () -> assertEquals(378611, image.getSize())
+                    () -> assertEquals(5744, image.getSize())
             );
         }
     }

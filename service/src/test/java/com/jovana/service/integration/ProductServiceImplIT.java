@@ -3,8 +3,6 @@ package com.jovana.service.integration;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.UpdateStockRequest;
-import com.jovana.entity.shippingaddress.ShippingAddress;
-import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
 import com.jovana.service.impl.product.ProductService;
@@ -29,8 +27,6 @@ public class ProductServiceImplIT extends AbstractTest {
     private ProductService productService;
     @Autowired
     private ProductRepository productRepository;
-    @Autowired
-    private StockRepository stockRepository;
 
     @DisplayName("When we want to find a Product by id")
     @Nested
