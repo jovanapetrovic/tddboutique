@@ -96,6 +96,16 @@ public class ProductServiceImpl implements ProductService {
         return updatedProduct.getStock().getNumberOfUnitsInStock();
     }
 
+    @IsAdmin
+    @Override
+    public boolean deleteProduct(Long productId) {
+        Product product = getProductById(productId);
+        product.setDeleted(true);
+        product.setStock(0L);
+        Product deletedProduct = productRepository.save(product);
+        return deletedProduct.isDeleted();
+    }
+
     private void validateProductName(String name) {
         if (productRepository.findByName(name) != null) {
             throw new ProductNameAlreadyExistsException(name, "Product already exists in the db with this name.");

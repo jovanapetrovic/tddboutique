@@ -136,9 +136,21 @@ public class TestDataProvider {
         eveningDressUpdate.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.COLORFUL));
         eveningDressUpdate.setStock(100L);
 
+        Product deletedProduct = new Product();
+        deletedProduct.setId(12L);
+        deletedProduct.setName("Green dress");
+        deletedProduct.setMaterial("cotton");
+        deletedProduct.setDescription("Simple green dress");
+        deletedProduct.setPrice(new BigDecimal("10.00"));
+        deletedProduct.setDeleted(true);
+        deletedProduct.setSizes(Sets.newHashSet(SizeCode.S, SizeCode.M));
+        deletedProduct.setColors(Sets.newHashSet(ColorCode.GREEN));
+        deletedProduct.setStock(0L);
+
         products.put("casualDress", casualDressProduct);
         products.put("eveningDress", eveningDressProduct);
         products.put("eveningDressUpdate", eveningDressUpdate);
+        products.put("deletedProduct", deletedProduct);
 
         return products;
     }

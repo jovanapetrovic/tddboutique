@@ -6,6 +6,7 @@ CREATE TABLE product (
     material varchar(100) NOT NULL,
     description varchar(100) DEFAULT NULL,
     price decimal DEFAULT NULL,
+    deleted bit(1) DEFAULT FALSE,
     created_by varchar(30) NOT NULL,
     created_date timestamp NOT NULL,
     last_modified_by varchar(30) DEFAULT NULL,

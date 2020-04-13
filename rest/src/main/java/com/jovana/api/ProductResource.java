@@ -113,4 +113,10 @@ public class ProductResource {
                 .body(resource);
     }
 
+    @DeleteMapping(value = PathConstants.PRODUCT_DELETE)
+    public ResponseEntity<Void> deleteProductDELETE(@PathVariable("productId") Long productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.ok().build();
+    }
+
 }

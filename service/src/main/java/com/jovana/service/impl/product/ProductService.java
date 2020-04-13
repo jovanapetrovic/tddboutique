@@ -17,4 +17,6 @@ public interface ProductService {
 
     Long updateProductStock(Long productId, UpdateStockRequest updateStockRequest);
 
+    boolean deleteProduct(Long productId);
+
 }

@@ -52,3 +52,17 @@ INSERT INTO stock (product_id, units, created_by, created_date) VALUES
 ('12', 1, 'system', now());
 
 ------------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO product (id, name, material, description, price, deleted, created_by, created_date) VALUES
+('13', 'Green dress', 'cotton', 'Simple green dress', '10.00', 0, 'system', now());
+
+INSERT INTO product_color (product_id, color) VALUES
+('13', 'GREEN');
+
+INSERT INTO product_size (product_id, size) VALUES
+('13', 'S');
+
+INSERT INTO stock (product_id, units, created_by, created_date) VALUES
+('13', 5, 'system', now());
+
+------------------------------------------------------------------------------------------------------------------------

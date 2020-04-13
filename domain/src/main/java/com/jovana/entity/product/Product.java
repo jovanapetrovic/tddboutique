@@ -40,6 +40,8 @@ public class Product extends AbstractAuditingEntity implements Serializable {
     @DecimalMax("500.0")
     private BigDecimal price;
 
+    private boolean deleted = false;
+
     @ElementCollection(targetClass = SizeCode.class, fetch = FetchType.EAGER)
     @JoinTable(name = "product_size", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "size", nullable = false)
@@ -99,6 +101,14 @@ public class Product extends AbstractAuditingEntity implements Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Set<SizeCode> getSizes() {

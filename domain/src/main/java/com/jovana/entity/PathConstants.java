@@ -30,6 +30,7 @@ public final class PathConstants {
     public static final String PRODUCT = "/product";
     public static final String PRODUCT_ADD = PRODUCT;
     public static final String PRODUCT_UPDATE = PRODUCT + "/update/" + PH_PRODUCT_ID;
+    public static final String PRODUCT_DELETE = PRODUCT + "/delete/" + PH_PRODUCT_ID;
     public static final String PRODUCT_STOCK_UPDATE = PRODUCT + "/update-stock/" + PH_PRODUCT_ID;
 
     // product images

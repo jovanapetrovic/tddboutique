@@ -145,4 +145,28 @@ public class ProductServiceImplIT extends AbstractTest {
         }
     }
 
+    @DisplayName("When we want to delete product")
+    @Nested
+    class DeleteProductTest {
+
+        private final Long TEST_PRODUCT_ID = 13L;
+
+        @WithMockCustomUser(username = "admin", authorities = {"ROLE_ADMIN"})
+        @DisplayName("Then product is delete when valid product id is passed")
+        @Test
+        public void testDeleteProductSuccess() {
+            // exercise
+            boolean isDeleted = productService.deleteProduct(TEST_PRODUCT_ID);
+
+            // verify
+            Product deletedProduct = productService.getProductById(TEST_PRODUCT_ID);
+
+            assertAll("Verify deleted product",
+                    () -> assertTrue(isDeleted),
+                    () -> assertTrue(deletedProduct.isDeleted()),
+                    () -> assertEquals(0l, deletedProduct.getStock().getNumberOfUnitsInStock())
+        );
+        }
+    }
+
 }

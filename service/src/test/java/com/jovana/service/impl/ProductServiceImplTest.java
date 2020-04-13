@@ -4,6 +4,7 @@ import com.jovana.entity.product.Product;
 import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
+import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
@@ -208,11 +209,12 @@ public class ProductServiceImplTest {
                     () -> assertNotNull(updatedProduct.getStock()),
                     () -> assertEquals(updatedProduct.getStock().getNumberOfUnitsInStock(), updateProductRequest.getNumberOfUnitsInStock())
             );
+            verify(productRepository, times(1)).save(any(Product.class));
         }
 
         @DisplayName("Then Product is updated when ProductRequest is valid")
         @Test
-        public void testUpdateProductSuccess1() {
+        public void testUpdateProductSuccessWhenNameIsUpdatedToo() {
             // prepare
             updateProductRequest.setName("Evening silk dress");
             eveningDressProductUpdated.setName("Evening silk dress");
@@ -230,6 +232,36 @@ public class ProductServiceImplTest {
                     () -> assertNotNull(updatedProduct.getName()),
                     () -> assertEquals(updatedProduct.getName(), updateProductRequest.getName())
             );
+            verify(productRepository, times(1)).save(any(Product.class));
+        }
+
+    }
+
+    @DisplayName("When we want to delete Product")
+    @Nested
+    class DeleteProductTest {
+
+        private final Long TEST_PRODUCT_ID = 12L;
+
+        @DisplayName("Then Product is deleted when valid product id is passed")
+        @Test
+        public void testDeleteProductSuccess() {
+            // prepare
+            Product deletedProduct = TestDataProvider.getProducts().get("deletedProduct");
+
+            when(productRepository.findById(anyLong())).thenReturn(Optional.of(mock(Product.class)));
+            when(productRepository.save(any(Product.class))).thenReturn(deletedProduct);
+
+            // execute
+            boolean isDeleted = productService.deleteProduct(TEST_PRODUCT_ID);
+
+            // verify
+            assertAll("Verify updated product",
+                    () -> assertTrue(isDeleted),
+                    () -> assertTrue(deletedProduct.isDeleted()),
+                    () -> assertEquals(0L, deletedProduct.getStock().getNumberOfUnitsInStock())
+            );
+            verify(productRepository, times(1)).save(any(Product.class));
         }
 
     }
