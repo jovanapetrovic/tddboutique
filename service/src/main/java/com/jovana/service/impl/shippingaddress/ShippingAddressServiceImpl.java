@@ -1,17 +1,18 @@
 package com.jovana.service.impl.shippingaddress;
 
+import com.google.common.collect.Sets;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
+import com.jovana.entity.shippingaddress.dto.ShippingAddressResponse;
 import com.jovana.entity.shippingaddress.exception.InvalidPhoneNumberException;
 import com.jovana.entity.user.User;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.exception.ValueMustNotBeNullOrEmptyException;
 import com.jovana.repositories.shippingaddress.ShippingAddressRepository;
 import com.jovana.service.impl.user.UserService;
-import com.jovana.service.security.IsAdmin;
 import com.jovana.service.security.IsAdminOrUser;
 import com.jovana.service.security.IsUser;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by jovana on 31.03.2020
@@ -88,6 +90,17 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
 
         ShippingAddress updatedShippingAddress = shippingAddressRepository.save(shippingAddress);
         return updatedShippingAddress.getId();
+    }
+
+    @Override
+    public Set<ShippingAddressResponse> viewAllShippingAddresses(Long userId) {
+        Set<ShippingAddress> shippingAddresses = shippingAddressRepository.findAllByUserId(userId);
+        Set<ShippingAddressResponse> shippingAddressResponses = Sets.newHashSet();
+        for (ShippingAddress shippingAddress : shippingAddresses) {
+            shippingAddressResponses.add(ShippingAddressResponse.createFromShippingAddress(shippingAddress));
+        }
+        LOGGER.debug("Found {} shipping address for user with id = {}.", shippingAddressResponses.size(), userId);
+        return shippingAddressResponses;
     }
 
     private ShippingAddressRequest validateFirstAndLastName(Long userId, ShippingAddressRequest shippingAddressRequest) {

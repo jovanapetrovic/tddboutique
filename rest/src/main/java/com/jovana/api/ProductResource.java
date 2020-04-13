@@ -130,7 +130,7 @@ public class ProductResource {
     }
 
     @GetMapping(value = PathConstants.PRODUCT_VIEW_ALL)
-    public ResponseEntity<Set<ProductResponse>> viewOneProductGET() {
+    public ResponseEntity<Set<ProductResponse>> viewAllProductsGET() {
         Set<ProductResponse> productResponses = productService.viewAllProducts();
         return new ResponseEntity<>(productResponses, HttpStatus.OK);
     }

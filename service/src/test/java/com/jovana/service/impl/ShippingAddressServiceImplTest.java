@@ -1,7 +1,14 @@
 package com.jovana.service.impl;
 
+import com.jovana.entity.product.Product;
+import com.jovana.entity.product.Stock;
+import com.jovana.entity.product.dto.ProductResponse;
+import com.jovana.entity.product.image.Image;
+import com.jovana.entity.product.image.ImageType;
+import com.jovana.entity.shippingaddress.Phone;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
+import com.jovana.entity.shippingaddress.dto.ShippingAddressResponse;
 import com.jovana.entity.shippingaddress.exception.InvalidPhoneNumberException;
 import com.jovana.entity.user.User;
 import com.jovana.exception.EntityNotFoundException;
@@ -16,9 +23,11 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -42,6 +51,7 @@ public class ShippingAddressServiceImplTest {
 
         private final Long TEST_SHIPPING_ADDRESS_ID = 10L;
         private final Long SHIPPING_ADDRESS_ID_NOT_EXISTS = 9999L;
+        private final Long TEST_USER_ID = 10L;
 
         @DisplayName("Then ShippingAddress is fetched from database when id is valid")
         @Test
@@ -62,6 +72,28 @@ public class ShippingAddressServiceImplTest {
             // verify
             assertThrows(EntityNotFoundException.class,
                     () -> shippingAddressService.getUserShippingAddressById(SHIPPING_ADDRESS_ID_NOT_EXISTS), "ShippingAddress with id=" + SHIPPING_ADDRESS_ID_NOT_EXISTS + " doesn't exist");
+        }
+
+        @DisplayName("Then all user's shipping addresses are fetched from database if there are any")
+        @Test
+        public void testViewAllShippingAddressesSuccess() {
+            // prepare
+            ShippingAddress shipAddressMock1 = mock(ShippingAddress.class);
+            ShippingAddress shipAddressMock2 = mock(ShippingAddress.class);
+            Set<ShippingAddress> shippingAddresses = Sets.newSet(shipAddressMock1, shipAddressMock2);
+
+            when(shippingAddressRepository.findAllByUserId(TEST_USER_ID)).thenReturn(shippingAddresses);
+
+            Phone phoneMock = mock(Phone.class);
+            when(shipAddressMock1.getPhone()).thenReturn(phoneMock);
+            when(shipAddressMock2.getPhone()).thenReturn(phoneMock);
+
+            // exercise
+            Set<ShippingAddressResponse> shippingAddressResponses = shippingAddressService.viewAllShippingAddresses(TEST_USER_ID);
+
+            // verify
+            assertNotNull(shippingAddressResponses);
+            assertEquals(2, shippingAddressResponses.size());
         }
     }
 

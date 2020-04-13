@@ -64,6 +64,7 @@ public class ProductServiceImplIT extends AbstractTest {
 
             assertAll("Verify product response",
                     () -> assertNotNull(productResponse),
+                    () -> assertNotNull(productResponse.getId()),
                     () -> assertNotNull(productResponse.getName()),
                     () -> assertEquals(productResponse.getName(), product.getName()),
                     () -> assertNotNull(productResponse.getMaterial()),

@@ -1,8 +1,6 @@
 package com.jovana.entity.product.dto;
 
-import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
-import com.jovana.entity.product.SizeCode;
 import com.jovana.entity.product.image.dto.ImageResponse;
 
 import java.math.BigDecimal;
@@ -12,6 +10,8 @@ import java.util.List;
  * Created by jovana on 13.04.2020
  */
 public class ProductResponse {
+
+    private Long id;
 
     private String name;
 
@@ -26,11 +26,20 @@ public class ProductResponse {
 
     public static ProductResponse createFromProduct(Product product, List<ImageResponse> imageResponses) {
         ProductResponse response = new ProductResponse();
+        response.setId(product.getId());
         response.setName(product.getName());
         response.setPrice(product.getPrice());
         response.setInStock(product.getStock().getNumberOfUnitsInStock() > 0);
         response.setImages(imageResponses);
         return response;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

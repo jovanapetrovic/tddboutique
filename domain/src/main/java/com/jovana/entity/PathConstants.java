@@ -25,6 +25,7 @@ public final class PathConstants {
     public static final String SHIPPING_ADDRESS = "/shipping-address";
     public static final String SHIPPING_ADDRESS_ADD = SHIPPING_ADDRESS + SEPARATOR + PH_USER_ID;
     public static final String SHIPPING_ADDRESS_UPDATE = SHIPPING_ADDRESS + "/update/" + PH_SHIPPING_ADDRESS_ID;
+    public static final String SHIPPING_ADDRESS_VIEW_ALL = "/shipping-addresses/" + PH_USER_ID;
 
     // product
     public static final String PRODUCT = "/product";

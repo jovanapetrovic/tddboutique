@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class ProductFullResponse {
 
+    private Long id;
+
     private String name;
 
     private String material;
@@ -34,6 +36,7 @@ public class ProductFullResponse {
 
     public static ProductFullResponse createFromProduct(Product product, List<ImageResponse> imageResponses) {
         ProductFullResponse response = new ProductFullResponse();
+        response.setId(product.getId());
         response.setName(product.getName());
         response.setMaterial(product.getMaterial());
         response.setDescription(product.getDescription());
@@ -43,6 +46,14 @@ public class ProductFullResponse {
         response.setInStock(product.getStock().getNumberOfUnitsInStock() > 0);
         response.setImages(imageResponses);
         return response;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
