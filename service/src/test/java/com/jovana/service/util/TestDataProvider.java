@@ -117,7 +117,7 @@ public class TestDataProvider {
         casualDressProduct.setStock(70L);
 
         Product eveningDressProduct = new Product();
-        eveningDressProduct.setId(10L);
+        eveningDressProduct.setId(11L);
         eveningDressProduct.setName("Evening dress");
         eveningDressProduct.setMaterial("cotton, polyester");
         eveningDressProduct.setDescription("A beautiful evening dress");
@@ -126,8 +126,19 @@ public class TestDataProvider {
         eveningDressProduct.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.COLORFUL));
         eveningDressProduct.setStock(1L);
 
+        Product eveningDressUpdate = new Product();
+        eveningDressUpdate.setId(11L);
+        eveningDressUpdate.setName("Evening dress");
+        eveningDressUpdate.setMaterial("silk");
+        eveningDressUpdate.setDescription("An elegant silk dress");
+        eveningDressUpdate.setPrice(new BigDecimal("50.00"));
+        eveningDressUpdate.setSizes(Sets.newHashSet(SizeCode.S, SizeCode.M, SizeCode.L, SizeCode.XL));
+        eveningDressUpdate.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.COLORFUL));
+        eveningDressUpdate.setStock(100L);
+
         products.put("casualDress", casualDressProduct);
         products.put("eveningDress", eveningDressProduct);
+        products.put("eveningDressUpdate", eveningDressUpdate);
 
         return products;
     }

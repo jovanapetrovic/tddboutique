@@ -8,6 +8,7 @@ import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
+import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
@@ -63,6 +64,27 @@ public class ProductServiceImpl implements ProductService {
 
         Product newProduct = productRepository.save(product);
         return newProduct.getId();
+    }
+
+    @IsAdmin
+    @Override
+    public Long updateProduct(Long productId, ProductRequest productRequest) {
+        Product product = getProductById(productId);
+
+        if (!product.getName().equals(productRequest.getName())) {
+            validateProductName(productRequest.getName());
+        }
+
+        product.setName(productRequest.getName());
+        product.setMaterial(productRequest.getMaterial());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setSizes(SizeCode.getSizeCodesFromSizeStrings(productRequest.getSizes()));
+        product.setColors(ColorCode.getColorCodesFromColorStrings(productRequest.getColors()));
+        product.setStock(productRequest.getNumberOfUnitsInStock());
+
+        Product updatedProduct = productRepository.save(product);
+        return updatedProduct.getId();
     }
 
     @IsAdmin

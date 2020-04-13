@@ -51,7 +51,7 @@ public class ImageStorageServiceImplTest {
     @Nested
     class AddProductImageTest {
 
-        private final Long PRODUCT_ID_EXISTS = 10L;
+        private final Long TEST_PRODUCT_ID = 10L;
         private final Long PRODUCT_ID_NOT_EXISTS = 9999L;
         private final Long IMAGE_ID = 10L;
         private final String IMAGE_NAME = "test.png";
@@ -81,7 +81,7 @@ public class ImageStorageServiceImplTest {
         @Test
         public void testAddImageSuccess() throws Exception {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
 
             when(imageFileMock.getOriginalFilename()).thenReturn(IMAGE_NAME);
             when(imageFileMock.getContentType()).thenReturn(IMAGE_CONTENT_TYPE);
@@ -95,7 +95,7 @@ public class ImageStorageServiceImplTest {
             when(imageRepository.findById(any(Long.class))).thenReturn(Optional.of(image));
 
             // exercise
-            String imageName = imageStorageService.addAndStoreImage(PRODUCT_ID_EXISTS, imageFileMock);
+            String imageName = imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock);
 
             // verify
             Image newImage = imageRepository.findById(IMAGE_ID).get();
@@ -104,8 +104,8 @@ public class ImageStorageServiceImplTest {
                     () -> assertNotNull(newImage),
                     () -> assertNotNull(newImage.getId()),
                     () -> assertNotNull(newImage.getProduct()),
-                    () -> assertEquals(PRODUCT_ID_EXISTS, image.getProduct().getId()),
-                    () -> assertEquals(PRODUCT_ID_EXISTS + "_" + IMAGE_NAME, image.getName()),
+                    () -> assertEquals(TEST_PRODUCT_ID, image.getProduct().getId()),
+                    () -> assertEquals(TEST_PRODUCT_ID + "_" + IMAGE_NAME, image.getName()),
                     () -> assertEquals(IMAGE_CONTENT_TYPE, image.getType().getType()),
                     () -> assertNotNull(image.getSize())
             );
@@ -116,7 +116,7 @@ public class ImageStorageServiceImplTest {
         @Test
         public void testAddImageSuccessAndImageEntityAlreadyExists() throws Exception {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
 
             when(imageFileMock.getOriginalFilename()).thenReturn(IMAGE_NAME);
             when(imageFileMock.getContentType()).thenReturn(IMAGE_CONTENT_TYPE);
@@ -127,7 +127,7 @@ public class ImageStorageServiceImplTest {
             when(imageRepository.findById(any(Long.class))).thenReturn(Optional.of(image));
 
             // exercise
-            String imageName = imageStorageService.addAndStoreImage(PRODUCT_ID_EXISTS, imageFileMock);
+            String imageName = imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock);
 
             // verify
             Image newImage = imageRepository.findById(IMAGE_ID).get();
@@ -136,8 +136,8 @@ public class ImageStorageServiceImplTest {
                     () -> assertNotNull(newImage),
                     () -> assertNotNull(newImage.getId()),
                     () -> assertNotNull(newImage.getProduct()),
-                    () -> assertEquals(PRODUCT_ID_EXISTS, image.getProduct().getId()),
-                    () -> assertEquals(PRODUCT_ID_EXISTS + "_" + IMAGE_NAME, image.getName()),
+                    () -> assertEquals(TEST_PRODUCT_ID, image.getProduct().getId()),
+                    () -> assertEquals(TEST_PRODUCT_ID + "_" + IMAGE_NAME, image.getName()),
                     () -> assertEquals(IMAGE_CONTENT_TYPE, image.getType().getType()),
                     () -> assertNotNull(image.getSize())
             );
@@ -160,12 +160,12 @@ public class ImageStorageServiceImplTest {
         @Test
         public void testAddImageFailsWhenImageNameIsInvalid() throws Exception {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
             when(imageFileMock.getOriginalFilename()).thenReturn(IMAGE_NAME_WRONG);
 
             // verify
             assertThrows(ImageStorageException.class,
-                    () -> imageStorageService.addAndStoreImage(PRODUCT_ID_EXISTS, imageFileMock), "Image name is invalid");
+                    () -> imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock), "Image name is invalid");
             verify(imageRepository, times(0)).save(any(Image.class));
         }
 
@@ -173,13 +173,13 @@ public class ImageStorageServiceImplTest {
         @Test
         public void testAddImageFailsWhenNonImageFileIsPassed() throws Exception {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
             when(imageFileMock.getOriginalFilename()).thenReturn(IMAGE_NAME);
             when(imageFileMock.getContentType()).thenReturn(IMAGE_CONTENT_TYPE_WRONG);
 
             // verify
             assertThrows(ImageStorageException.class,
-                    () -> imageStorageService.addAndStoreImage(PRODUCT_ID_EXISTS, imageFileMock), "Only image files allowed");
+                    () -> imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock), "Only image files allowed");
             verify(imageRepository, times(0)).save(any(Image.class));
         }
 
@@ -187,7 +187,7 @@ public class ImageStorageServiceImplTest {
         @Test
         public void testAddImageFailsWhenStoreImageFails() throws Exception {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
 
             when(imageFileMock.getOriginalFilename()).thenReturn(IMAGE_NAME);
             when(imageFileMock.getContentType()).thenReturn(IMAGE_CONTENT_TYPE);
@@ -195,7 +195,7 @@ public class ImageStorageServiceImplTest {
 
             // verify
             assertThrows(ImageStorageException.class,
-                    () -> imageStorageService.addAndStoreImage(PRODUCT_ID_EXISTS, imageFileMock), "Failed to store image");
+                    () -> imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock), "Failed to store image");
             verify(imageRepository, times(0)).save(any(Image.class));
         }
 
@@ -205,7 +205,7 @@ public class ImageStorageServiceImplTest {
     @Nested
     class GetProductImageTest {
 
-        private final Long PRODUCT_ID_EXISTS = 11L;
+        private final Long TEST_PRODUCT_ID = 11L;
         private final Long PRODUCT_ID_NOT_EXISTS = 9999L;
         private final String IMAGE_NAME = "11_test.png";
         private final String IMAGE_NAME_NOT_EXISTS = "9999_test.png";
@@ -237,11 +237,11 @@ public class ImageStorageServiceImplTest {
         @Test
         public void testGetImageSuccess() {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
             when(imageRepository.findByProductIdAndName(anyLong(), anyString())).thenReturn(imageMock);
 
             // exercise
-            Resource resource = imageStorageService.getAndLoadImageAsResource(PRODUCT_ID_EXISTS, IMAGE_NAME);
+            Resource resource = imageStorageService.getAndLoadImageAsResource(TEST_PRODUCT_ID, IMAGE_NAME);
 
             // verify
             assertNotNull(resource);
@@ -262,24 +262,24 @@ public class ImageStorageServiceImplTest {
         @Test
         public void testGetImageFailsWhenImageDoesntExistInDb() throws Exception {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
             when(imageRepository.findByProductIdAndName(anyLong(), anyString())).thenReturn(null);
 
             // verify
             assertThrows(ImageNotFoundException.class,
-                    () -> imageStorageService.getAndLoadImageAsResource(PRODUCT_ID_EXISTS, IMAGE_NAME), "Image doesn't exist in db");
+                    () -> imageStorageService.getAndLoadImageAsResource(TEST_PRODUCT_ID, IMAGE_NAME), "Image doesn't exist in db");
         }
 
         @DisplayName("Then get image fails when image file doesn't exist")
         @Test
         public void testGetImageFailsWhenImageFileDoesntExist() {
             // prepare
-            when(productService.getProductById(PRODUCT_ID_EXISTS)).thenReturn(productMock);
+            when(productService.getProductById(TEST_PRODUCT_ID)).thenReturn(productMock);
             when(imageRepository.findByProductIdAndName(anyLong(), anyString())).thenReturn(imageMock);
 
             // verify
             assertThrows(ImageNotFoundException.class,
-                    () -> imageStorageService.getAndLoadImageAsResource(PRODUCT_ID_EXISTS, IMAGE_NAME_NOT_EXISTS), "Image file doesn't exist");
+                    () -> imageStorageService.getAndLoadImageAsResource(TEST_PRODUCT_ID, IMAGE_NAME_NOT_EXISTS), "Image file doesn't exist");
         }
 
     }

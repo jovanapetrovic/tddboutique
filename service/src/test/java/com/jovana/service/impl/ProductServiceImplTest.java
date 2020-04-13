@@ -1,7 +1,6 @@
 package com.jovana.service.impl;
 
 import com.jovana.entity.product.Product;
-import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
@@ -46,7 +45,7 @@ public class ProductServiceImplTest {
     @Nested
     class GetProductTest {
 
-        private final Long PRODUCT_ID_EXISTS = 10L;
+        private final Long TEST_PRODUCT_ID = 10L;
         private final Long PRODUCT_ID_NOT_EXISTS = 9999L;
 
         @DisplayName("Then Product is fetched from database when id is valid")
@@ -55,7 +54,7 @@ public class ProductServiceImplTest {
             // prepare
             when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(Product.class)));
             // exercise
-            Product product = productService.getProductById(PRODUCT_ID_EXISTS);
+            Product product = productService.getProductById(TEST_PRODUCT_ID);
             // verify
             assertNotNull(product, "Product is null");
         }
@@ -80,10 +79,7 @@ public class ProductServiceImplTest {
 
         @BeforeEach
         void setUp() {
-            // set requests
             casualDressRequest = RequestTestDataProvider.getProductRequests().get("casualDress");
-
-            // set products
             casualDressProduct = TestDataProvider.getProducts().get("casualDress");
         }
 
@@ -140,7 +136,7 @@ public class ProductServiceImplTest {
 
         @DisplayName("Then Stock is updated when request is valid")
         @Test
-        public void testUpdateProductStock() {
+        public void testUpdateProductStockSuccess() {
             // prepare
             final Long TEST_PRODUCT_ID = 10L;
             UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
@@ -161,6 +157,79 @@ public class ProductServiceImplTest {
                     () -> assertEquals(updateStockRequest.getNumberOfUnitsInStock(), numberOfProductsInStock)
             );
             verify(productRepository, times(1)).save(any(Product.class));
+        }
+
+    }
+
+    @DisplayName("When we want to update Product")
+    @Nested
+    class UpdateProductTest {
+
+        private final Long TEST_PRODUCT_ID = 11L;
+
+        private ProductRequest updateProductRequest;
+        private Product eveningDressProduct;
+        private Product eveningDressProductUpdated;
+
+        @BeforeEach
+        void setUp() {
+            updateProductRequest = RequestTestDataProvider.getProductRequests().get("updateRequest");
+
+            eveningDressProduct = TestDataProvider.getProducts().get("eveningDress");
+            eveningDressProductUpdated = TestDataProvider.getProducts().get("eveningDressUpdate");
+        }
+
+        @DisplayName("Then Product is updated when ProductRequest is valid")
+        @Test
+        public void testUpdateProductSuccess() {
+            // prepare
+            when(productRepository.findById(anyLong())).thenReturn(Optional.of(eveningDressProduct));
+            when(productRepository.save(any(Product.class))).thenReturn(eveningDressProductUpdated);
+
+            // execute
+            productService.updateProduct(TEST_PRODUCT_ID, updateProductRequest);
+
+            // verify
+            Product updatedProduct = productService.getProductById(TEST_PRODUCT_ID);
+
+            assertAll("Verify updated product",
+                    () -> assertNotNull(updatedProduct.getName()),
+                    () -> assertEquals(updatedProduct.getName(), updateProductRequest.getName()),
+                    () -> assertNotNull(updatedProduct.getMaterial()),
+                    () -> assertEquals(updatedProduct.getMaterial(), updateProductRequest.getMaterial()),
+                    () -> assertNotNull(updatedProduct.getDescription()),
+                    () -> assertEquals(updatedProduct.getDescription(), updateProductRequest.getDescription()),
+                    () -> assertNotNull(updatedProduct.getPrice()),
+                    () -> assertEquals(updatedProduct.getPrice(), updateProductRequest.getPrice()),
+                    () -> assertNotNull(updatedProduct.getSizes()),
+                    () -> assertEquals(updatedProduct.getSizes().size(), updateProductRequest.getSizes().size()),
+                    () -> assertNotNull(updatedProduct.getColors()),
+                    () -> assertEquals(updatedProduct.getColors().size(), updateProductRequest.getColors().size()),
+                    () -> assertNotNull(updatedProduct.getStock()),
+                    () -> assertEquals(updatedProduct.getStock().getNumberOfUnitsInStock(), updateProductRequest.getNumberOfUnitsInStock())
+            );
+        }
+
+        @DisplayName("Then Product is updated when ProductRequest is valid")
+        @Test
+        public void testUpdateProductSuccess1() {
+            // prepare
+            updateProductRequest.setName("Evening silk dress");
+            eveningDressProductUpdated.setName("Evening silk dress");
+
+            when(productRepository.findById(anyLong())).thenReturn(Optional.of(eveningDressProduct));
+            when(productRepository.save(any(Product.class))).thenReturn(eveningDressProductUpdated);
+
+            // execute
+            productService.updateProduct(TEST_PRODUCT_ID, updateProductRequest);
+
+            // verify
+            Product updatedProduct = productService.getProductById(TEST_PRODUCT_ID);
+
+            assertAll("Verify updated product",
+                    () -> assertNotNull(updatedProduct.getName()),
+                    () -> assertEquals(updatedProduct.getName(), updateProductRequest.getName())
+            );
         }
 
     }

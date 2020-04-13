@@ -13,6 +13,8 @@ public interface ProductService {
 
     Long addProduct(ProductRequest productRequest);
 
+    Long updateProduct(Long productId, ProductRequest productRequest);
+
     Long updateProductStock(Long productId, UpdateStockRequest updateStockRequest);
 
 }

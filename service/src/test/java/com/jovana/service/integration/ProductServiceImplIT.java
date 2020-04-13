@@ -3,6 +3,8 @@ package com.jovana.service.integration;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.UpdateStockRequest;
+import com.jovana.entity.shippingaddress.ShippingAddress;
+import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
 import com.jovana.service.impl.product.ProductService;
@@ -39,9 +41,9 @@ public class ProductServiceImplIT extends AbstractTest {
         @Test
         public void testGetProductById() {
             // prepare
-            Long PRODUCT_ID_EXISTS = 10L;
+            Long TEST_PRODUCT_ID = 10L;
             // exercise
-            Product product = productService.getProductById(PRODUCT_ID_EXISTS);
+            Product product = productService.getProductById(TEST_PRODUCT_ID);
             // verify
             assertNotNull(product, "Product is null");
             assertNotNull(product.getStock(), "Stock is null");
@@ -90,12 +92,13 @@ public class ProductServiceImplIT extends AbstractTest {
     @Nested
     class UpdateProductStockTest {
 
+        private final Long TEST_PRODUCT_ID = 11L;
+
         @WithMockCustomUser(username = "admin", authorities = {"ROLE_ADMIN"})
         @DisplayName("Then product is created when valid ProductRequest is passed")
         @Test
         public void testUpdateProductStockSuccess() {
             // prepare
-            Long TEST_PRODUCT_ID = 11L;
             UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
 
             Product productBefore = productService.getProductById(TEST_PRODUCT_ID);
@@ -108,6 +111,37 @@ public class ProductServiceImplIT extends AbstractTest {
             Product productAfter = productService.getProductById(TEST_PRODUCT_ID);
             assertEquals(updateStockRequest.getNumberOfUnitsInStock(), productAfter.getStock().getNumberOfUnitsInStock());
             assertEquals(updateStockRequest.getNumberOfUnitsInStock(), numberOfProductsInStock);
+        }
+    }
+
+    @DisplayName("When we want to update product")
+    @Nested
+    class UpdateProductTest {
+
+        private final Long TEST_PRODUCT_ID = 12L;
+
+        @WithMockCustomUser(username = "admin", authorities = {"ROLE_ADMIN"})
+        @DisplayName("Then product is updated when valid ProductRequest is passed")
+        @Test
+        public void testUpdateProductSuccess() {
+            // prepare
+            ProductRequest updateProductRequest = RequestTestDataProvider.getProductRequests().get("updateRequest");
+
+            // exercise
+            productService.updateProduct(TEST_PRODUCT_ID, updateProductRequest);
+
+            // verify
+            Product updatedProduct = productService.getProductById(TEST_PRODUCT_ID);
+
+            assertAll("Verify updated product",
+                    () -> assertEquals(updatedProduct.getName(), updateProductRequest.getName()),
+                    () -> assertEquals(updatedProduct.getMaterial(), updateProductRequest.getMaterial()),
+                    () -> assertEquals(updatedProduct.getDescription(), updateProductRequest.getDescription()),
+                    () -> assertEquals(updatedProduct.getPrice(), updateProductRequest.getPrice()),
+                    () -> assertEquals(updatedProduct.getSizes().size(), updateProductRequest.getSizes().size()),
+                    () -> assertEquals(updatedProduct.getColors().size(), updateProductRequest.getColors().size()),
+                    () -> assertEquals(updatedProduct.getStock().getNumberOfUnitsInStock(), updateProductRequest.getNumberOfUnitsInStock())
+            );
         }
     }
 

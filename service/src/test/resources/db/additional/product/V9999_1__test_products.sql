@@ -35,3 +35,20 @@ INSERT INTO stock (product_id, units, created_by, created_date) VALUES
 
 ------------------------------------------------------------------------------------------------------------------------
 
+INSERT INTO product (id, name, material, description, price, created_by, created_date) VALUES
+('12', 'Evening dress', 'cotton, polyester', 'A beautiful evening dress', '45.00', 'system', now());
+
+INSERT INTO product_color (product_id, color) VALUES
+('12', 'BLACK'),
+('12', 'COLORFUL');
+
+INSERT INTO product_size (product_id, size) VALUES
+('12', 'S'),
+('12', 'M'),
+('12', 'L'),
+('12', 'XL');
+
+INSERT INTO stock (product_id, units, created_by, created_date) VALUES
+('12', 1, 'system', now());
+
+------------------------------------------------------------------------------------------------------------------------

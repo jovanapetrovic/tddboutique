@@ -40,7 +40,7 @@ public class ShippingAddressServiceImplTest {
     @Nested
     class GetShippingAddressTest {
 
-        private final Long SHIPPING_ADDRESS_ID_EXISTS = 10L;
+        private final Long TEST_SHIPPING_ADDRESS_ID = 10L;
         private final Long SHIPPING_ADDRESS_ID_NOT_EXISTS = 9999L;
 
         @DisplayName("Then ShippingAddress is fetched from database when id is valid")
@@ -49,7 +49,7 @@ public class ShippingAddressServiceImplTest {
             // prepare
             when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(ShippingAddress.class)));
             // exercise
-            ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(SHIPPING_ADDRESS_ID_EXISTS);
+            ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(TEST_SHIPPING_ADDRESS_ID);
             // verify
             assertNotNull(shippingAddress, "ShippingAddress is null");
         }
@@ -83,15 +83,12 @@ public class ShippingAddressServiceImplTest {
 
         @BeforeEach
         void setUp() {
-            // set requests
             shippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("john");
             shippingAddressRequestWithoutNames = RequestTestDataProvider.getShippingAddressRequests().get("noNames");
 
-            // set users
             johnUser = TestDataProvider.getUsers().get("john");
             janeUser = TestDataProvider.getUsers().get("jane");
 
-            // set shipping addresses
             johnShippingAddress = TestDataProvider.getShippingAddresses().get("john");
             janeShippingAddress = TestDataProvider.getShippingAddresses().get("jane");
         }
@@ -258,10 +255,7 @@ public class ShippingAddressServiceImplTest {
 
         @BeforeEach
         void setUp() {
-            // set requests
             updateShippingAddressRequest = RequestTestDataProvider.getShippingAddressRequests().get("updateRequest");
-
-            // set shipping addresses
             johnShippingAddress = TestDataProvider.getShippingAddresses().get("john");
             johnUpdatedShippingAddress = TestDataProvider.getShippingAddresses().get("johnUpdate");
         }

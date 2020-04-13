@@ -2,6 +2,9 @@ package com.jovana.service.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.jovana.entity.product.ColorCode;
+import com.jovana.entity.product.Product;
+import com.jovana.entity.product.SizeCode;
 import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
@@ -85,7 +88,17 @@ public class RequestTestDataProvider {
         casualDressRequest.setColors(Lists.newArrayList("BLACK", "RED"));
         casualDressRequest.setNumberOfUnitsInStock(70L);
 
+        ProductRequest eveningDressUpdate = new ProductRequest();
+        eveningDressUpdate.setName("Evening dress");
+        eveningDressUpdate.setMaterial("silk");
+        eveningDressUpdate.setDescription("An elegant silk dress");
+        eveningDressUpdate.setPrice(new BigDecimal("50.00"));
+        eveningDressUpdate.setSizes(Lists.newArrayList("S", "M", "L", "XL"));
+        eveningDressUpdate.setColors(Lists.newArrayList("BLACK", "RED"));
+        eveningDressUpdate.setNumberOfUnitsInStock(100L);
+
         productRequests.put("casualDress", casualDressRequest);
+        productRequests.put("updateRequest", eveningDressUpdate);
 
         return productRequests;
     }

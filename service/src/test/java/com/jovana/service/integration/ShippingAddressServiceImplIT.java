@@ -32,9 +32,9 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
         @Test
         public void testGetShippingAddressById() {
             // prepare
-            Long SHIPPING_ADDRESS_ID_EXISTS = 10L;
+            Long TEST_SHIPPING_ADDRESS_ID = 10L;
             // exercise
-            ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(SHIPPING_ADDRESS_ID_EXISTS);
+            ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(TEST_SHIPPING_ADDRESS_ID);
             // verify
             assertNotNull(shippingAddress, "ShippingAddress is null");
         }

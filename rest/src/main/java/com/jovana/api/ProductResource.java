@@ -42,22 +42,24 @@ public class ProductResource {
 
     @PostMapping(value = PathConstants.PRODUCT_ADD)
     public ResponseEntity<Void> addProductPOST(@Valid @RequestBody ProductRequest productRequest) {
-
         productService.addProduct(productRequest);
-
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .build()
                 .toUri();
-
         return ResponseEntity.created(location).build();
+    }
+
+    @PutMapping(value = PathConstants.PRODUCT_UPDATE)
+    public ResponseEntity<Void> updateProductPUT(@PathVariable("productId") Long productId,
+                                                 @Valid @RequestBody ProductRequest productRequest) {
+        productService.updateProduct(productId, productRequest);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = PathConstants.PRODUCT_STOCK_UPDATE)
     public ResponseEntity<Void> updateProductStockPUT(@PathVariable("productId") Long productId,
                                                       @Valid @RequestBody UpdateStockRequest updateStockRequest) {
-
         productService.updateProductStock(productId, updateStockRequest);
-
         return ResponseEntity.ok().build();
     }
 
