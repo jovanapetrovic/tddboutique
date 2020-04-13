@@ -116,7 +116,18 @@ public class TestDataProvider {
         casualDressProduct.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.RED));
         casualDressProduct.setStock(70L);
 
+        Product eveningDressProduct = new Product();
+        eveningDressProduct.setId(10L);
+        eveningDressProduct.setName("Evening dress");
+        eveningDressProduct.setMaterial("cotton, polyester");
+        eveningDressProduct.setDescription("A beautiful evening dress");
+        eveningDressProduct.setPrice(new BigDecimal("45.00"));
+        eveningDressProduct.setSizes(Sets.newHashSet(SizeCode.S, SizeCode.M, SizeCode.L, SizeCode.XL));
+        eveningDressProduct.setColors(Sets.newHashSet(ColorCode.BLACK, ColorCode.COLORFUL));
+        eveningDressProduct.setStock(1L);
+
         products.put("casualDress", casualDressProduct);
+        products.put("eveningDress", eveningDressProduct);
 
         return products;
     }
@@ -135,18 +146,5 @@ public class TestDataProvider {
 
         return images;
     }
-    public static Map<String, Stock> getStocks() {
-        Map<String, Stock> images = new HashMap<>();
-
-        Stock casualDressStock = new Stock();
-        casualDressStock.setId(10L);
-        casualDressStock.setProduct(TestDataProvider.getProducts().get("casualDress"));
-        casualDressStock.setNumberOfUnitsInStock(50L);
-
-        images.put("casualDressStock", casualDressStock);
-
-        return images;
-    }
-
 
 }

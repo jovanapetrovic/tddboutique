@@ -122,7 +122,11 @@ public class Product extends AbstractAuditingEntity implements Serializable {
     }
 
     public void setStock(Long numberOfUnitsInStock) {
-        this.stock = new Stock(this, numberOfUnitsInStock);
+        if (this.stock == null) {
+            this.stock = new Stock(this, numberOfUnitsInStock);
+        } else {
+            this.stock.setNumberOfUnitsInStock(numberOfUnitsInStock);
+        }
     }
 
     public List<Image> getImages() {

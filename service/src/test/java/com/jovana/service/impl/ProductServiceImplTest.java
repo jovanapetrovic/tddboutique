@@ -143,57 +143,24 @@ public class ProductServiceImplTest {
         public void testUpdateProductStock() {
             // prepare
             final Long TEST_PRODUCT_ID = 10L;
-            Product casualDressProduct = TestDataProvider.getProducts().get("casualDress");
             UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
-            Stock casualDressStock = TestDataProvider.getStocks().get("casualDressStock");
+            Product eveningDressProductBefore = TestDataProvider.getProducts().get("eveningDress");
+            Product eveningDressProductAfter = TestDataProvider.getProducts().get("eveningDress");
+            eveningDressProductAfter.setStock(updateStockRequest.getNumberOfUnitsInStock());
 
-            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressProduct));
-            when(stockRepository.findByProductId(any(Long.class))).thenReturn(mock(Stock.class));
-            when(stockRepository.save(any(Stock.class))).thenReturn(casualDressStock);
-
-            when(stockRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressStock));
+            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(eveningDressProductBefore));
+            when(productRepository.save(any(Product.class))).thenReturn(eveningDressProductAfter);
 
             // exercise
-            Long stockId = productService.updateProductStock(TEST_PRODUCT_ID, updateStockRequest);
+            Long numberOfProductsInStock = productService.updateProductStock(TEST_PRODUCT_ID, updateStockRequest);
 
             // verify
-            Stock stockFound = stockRepository.findById(stockId).get();
 
             assertAll("Verify updated stock",
-                    () -> assertNotNull(stockFound),
-                    () -> assertEquals(TEST_PRODUCT_ID, stockFound.getProduct().getId()),
-                    () -> assertEquals(50L, stockFound.getNumberOfUnitsInStock())
+                    () -> assertNotNull(numberOfProductsInStock),
+                    () -> assertEquals(updateStockRequest.getNumberOfUnitsInStock(), numberOfProductsInStock)
             );
-            verify(stockRepository, times(1)).save(any(Stock.class));
-        }
-
-        @DisplayName("Then Stock is created and updated when request is valid")
-        @Test
-        public void testUpdateProductStockAndNewStockIsCreated() {
-            // prepare
-            final Long TEST_PRODUCT_ID = 10L;
-            Product casualDressProduct = TestDataProvider.getProducts().get("casualDress");
-            UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
-            Stock casualDressStock = TestDataProvider.getStocks().get("casualDressStock");
-
-            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressProduct));
-            when(stockRepository.findByProductId(any(Long.class))).thenReturn(null);
-            when(stockRepository.save(any(Stock.class))).thenReturn(casualDressStock);
-
-            when(stockRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressStock));
-
-            // exercise
-            Long stockId = productService.updateProductStock(TEST_PRODUCT_ID, updateStockRequest);
-
-            // verify
-            Stock stockFound = stockRepository.findById(stockId).get();
-
-            assertAll("Verify updated stock",
-                    () -> assertNotNull(stockFound),
-                    () -> assertEquals(TEST_PRODUCT_ID, stockFound.getProduct().getId()),
-                    () -> assertEquals(50L, stockFound.getNumberOfUnitsInStock())
-            );
-            verify(stockRepository, times(1)).save(any(Stock.class));
+            verify(productRepository, times(1)).save(any(Product.class));
         }
 
     }

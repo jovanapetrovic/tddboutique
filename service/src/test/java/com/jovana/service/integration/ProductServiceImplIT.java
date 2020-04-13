@@ -2,6 +2,7 @@ package com.jovana.service.integration;
 
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.dto.ProductRequest;
+import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
 import com.jovana.service.impl.product.ProductService;
@@ -82,6 +83,31 @@ public class ProductServiceImplIT extends AbstractTest {
                     () -> assertNotNull(newProduct.getStock()),
                     () -> assertEquals(newProduct.getStock().getNumberOfUnitsInStock(), productRequest.getNumberOfUnitsInStock())
             );
+        }
+    }
+
+    @DisplayName("When we want to add a new product")
+    @Nested
+    class UpdateProductStockTest {
+
+        @WithMockCustomUser(username = "admin", authorities = {"ROLE_ADMIN"})
+        @DisplayName("Then product is created when valid ProductRequest is passed")
+        @Test
+        public void testUpdateProductStockSuccess() {
+            // prepare
+            Long TEST_PRODUCT_ID = 11L;
+            UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
+
+            Product productBefore = productService.getProductById(TEST_PRODUCT_ID);
+            assertEquals(1L, productBefore.getStock().getNumberOfUnitsInStock());
+
+            // exercise
+            Long numberOfProductsInStock = productService.updateProductStock(TEST_PRODUCT_ID, updateStockRequest);
+
+            // verify
+            Product productAfter = productService.getProductById(TEST_PRODUCT_ID);
+            assertEquals(updateStockRequest.getNumberOfUnitsInStock(), productAfter.getStock().getNumberOfUnitsInStock());
+            assertEquals(updateStockRequest.getNumberOfUnitsInStock(), numberOfProductsInStock);
         }
     }
 

@@ -19,9 +19,11 @@ public enum ColorCode {
     BLUE("Blue"),
     GREEN("Green"),
     YELLOW("Yellow"),
+    BEIGE("Beige"),
     ORANGE("Orange"),
     BROWN("Brown"),
-    COLORFUL("Colorful");
+    COLORFUL("Colorful"),
+    OTHER("Other");
 
     private String code;
 

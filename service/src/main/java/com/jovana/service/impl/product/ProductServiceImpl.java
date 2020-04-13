@@ -65,17 +65,13 @@ public class ProductServiceImpl implements ProductService {
         return newProduct.getId();
     }
 
+    @IsAdmin
     @Override
     public Long updateProductStock(Long productId, UpdateStockRequest updateStockRequest) {
         Product product = getProductById(productId);
-        Stock stock = stockRepository.findByProductId(updateStockRequest.getNumberOfUnitsInStock());
-        if (stock != null) {
-            stock.setNumberOfUnitsInStock(updateStockRequest.getNumberOfUnitsInStock());
-        } else {
-            stock = new Stock(product, updateStockRequest.getNumberOfUnitsInStock());
-        }
-        Stock updatedStock = stockRepository.save(stock);
-        return updatedStock.getId();
+        product.setStock(updateStockRequest.getNumberOfUnitsInStock());
+        Product updatedProduct = productRepository.save(product);
+        return updatedProduct.getStock().getNumberOfUnitsInStock();
     }
 
     private void validateProductName(String name) {
