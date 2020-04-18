@@ -26,6 +26,11 @@ public enum ExceptionCode {
     IMAGE_STORAGE_EXCEPTION(1400),
     IMAGE_NOT_FOUND_EXCEPTION(1401),
 
+    // coupon
+    COUPON_ALREADY_REDEEMED(1500),
+    COUPON_EXPIRED(1501),
+    COUPON_EXPIRY_DATE_MUST_BE_IN_FUTURE(1502),
+
     ;
 
     private Integer code;

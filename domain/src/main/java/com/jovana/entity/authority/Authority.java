@@ -1,6 +1,5 @@
 package com.jovana.entity.authority;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,9 +15,8 @@ import java.io.Serializable;
 public class Authority implements Serializable {
 
     @NotNull
-    @Size(min = 0, max = 50)
+    @Size(max = 50)
     @Id
-    @Column(length = 50)
     private String name;
 
     private Authority() {

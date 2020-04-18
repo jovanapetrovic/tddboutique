@@ -14,21 +14,13 @@ import java.util.List;
 public class ProductFullResponse {
 
     private Long id;
-
     private String name;
-
     private String material;
-
     private String description;
-
     private BigDecimal price;
-
     private List<String> sizes;
-
     private List<String> colors;
-
     private boolean inStock;
-
     private List<ImageResponse> images;
 
     public ProductFullResponse() {

@@ -27,7 +27,7 @@
 
     <properties>
         <java-version>13</java-version>
-        <apache-commons-lang3-version>3.9</apache-commons-lang3-version>
+        <apache-commons-lang3-version>3.10</apache-commons-lang3-version>
         <google-guava-version>28.2-jre</google-guava-version>
         <google-libphonenumber-version>8.12.0</google-libphonenumber-version>
         <json-web-token-version>0.9.1</json-web-token-version>

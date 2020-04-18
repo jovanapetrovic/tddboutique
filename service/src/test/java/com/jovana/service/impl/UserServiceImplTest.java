@@ -45,25 +45,25 @@ public class UserServiceImplTest {
 
         @DisplayName("Then user is fetched from database when id is valid")
         @Test
-        public void testGetUserById() {
+        public void testGetUserByIdSuccess() {
             // prepare
-            Long testUserId = 10L;
+            Long TEST_USER_ID = 10L;
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(User.class)));
             // exercise
-            User newUser = userService.getUserById(testUserId);
+            User user = userService.getUserById(TEST_USER_ID);
             // verify
-            assertNotNull(newUser, "User is null");
+            assertNotNull(user, "User is null");
         }
 
         @DisplayName("Then error is thrown when user with passed id doesn't exist")
         @Test
         public void testGetUserByIdFailsWhenUserWithPassedIdDoesntExist() {
             // prepare
-            Long testUserId = 9999L;
+            Long TEST_USER_ID = 9999L;
             when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
             // verify
             assertThrows(EntityNotFoundException.class,
-                    () -> userService.getUserById(testUserId), "User with id=" + testUserId + " doesn't exist");
+                    () -> userService.getUserById(TEST_USER_ID), "User with id=" + TEST_USER_ID + " doesn't exist");
         }
     }
 

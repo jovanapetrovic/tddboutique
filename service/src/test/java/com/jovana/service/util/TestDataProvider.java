@@ -3,6 +3,9 @@ package com.jovana.service.util;
 import com.google.common.collect.Sets;
 import com.jovana.entity.authority.Authority;
 import com.jovana.entity.authority.AuthorityConstants;
+import com.jovana.entity.coupon.Coupon;
+import com.jovana.entity.coupon.CouponStatus;
+import com.jovana.entity.coupon.CouponValue;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
@@ -13,6 +16,7 @@ import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.user.User;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -168,6 +172,40 @@ public class TestDataProvider {
         images.put("casualDressImage", casualDressImage);
 
         return images;
+    }
+
+    public static Map<String, Coupon> getCoupons() {
+        Map<String, Coupon> coupons = new HashMap<>();
+
+        Coupon johnCoupon = new Coupon();
+        johnCoupon.setId(10L);
+        johnCoupon.setUser(TestDataProvider.getUsers().get("john"));
+        johnCoupon.setCode("ASDF5678asdf");
+        johnCoupon.setValue(CouponValue.COUPON_10);
+        johnCoupon.setStatus(CouponStatus.ACTIVE);
+        johnCoupon.setExpiryDate(LocalDateTime.now().plusDays(5));
+
+        Coupon redeemedCoupon = new Coupon();
+        redeemedCoupon.setId(11L);
+        redeemedCoupon.setUser(TestDataProvider.getUsers().get("john"));
+        redeemedCoupon.setCode("ASDF5678asdf");
+        redeemedCoupon.setValue(CouponValue.COUPON_10);
+        redeemedCoupon.setStatus(CouponStatus.REDEEMED);
+        redeemedCoupon.setExpiryDate(LocalDateTime.now().plusDays(5));
+
+        Coupon expiredCoupon = new Coupon();
+        expiredCoupon.setId(12L);
+        expiredCoupon.setUser(TestDataProvider.getUsers().get("john"));
+        expiredCoupon.setCode("1234aBaB56CD");
+        expiredCoupon.setValue(CouponValue.COUPON_20);
+        expiredCoupon.setStatus(CouponStatus.ACTIVE);
+        expiredCoupon.setExpiryDate(LocalDateTime.now().minusDays(5));
+
+        coupons.put("john", johnCoupon);
+        coupons.put("johnRedeemed", redeemedCoupon);
+        coupons.put("johnExpired", expiredCoupon);
+
+        return coupons;
     }
 
 }

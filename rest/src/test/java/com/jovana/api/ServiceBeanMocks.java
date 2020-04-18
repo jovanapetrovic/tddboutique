@@ -1,5 +1,6 @@
 package com.jovana.api;
 
+import com.jovana.service.impl.coupon.CouponService;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.impl.product.image.ImageStorageService;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
@@ -19,5 +20,7 @@ public class ServiceBeanMocks {
     private ProductService productService;
     @MockBean
     private ImageStorageService imageStorageService;
+    @MockBean
+    private CouponService couponService;
 
 }

@@ -12,13 +12,9 @@ import java.util.List;
 public class ProductResponse {
 
     private Long id;
-
     private String name;
-
     private BigDecimal price;
-
     private boolean inStock;
-
     private List<ImageResponse> images;
 
     public ProductResponse() {

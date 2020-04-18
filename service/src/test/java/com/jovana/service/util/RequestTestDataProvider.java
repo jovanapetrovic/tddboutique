@@ -2,6 +2,8 @@ package com.jovana.service.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.jovana.entity.coupon.CouponValue;
+import com.jovana.entity.coupon.dto.CouponRequest;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
@@ -11,6 +13,7 @@ import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.entity.user.dto.RegisterUserRequest;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,6 +115,19 @@ public class RequestTestDataProvider {
         stockRequests.put("updateStockRequest", updateStockRequest);
 
         return stockRequests;
+    }
+
+    public static Map<String, CouponRequest> getCouponRequests() {
+        Map<String, CouponRequest> couponRequests = new HashMap<>();
+
+        CouponRequest johnCoupon = new CouponRequest();
+        johnCoupon.setUserId(10L);
+        johnCoupon.setValue(CouponValue.COUPON_10.name());
+        johnCoupon.setExpiryDate(LocalDateTime.now().plusDays(5));
+
+        couponRequests.put("john", johnCoupon);
+
+        return couponRequests;
     }
 
 }

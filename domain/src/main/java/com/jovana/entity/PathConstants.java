@@ -7,6 +7,7 @@ public final class PathConstants {
     public static final String PH_SHIPPING_ADDRESS_ID = "{shippingAddressId}";
     public static final String PH_PRODUCT_ID = "{productId}";
     public static final String PH_IMAGE_NAME = "{imageName:.+}";
+    public static final String PH_COUPON_CODE = "{couponCode:.+}";
 
     // Syntax
     public static final String SEPARATOR = "/";
@@ -41,6 +42,12 @@ public final class PathConstants {
     public static final String UPLOAD_MULTIPLE_IMAGES = "/upload-multiple-images/" + PH_PRODUCT_ID;
     public static final String DOWNLOAD_IMAGE = "/download-image/";
     public static final String DOWNLOAD_IMAGE_BY_NAME = DOWNLOAD_IMAGE + PH_PRODUCT_ID + SEPARATOR + PH_IMAGE_NAME;
+
+    // coupon
+    public static final String COUPON = "/coupon";
+    public static final String COUPON_ADD = COUPON;
+    public static final String COUPON_REDEEM = COUPON + SEPARATOR + PH_USER_ID + SEPARATOR + PH_COUPON_CODE;
+    public static final String COUPON_VIEW_ALL = "/coupons/" + PH_USER_ID;
 
     private PathConstants() {
     }

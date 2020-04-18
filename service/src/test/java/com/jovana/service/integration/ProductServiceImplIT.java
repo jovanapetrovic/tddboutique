@@ -34,7 +34,7 @@ public class ProductServiceImplIT extends AbstractTest {
 
     @DisplayName("When we want to find a Product by id")
     @Nested
-    class GetProductTest {
+    class GetAndViewProductTest {
 
         @WithMockCustomUser
         @DisplayName("Then Product is fetched from database when id is valid")
