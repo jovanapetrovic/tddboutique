@@ -1,21 +1,16 @@
 package com.jovana.service.integration;
 
 import com.google.common.collect.Lists;
-import com.jovana.entity.coupon.Coupon;
-import com.jovana.entity.coupon.CouponStatus;
-import com.jovana.entity.coupon.dto.CouponRequest;
 import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.OrderState;
 import com.jovana.entity.order.dto.CartItemDTO;
 import com.jovana.entity.order.dto.CartRequest;
 import com.jovana.entity.order.dto.CartResponse;
 import com.jovana.entity.product.Product;
-import com.jovana.entity.user.User;
 import com.jovana.repositories.order.OrderItemRepository;
 import com.jovana.service.impl.order.OrderService;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.integration.auth.WithMockCustomUser;
-import com.jovana.service.util.RequestTestDataProvider;
 import com.jovana.service.util.TestDataProvider;
 import org.flywaydb.test.annotation.FlywayTest;
 import org.junit.jupiter.api.BeforeEach;
