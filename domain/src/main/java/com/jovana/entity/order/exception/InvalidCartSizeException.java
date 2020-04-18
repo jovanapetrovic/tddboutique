@@ -1,4 +1,4 @@
-package com.jovana.entity.coupon.exception;
+package com.jovana.entity.order.exception;
 
 import com.jovana.exception.ErrorCode;
 import com.jovana.exception.ExceptionCode;
@@ -11,17 +11,18 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
  * Created by jovana on 11.04.2020
  */
 @ResponseStatus(BAD_REQUEST)
-@ErrorCode(ExceptionCode.COUPON_EXPIRED)
-public class CouponExpiredException extends TddBoutiqueApiException {
+@ErrorCode(ExceptionCode.INVALID_CART_SIZE)
+public class InvalidCartSizeException extends TddBoutiqueApiException {
 
-    private final String code;
+    private final Integer size;
 
-    public CouponExpiredException(String code, String message) {
+    public InvalidCartSizeException(Integer size, String message) {
         super(message);
-        this.code = code;
+        this.size = size;
     }
 
-    public String getCode() {
-        return code;
+    public Integer getSize() {
+        return size;
     }
+
 }

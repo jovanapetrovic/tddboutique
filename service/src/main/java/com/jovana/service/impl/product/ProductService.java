@@ -22,6 +22,8 @@ public interface ProductService {
 
     Long updateProductStock(Long productId, UpdateStockRequest updateStockRequest);
 
+    boolean validateAndProcessProductStock(Product product, Long productQuantity);
+
     boolean deleteProduct(Long productId);
 
     ProductFullResponse viewOneProduct(Long productId);

@@ -6,6 +6,9 @@ import com.jovana.entity.authority.AuthorityConstants;
 import com.jovana.entity.coupon.Coupon;
 import com.jovana.entity.coupon.CouponStatus;
 import com.jovana.entity.coupon.CouponValue;
+import com.jovana.entity.order.OrderItem;
+import com.jovana.entity.order.OrderState;
+import com.jovana.entity.order.dto.CartItemDTO;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
@@ -206,6 +209,61 @@ public class TestDataProvider {
         coupons.put("johnExpired", expiredCoupon);
 
         return coupons;
+    }
+
+    public static Map<String, CartItemDTO> getCartItems() {
+        Map<String, CartItemDTO> cartItems = new HashMap<>();
+
+        CartItemDTO cartItem1 = new CartItemDTO();
+        cartItem1.setProductId(10L);
+        cartItem1.setProductSize("S");
+        cartItem1.setProductColor("BLACK");
+        cartItem1.setQuantity(1L);
+
+        CartItemDTO cartItem2 = new CartItemDTO();
+        cartItem2.setProductId(10L);
+        cartItem2.setProductSize("S");
+        cartItem2.setProductColor("RED");
+        cartItem2.setQuantity(1L);
+
+        CartItemDTO cartItem3 = new CartItemDTO();
+        cartItem3.setProductId(11L);
+        cartItem3.setProductSize("M");
+        cartItem3.setProductColor("COLORFUL");
+        cartItem3.setQuantity(100L);
+
+        cartItems.put("cartItem1", cartItem1);
+        cartItems.put("cartItem2", cartItem2);
+        cartItems.put("cartItem3", cartItem3);
+
+        return cartItems;
+    }
+
+    public static Map<String, OrderItem> getOrderItems() {
+        Map<String, OrderItem> orderItems = new HashMap<>();
+
+        OrderItem orderItem1 = new OrderItem();
+        orderItem1.setId(10L);
+        orderItem1.setUser(TestDataProvider.getUsers().get("john"));
+        orderItem1.setProduct(TestDataProvider.getProducts().get("casualDress"));
+        orderItem1.setProductSize(SizeCode.S);
+        orderItem1.setProductColor(ColorCode.BLACK);
+        orderItem1.setQuantity(1L);
+        orderItem1.setOrderState(OrderState.CART);
+
+        OrderItem orderItem2 = new OrderItem();
+        orderItem2.setId(10L);
+        orderItem2.setUser(TestDataProvider.getUsers().get("john"));
+        orderItem2.setProduct(TestDataProvider.getProducts().get("casualDress"));
+        orderItem2.setProductSize(SizeCode.S);
+        orderItem2.setProductColor(ColorCode.RED);
+        orderItem2.setQuantity(1L);
+        orderItem2.setOrderState(OrderState.CART);
+
+        orderItems.put("orderItem1", orderItem1);
+        orderItems.put("orderItem2", orderItem1);
+
+        return orderItems;
     }
 
 }

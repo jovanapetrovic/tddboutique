@@ -31,6 +31,9 @@ public enum ExceptionCode {
     COUPON_EXPIRED(1501),
     COUPON_EXPIRY_DATE_MUST_BE_IN_FUTURE(1502),
 
+    // cart
+    INVALID_CART_SIZE(1600),
+
     ;
 
     private Integer code;

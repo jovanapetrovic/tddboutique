@@ -49,6 +49,13 @@ public final class PathConstants {
     public static final String COUPON_REDEEM = COUPON + SEPARATOR + PH_USER_ID + SEPARATOR + PH_COUPON_CODE;
     public static final String COUPON_VIEW_ALL = "/coupons/" + PH_USER_ID;
 
+    // cart
+    public static final String CART = "/order";
+    public static final String CART_ADD = "/add-to-cart/" + PH_USER_ID;
+
+    // order
+    public static final String ORDER = "/order";
+
     private PathConstants() {
     }
 

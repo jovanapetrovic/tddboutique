@@ -1,6 +1,8 @@
 package com.jovana.api;
 
+import com.jovana.entity.order.OrderItem;
 import com.jovana.service.impl.coupon.CouponService;
+import com.jovana.service.impl.order.OrderService;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.impl.product.image.ImageStorageService;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
@@ -22,5 +24,7 @@ public class ServiceBeanMocks {
     private ImageStorageService imageStorageService;
     @MockBean
     private CouponService couponService;
+    @MockBean
+    private OrderService orderService;
 
 }

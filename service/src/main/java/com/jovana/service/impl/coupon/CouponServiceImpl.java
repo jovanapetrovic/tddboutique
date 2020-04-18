@@ -80,7 +80,7 @@ public class CouponServiceImpl implements CouponService {
         for (Coupon coupon : coupons) {
             couponResponses.add(CouponResponse.createFromCoupon(coupon));
         }
-        LOGGER.debug("Found {} user coupons.", couponResponses.size());
+        LOGGER.info("Found {} user coupons.", couponResponses.size());
         return couponResponses;
     }
 

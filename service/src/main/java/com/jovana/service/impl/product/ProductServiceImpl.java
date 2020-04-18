@@ -17,6 +17,7 @@ import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
 import com.jovana.service.security.IsAdmin;
 import com.jovana.service.security.IsAdminOrUser;
+import com.jovana.service.security.IsUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +101,19 @@ public class ProductServiceImpl implements ProductService {
         return updatedProduct.getStock().getNumberOfUnitsInStock();
     }
 
+    @IsUser
+    @Override
+    public boolean validateAndProcessProductStock(Product product, Long productQuantity) {
+        Long currentProductStock = product.getStock().getNumberOfUnitsInStock();
+        if (productQuantity > currentProductStock) {
+            return false;
+        }
+
+        product.setStock(currentProductStock - productQuantity);
+        productRepository.save(product);
+        return true;
+    }
+
     @IsAdmin
     @Override
     public boolean deleteProduct(Long productId) {
@@ -138,7 +152,7 @@ public class ProductServiceImpl implements ProductService {
             }
             productResponses.add(ProductResponse.createFromProduct(product, imageResponses));
         }
-        LOGGER.debug("Found {} products.", productResponses.size());
+        LOGGER.info("Found {} products.", productResponses.size());
         return productResponses;
     }
 

@@ -227,6 +227,39 @@ public class ProductServiceImplTest {
             verify(productRepository, times(1)).save(any(Product.class));
         }
 
+        @DisplayName("Then Stock is updated when product quantity is smaller than stock")
+        @Test
+        public void testValidateAndProcessProductStockSuccess() {
+            // prepare
+            Long productQuantity = 10L;
+            Product casualDressProduct = TestDataProvider.getProducts().get("casualDress");
+            Long casualDressStockBefore = casualDressProduct.getStock().getNumberOfUnitsInStock();
+            // exercise
+            boolean isStockUpdated = productService.validateAndProcessProductStock(casualDressProduct, productQuantity);
+
+            // verify
+            assertAll("Verify updated stock",
+                    () -> assertTrue(isStockUpdated),
+                    () -> assertEquals(productQuantity,casualDressStockBefore - casualDressProduct.getStock().getNumberOfUnitsInStock())
+            );
+            verify(productRepository, times(1)).save(any(Product.class));
+        }
+
+        @DisplayName("Then Stock skips update when product quantity is bigger than stock")
+        @Test
+        public void testValidateAndProcessProductStockSkipsUpdate() {
+            // prepare
+            Long productQuantity = 100L;
+            Product casualDressProduct = TestDataProvider.getProducts().get("casualDress");
+
+            // exercise
+            boolean isStockUpdated = productService.validateAndProcessProductStock(casualDressProduct, productQuantity);
+
+            // verify
+            assertFalse(isStockUpdated);
+            verify(productRepository, times(0)).save(any(Product.class));
+        }
+
     }
 
     @DisplayName("When we want to update Product")
