@@ -120,7 +120,6 @@ public class OrderServiceImplTest {
             CartResponse cartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
 
             // verify
-
             assertAll("Verify cart response",
                     () -> assertNotNull(cartResponse),
                     () -> assertEquals(2, cartResponse.getOrderedProducts().size()),
