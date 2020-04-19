@@ -19,11 +19,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by jovana on 13.04.2020
@@ -105,6 +105,30 @@ public class OrderServiceImplIT extends AbstractTest {
 
             assertAll("Verify product stock change",
                     () -> assertEquals(2, productStockBefore - productStockAfter)
+            );
+        }
+    }
+
+    @DisplayName("When we want to remove an item from cart")
+    @Nested
+    class RemoveItemFromCartTest {
+
+        @DisplayName("Then OrderItem is deleted from database if it is user's cart item")
+        @Test
+        public void testRemoveItemFromCartSuccess() {
+            // prepare
+            Long TEST_USER_ID = 12L;
+            Long TEST_CART_ITEM_ID = 11L;
+
+            // exercise
+            boolean isRemoved = orderService.removeItemFromCart(TEST_USER_ID, TEST_CART_ITEM_ID);
+
+            // verify
+            Optional<OrderItem> orderItem = orderItemRepository.findById(TEST_CART_ITEM_ID);
+
+            assertAll("Verify cart item has been removed",
+                    () -> assertTrue(isRemoved),
+                    () -> assertTrue(orderItem.isEmpty())
             );
         }
     }

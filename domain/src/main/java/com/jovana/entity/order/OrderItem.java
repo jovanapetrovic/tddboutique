@@ -27,7 +27,7 @@ public class OrderItem extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
 

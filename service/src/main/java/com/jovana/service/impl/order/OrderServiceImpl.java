@@ -12,6 +12,7 @@ import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
 import com.jovana.entity.user.User;
 import com.jovana.exception.EntityNotFoundException;
+import com.jovana.exception.ActionNotAllowedException;
 import com.jovana.repositories.order.OrderItemRepository;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.impl.user.UserService;
@@ -91,10 +92,20 @@ public class OrderServiceImpl implements OrderService {
         return new CartResponse(orderedItems, outOfStockItems);
     }
 
+    @Override
+    public boolean removeItemFromCart(Long userId, Long orderItemId) {
+        OrderItem orderItem = getOrderItemById(orderItemId);
+        if (userId == orderItem.getUser().getId() && OrderState.CART.equals(orderItem.getOrderState())) {
+            orderItemRepository.delete(orderItem);
+            return true;
+        }
+        throw new ActionNotAllowedException("This item is not in your current cart.");
+    }
+
     private void validateCartRequest(CartRequest cartRequest) {
         int cartSize = cartRequest.getCartItems().size();
         if (cartSize <= 0 || cartSize > 10) {
-            throw new InvalidCartSizeException(cartSize, "One cart can contain between 1 and 10 items");
+            throw new InvalidCartSizeException(cartSize, "One cart can contain between 1 and 10 items.");
         }
     }
 

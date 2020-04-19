@@ -18,3 +18,6 @@ INSERT INTO stock (product_id, units, created_by, created_date) VALUES
 
 INSERT INTO order_item (id, user_id, product_id, product_size, product_color, quantity, order_state, created_by, created_date) VALUES
 (10, 11, 10, 'L', 'BLACK', 2, 'CART', 'system', now());
+
+INSERT INTO order_item (id, user_id, product_id, product_size, product_color, quantity, order_state, created_by, created_date) VALUES
+(11, 12, 10, 'S', 'RED', 1, 'CART', 'system', now()); -- for removal test

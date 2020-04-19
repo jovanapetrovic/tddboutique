@@ -13,4 +13,6 @@ public interface OrderService {
 
     CartResponse addItemsToCart(Long userId, CartRequest cartRequest);
 
+    boolean removeItemFromCart(Long userId, Long orderItemId);
+
 }

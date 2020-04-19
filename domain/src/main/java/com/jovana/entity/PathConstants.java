@@ -8,6 +8,7 @@ public final class PathConstants {
     public static final String PH_PRODUCT_ID = "{productId}";
     public static final String PH_IMAGE_NAME = "{imageName:.+}";
     public static final String PH_COUPON_CODE = "{couponCode:.+}";
+    public static final String PH_ORDER_ITEM_ID = "{orderItemId}";
 
     // Syntax
     public static final String SEPARATOR = "/";
@@ -50,8 +51,9 @@ public final class PathConstants {
     public static final String COUPON_VIEW_ALL = "/coupons/" + PH_USER_ID;
 
     // cart
-    public static final String CART = "/order";
+    public static final String CART = "/cart";
     public static final String CART_ADD = "/add-to-cart/" + PH_USER_ID;
+    public static final String CART_REMOVE_ITEM = CART + "/remove-item/" + PH_USER_ID + SEPARATOR + PH_ORDER_ITEM_ID;
 
     // order
     public static final String ORDER = "/order";

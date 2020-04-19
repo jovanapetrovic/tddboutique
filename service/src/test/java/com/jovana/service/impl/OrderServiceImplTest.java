@@ -2,12 +2,14 @@ package com.jovana.service.impl;
 
 import com.google.common.collect.Lists;
 import com.jovana.entity.order.OrderItem;
+import com.jovana.entity.order.OrderState;
 import com.jovana.entity.order.dto.CartItemDTO;
 import com.jovana.entity.order.dto.CartRequest;
 import com.jovana.entity.order.dto.CartResponse;
 import com.jovana.entity.order.exception.InvalidCartSizeException;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.user.User;
+import com.jovana.exception.ActionNotAllowedException;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.order.OrderItemRepository;
 import com.jovana.service.impl.order.OrderService;
@@ -154,7 +156,7 @@ public class OrderServiceImplTest {
             verify(orderItemRepository, times(1)).saveAll(anySet());
         }
 
-        @DisplayName("Then add items to cart fails when cart is empty")
+        @DisplayName("Then error is thrown when cart is empty")
         @Test
         public void testAddItemsToCartFailsWhenCartIsEmpty() {
             // prepare
@@ -170,7 +172,7 @@ public class OrderServiceImplTest {
             verify(orderItemRepository, times(0)).saveAll(anySet());
         }
 
-        @DisplayName("Then add items to cart fails when cart has more than 10 items")
+        @DisplayName("Then error is thrown when cart has more than 10 items")
         @Test
         public void testAddItemsToCartFailsWhenCartHasMoreThan10Items() {
             // prepare
@@ -189,6 +191,69 @@ public class OrderServiceImplTest {
             verify(orderItemRepository, times(0)).saveAll(anySet());
         }
 
+    }
+
+    @DisplayName("When we want to remove an item from cart")
+    @Nested
+    class RemoveItemFromCartTest {
+
+        @DisplayName("Then OrderItem is deleted from database if it is user's cart item")
+        @Test
+        public void testRemoveItemFromCartSuccess() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            Long TEST_CART_ITEM_ID = 10L;
+            OrderItem orderItemMock = mock(OrderItem.class);
+            User userMock = mock(User.class);
+
+            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.of(orderItemMock));
+            when(orderItemMock.getUser()).thenReturn(userMock);
+            when(userMock.getId()).thenReturn(TEST_USER_ID);
+            when(orderItemMock.getOrderState()).thenReturn(OrderState.CART);
+
+            // exercise
+            boolean isRemoved = orderService.removeItemFromCart(TEST_USER_ID, TEST_CART_ITEM_ID);
+            // verify
+            assertTrue(isRemoved);
+        }
+
+        @DisplayName("Then error is thrown when OrderItem is not user's item")
+        @Test
+        public void testRemoveItemFromCartFailsWhenOrderItemDoesntBelongToUser() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            Long TEST_ACTUAL_USER_ID = 11L;
+            Long TEST_ORDER_ITEM_ID = 9999L;
+            OrderItem orderItemMock = mock(OrderItem.class);
+            User userMock = mock(User.class);
+
+            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.of(orderItemMock));
+            when(orderItemMock.getUser()).thenReturn(userMock);
+            when(userMock.getId()).thenReturn(TEST_ACTUAL_USER_ID);
+
+            // verify
+            assertThrows(ActionNotAllowedException.class,
+                    () -> orderService.removeItemFromCart(TEST_USER_ID, TEST_ORDER_ITEM_ID), "This item is not in your cart");
+        }
+
+        @DisplayName("Then error is thrown when OrderItem is not a cart item")
+        @Test
+        public void testRemoveItemFromCartFailsWhenOrderItemIsNotInUsersCart() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            Long TEST_ORDER_ITEM_ID = 9999L;
+            OrderItem orderItemMock = mock(OrderItem.class);
+            User userMock = mock(User.class);
+
+            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.of(orderItemMock));
+            when(orderItemMock.getUser()).thenReturn(userMock);
+            when(userMock.getId()).thenReturn(TEST_USER_ID);
+            when(orderItemMock.getOrderState()).thenReturn(OrderState.ORDER);
+
+            // verify
+            assertThrows(ActionNotAllowedException.class,
+                    () -> orderService.removeItemFromCart(TEST_USER_ID, TEST_ORDER_ITEM_ID), "This item is not in your cart");
+        }
     }
 
 }

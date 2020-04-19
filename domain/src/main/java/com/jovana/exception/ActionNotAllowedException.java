@@ -9,9 +9,9 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
  */
 @ResponseStatus(BAD_REQUEST)
 @ErrorCode(ExceptionCode.NOT_ALLOWED_TO_DO_ACTION)
-public class NotAllowedException extends TddBoutiqueApiException {
+public class ActionNotAllowedException extends TddBoutiqueApiException {
 
-    public NotAllowedException (String message) {
+    public ActionNotAllowedException(String message) {
         super(message);
     }
 

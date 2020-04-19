@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 
 /**
  * Created by jovana on 13.04.2020
@@ -28,6 +26,13 @@ public class OrderResource {
                                                            @Valid @RequestBody CartRequest cartRequest) {
         CartResponse cartResponse = orderService.addItemsToCart(userId, cartRequest);
         return new ResponseEntity<>(cartResponse, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = PathConstants.CART_REMOVE_ITEM)
+    public ResponseEntity<Void> removeItemsFromCartDELETE(@PathVariable("userId") Long userId,
+                                                          @PathVariable("orderItemId") Long orderItemId) {
+        orderService.removeItemFromCart(userId, orderItemId);
+        return ResponseEntity.ok().build();
     }
 
 }
