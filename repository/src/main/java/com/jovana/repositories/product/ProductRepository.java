@@ -16,13 +16,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product findByName(String name);
 
-    @Query("select p, i from Product p " +
+    @Query("select p from Product p " +
             "left join p.images i " +
             "where p.id = :productId " +
             "and p.deleted = false ")
     Product findOneWithImages(@Param("productId") Long productId);
 
-    @Query("select p, i from Product p " +
+    @Query("select p from Product p " +
             "left join p.images i " +
             "where p.deleted = false ")
     Set<Product> findAllWithImages();
