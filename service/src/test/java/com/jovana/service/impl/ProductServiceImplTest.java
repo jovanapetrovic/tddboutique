@@ -184,7 +184,7 @@ public class ProductServiceImplTest {
             verify(productRepository, times(1)).save(any(Product.class));
         }
 
-        @DisplayName("Then creating a product fails when name already exists")
+        @DisplayName("Then error is thrown when name already exists")
         @Test
         public void testAddProductFailsWhenNameAlreadyExists() {
             // prepare

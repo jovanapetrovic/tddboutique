@@ -187,7 +187,7 @@ public class ShippingAddressServiceImplTest {
             verify(shippingAddressRepository, times(1)).save(any(ShippingAddress.class));
         }
 
-        @DisplayName("Then creating shipping address fails when first name is not provided")
+        @DisplayName("Then error is thrown when first name is not provided")
         @Test
         public void testAddUserShippingAddressFailsWhenFirstNameIsNotProvided() {
             // prepare
@@ -200,7 +200,7 @@ public class ShippingAddressServiceImplTest {
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
-        @DisplayName("Then creating shipping address fails when first name is empty")
+        @DisplayName("Then error is thrown when first name is empty")
         @Test
         public void testAddUserShippingAddressFailsWhenFirstNameIsEmpty() {
             // prepare
@@ -214,7 +214,7 @@ public class ShippingAddressServiceImplTest {
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
-        @DisplayName("Then creating shipping address fails when last name is not provided")
+        @DisplayName("Then error is thrown when last name is not provided")
         @Test
         public void testAddUserShippingAddressFailsWhenLastNameIsNotProvided() {
             // prepare
@@ -228,7 +228,7 @@ public class ShippingAddressServiceImplTest {
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
-        @DisplayName("Then creating shipping address fails when last name is empty")
+        @DisplayName("Then error is thrown when last name is empty")
         @Test
         public void testAddUserShippingAddressFailsWhenLastNameIsEmpty() {
             // prepare
@@ -243,7 +243,7 @@ public class ShippingAddressServiceImplTest {
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
-        @DisplayName("Then creating shipping address fails when phone number is invalid")
+        @DisplayName("Then error is thrown when phone number is invalid")
         @Test
         public void testAddUserShippingAddressFailsWhenPhoneNumberIsInvalid() {
             // prepare
@@ -258,7 +258,7 @@ public class ShippingAddressServiceImplTest {
             verify(shippingAddressRepository, times(0)).save(any(ShippingAddress.class));
         }
 
-        @DisplayName("Then creating shipping address fails when phone number cannot be parsed")
+        @DisplayName("Then error is thrown when phone number cannot be parsed")
         @Test
         public void testAddUserShippingAddressFailsWhenPhoneNumberCannotBeParsed() {
             // prepare

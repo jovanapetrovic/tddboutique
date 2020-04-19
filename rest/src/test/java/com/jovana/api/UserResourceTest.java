@@ -35,7 +35,7 @@ public class UserResourceTest extends AbstractTest {
                 MockMvcResultMatchers.status().isCreated());
     }
 
-    @DisplayName("Register user fails when request params are null")
+    @DisplayName("Then error is thrown when request params are null")
     @Test
     public void testRegisterUserFailsWhenParamsAreNull() throws Exception {
         RegisterUserRequest registerUserRequest = RegisterUserRequest.createRegisterUserRequest(
@@ -53,7 +53,7 @@ public class UserResourceTest extends AbstractTest {
                 MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @DisplayName("Register user fails when request params size is wrong")
+    @DisplayName("Then error is thrown when request params size is wrong")
     @Test
     public void testRegisterUserFailsWhenParamsSizeIsWrong() throws Exception {
         RegisterUserRequest registerUserRequest = RegisterUserRequest.createRegisterUserRequest(
@@ -71,7 +71,7 @@ public class UserResourceTest extends AbstractTest {
                 MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @DisplayName("Register user fails when email param has wrong format")
+    @DisplayName("Then error is thrown when email param has wrong format")
     @Test
     public void testRegisterUserFailsWhenEmailHasWrongFormat() throws Exception {
         RegisterUserRequest registerUserRequest = RegisterUserRequest.createRegisterUserRequest(

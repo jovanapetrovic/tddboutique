@@ -41,7 +41,7 @@ public class ShippingAddressResourceTest extends AbstractTest {
                 MockMvcResultMatchers.status().isCreated());
     }
 
-    @DisplayName("Add shipping address fails when request params are null")
+    @DisplayName("Then error is thrown when request params are null")
     @Test
     public void testAddShippingAddressFailsWhenParamsAreNull() throws Exception {
         ShippingAddressRequest shippingAddressRequest = new ShippingAddressRequest();
@@ -53,7 +53,7 @@ public class ShippingAddressResourceTest extends AbstractTest {
                 MockMvcResultMatchers.status().isBadRequest());
     }
 
-    @DisplayName("Add shipping address fails when request params size is wrong")
+    @DisplayName("Then error is thrown when request params size is wrong")
     @Test
     public void testAddShippingAddressFailsWhenParamsSizeIsWrong() throws Exception {
         ShippingAddressRequest shippingAddressRequest = new ShippingAddressRequest();

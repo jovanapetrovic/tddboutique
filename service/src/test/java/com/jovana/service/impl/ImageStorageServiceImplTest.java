@@ -144,7 +144,7 @@ public class ImageStorageServiceImplTest {
             verify(imageRepository, times(0)).save(any(Image.class));
         }
 
-        @DisplayName("Then image creating fails when product doesn't exist")
+        @DisplayName("Then error is thrown when product doesn't exist")
         @Test
         public void testAddImageFailsWhenProductDoesntExist() throws Exception {
             // prepare
@@ -156,7 +156,7 @@ public class ImageStorageServiceImplTest {
             verify(imageRepository, times(0)).save(any(Image.class));
         }
 
-        @DisplayName("Then image creating fails when image name contains invalid path sequence")
+        @DisplayName("Then error is thrown when image name contains invalid path sequence")
         @Test
         public void testAddImageFailsWhenImageNameIsInvalid() throws Exception {
             // prepare
@@ -169,7 +169,7 @@ public class ImageStorageServiceImplTest {
             verify(imageRepository, times(0)).save(any(Image.class));
         }
 
-        @DisplayName("Then image creating fails when non-image file is passed")
+        @DisplayName("Then error is thrown when non-image file is passed")
         @Test
         public void testAddImageFailsWhenNonImageFileIsPassed() throws Exception {
             // prepare
@@ -183,7 +183,7 @@ public class ImageStorageServiceImplTest {
             verify(imageRepository, times(0)).save(any(Image.class));
         }
 
-        @DisplayName("Then image creating fails when storing image fails first")
+        @DisplayName("Then error is thrown when storing image fails first")
         @Test
         public void testAddImageFailsWhenStoreImageFails() throws Exception {
             // prepare
@@ -247,7 +247,7 @@ public class ImageStorageServiceImplTest {
             assertNotNull(resource);
         }
 
-        @DisplayName("Then get image fails when product doesn't exist")
+        @DisplayName("Then error is thrown when product doesn't exist")
         @Test
         public void testGetImageFailsWhenProductDoesntExist() throws Exception {
             // prepare
@@ -258,7 +258,7 @@ public class ImageStorageServiceImplTest {
                     () -> imageStorageService.getAndLoadImageAsResource(PRODUCT_ID_NOT_EXISTS, IMAGE_NAME), "Product doesn't exist");
         }
 
-        @DisplayName("Then get image fails when image doesn't exist in db for passed product id")
+        @DisplayName("Then error is thrown when image doesn't exist in db for passed product id")
         @Test
         public void testGetImageFailsWhenImageDoesntExistInDb() throws Exception {
             // prepare
@@ -270,7 +270,7 @@ public class ImageStorageServiceImplTest {
                     () -> imageStorageService.getAndLoadImageAsResource(TEST_PRODUCT_ID, IMAGE_NAME), "Image doesn't exist in db");
         }
 
-        @DisplayName("Then get image fails when image file doesn't exist")
+        @DisplayName("Then error is thrown when image file doesn't exist")
         @Test
         public void testGetImageFailsWhenImageFileDoesntExist() {
             // prepare

@@ -104,7 +104,7 @@ public class UserServiceImplIT extends AbstractTest {
         }
 
         @WithMockCustomUser
-        @DisplayName("Then change email fails when email already exists")
+        @DisplayName("Then error is thrown when email already exists")
         @Test
         public void testChangeEmailAddressFailsWhenEmailAlreadyExists() {
             // prepare
@@ -142,7 +142,7 @@ public class UserServiceImplIT extends AbstractTest {
         }
 
         @WithMockCustomUser
-        @DisplayName("Then change username fails when username already exists")
+        @DisplayName("Then error is thrown when username already exists")
         @Test
         public void testChangeUsernameFailsWhenUsernameAlreadyExists() {
             // prepare

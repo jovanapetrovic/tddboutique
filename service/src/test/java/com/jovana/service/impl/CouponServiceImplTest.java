@@ -150,7 +150,7 @@ public class CouponServiceImplTest {
             verify(couponRepository, times(1)).save(any(Coupon.class));
         }
 
-        @DisplayName("Then creating a coupon fails when coupon expiry date is in the past")
+        @DisplayName("Then error is thrown when coupon expiry date is in the past")
         @Test
         public void testAddCouponFailsWhenCouponExpiryDateIsInPast() {
             // prepare
@@ -205,7 +205,7 @@ public class CouponServiceImplTest {
             verify(couponRepository, times(1)).save(any(Coupon.class));
         }
 
-        @DisplayName("Then redeeming a coupon fails when coupon with passed couponCode doesn't exist for user")
+        @DisplayName("Then error is thrown when coupon with passed couponCode doesn't exist for user")
         @Test
         public void testRedeemCouponFailsWhenItDoesntExistInDb() {
             // prepare
@@ -217,7 +217,7 @@ public class CouponServiceImplTest {
             verify(couponRepository, times(0)).save(any(Coupon.class));
         }
 
-        @DisplayName("Then redeeming a coupon fails when coupon is already redeemed")
+        @DisplayName("Then error is thrown when coupon is already redeemed")
         @Test
         public void testRedeemCouponFailsWhenCouponIsAlreadyRedeemed() {
             // prepare
@@ -229,7 +229,7 @@ public class CouponServiceImplTest {
             verify(couponRepository, times(0)).save(any(Coupon.class));
         }
 
-        @DisplayName("Then redeeming a coupon fails when coupon has already expired")
+        @DisplayName("Then error is thrown when coupon has already expired")
         @Test
         public void testRedeemCouponFailsWhenCouponHasExpired() {
             // prepare

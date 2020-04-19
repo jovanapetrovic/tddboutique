@@ -112,7 +112,7 @@ public class UserServiceImplTest {
             verify(userRepository, times(1)).save(any(User.class));
         }
 
-        @DisplayName("Then register fails when password and confirm password don't match")
+        @DisplayName("Then error is thrown when password and confirm password don't match")
         @Test
         public void testRegisterUserFailsWhenPasswordAndConfirmPasswordDontMatch() {
             // prepare
@@ -126,7 +126,7 @@ public class UserServiceImplTest {
             verify(userRepository, times(0)).save(any(User.class));
         }
 
-        @DisplayName("Then register fails when username already exists")
+        @DisplayName("Then error is thrown when username already exists")
         @Test
         public void testRegisterUserFailsWhenUsernameAlreadyExists() {
             // prepare
@@ -138,7 +138,7 @@ public class UserServiceImplTest {
             verify(userRepository, times(0)).save(any(User.class));
         }
 
-        @DisplayName("Then register fails when email already exists")
+        @DisplayName("Then error is thrown when email already exists")
         @Test
         public void testRegisterUserFailsWhenEmailAlreadyExists() {
             // prepare
@@ -222,7 +222,7 @@ public class UserServiceImplTest {
             verify(userRepository, times(0)).save(any(User.class));
         }
 
-        @DisplayName("Then change email fails when email already exists")
+        @DisplayName("Then error is thrown when email already exists")
         @Test
         public void testChangeEmailAddressFailsWhenEmailAlreadyExists() {
             // prepare
@@ -269,7 +269,7 @@ public class UserServiceImplTest {
             verify(userRepository, times(0)).save(any(User.class));
         }
 
-        @DisplayName("Then change username fails when username already exists")
+        @DisplayName("Then error is thrown when username already exists")
         @Test
         public void testChangeUsernameFailsWhenUsernameAlreadyExists() {
             // prepare
