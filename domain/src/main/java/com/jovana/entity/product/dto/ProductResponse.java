@@ -1,6 +1,8 @@
 package com.jovana.entity.product.dto;
 
+import com.google.common.collect.Lists;
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.image.Image;
 import com.jovana.entity.product.image.dto.ImageResponse;
 
 import java.math.BigDecimal;
@@ -20,14 +22,18 @@ public class ProductResponse {
     public ProductResponse() {
     }
 
-    public static ProductResponse createFromProduct(Product product, List<ImageResponse> imageResponses) {
-        ProductResponse response = new ProductResponse();
-        response.setId(product.getId());
-        response.setName(product.getName());
-        response.setPrice(product.getPrice());
-        response.setInStock(product.getStock().getNumberOfUnitsInStock() > 0);
-        response.setImages(imageResponses);
-        return response;
+    // used by Hibernate
+    public ProductResponse(Product product) {
+        this.setId(product.getId());
+        this.setName(product.getName());
+        this.setPrice(product.getPrice());
+        this.setInStock(product.getStock().getNumberOfUnitsInStock() > 0);
+
+        List<ImageResponse> imageResponses = Lists.newArrayList();
+        for (Image i : product.getImages()) {
+            imageResponses.add(ImageResponse.createFromImage(i));
+        }
+        this.setImages(imageResponses);
     }
 
     public Long getId() {

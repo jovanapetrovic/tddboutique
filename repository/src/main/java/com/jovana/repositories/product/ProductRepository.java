@@ -1,6 +1,8 @@
 package com.jovana.repositories.product;
 
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.dto.ProductFullResponse;
+import com.jovana.entity.product.dto.ProductResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,15 +18,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product findByName(String name);
 
-    @Query("select p from Product p " +
-            "left join p.images i " +
+    @Query("select new com.jovana.entity.product.dto.ProductFullResponse(p) " +
+            "from Product p " +
             "where p.id = :productId " +
             "and p.deleted = false ")
-    Product findOneWithImages(@Param("productId") Long productId);
+    ProductFullResponse findOneWithImages(@Param("productId") Long productId);
 
-    @Query("select p from Product p " +
-            "left join p.images i " +
+    @Query("select new com.jovana.entity.product.dto.ProductResponse(p) " +
+            "from Product p " +
             "where p.deleted = false ")
-    Set<Product> findAllWithImages();
+    Set<ProductResponse> findAllWithImages();
 
 }

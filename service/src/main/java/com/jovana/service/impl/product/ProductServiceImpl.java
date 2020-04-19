@@ -127,33 +127,19 @@ public class ProductServiceImpl implements ProductService {
     @IsAdminOrUser
     @Override
     public ProductFullResponse viewOneProduct(Long productId) {
-        Product product = productRepository.findOneWithImages(productId);
+        ProductFullResponse product = productRepository.findOneWithImages(productId);
         if (product == null) {
             throw new EntityNotFoundException("No product found with id = " + productId);
         }
-
-        List<ImageResponse> imageResponses = Lists.newArrayList();
-        for (Image i : product.getImages()) {
-            imageResponses.add(ImageResponse.createFromImage(i));
-        }
-        return ProductFullResponse.createFromProduct(product, imageResponses);
+        return product;
     }
 
     @IsAdminOrUser
     @Override
     public Set<ProductResponse> viewAllProducts() {
-        Set<Product> products = productRepository.findAllWithImages();
-
-        Set<ProductResponse> productResponses = Sets.newHashSet();
-        for (Product product : products) {
-            List<ImageResponse> imageResponses = Lists.newArrayList();
-            for (Image i : product.getImages()) {
-                imageResponses.add(ImageResponse.createFromImage(i));
-            }
-            productResponses.add(ProductResponse.createFromProduct(product, imageResponses));
-        }
-        LOGGER.info("Found {} products.", productResponses.size());
-        return productResponses;
+        Set<ProductResponse> products = productRepository.findAllWithImages();
+        LOGGER.info("Found {} products.", products.size());
+        return products;
     }
 
 

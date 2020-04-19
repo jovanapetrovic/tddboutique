@@ -80,17 +80,12 @@ public class ProductServiceImplTest {
         @Test
         public void testViewOneProductSuccess() {
             // prepare
-            Product productMock = mock(Product.class);
-            Stock stockMock = mock(Stock.class);
-            Image imageMock = mock(Image.class);
-            Set<Image> imageSet = Sets.newSet(imageMock);
-
+            ProductFullResponse productMock = mock(ProductFullResponse.class);
             when(productRepository.findOneWithImages(any(Long.class))).thenReturn(productMock);
-            when(productMock.getImages()).thenReturn(imageSet);
-            when(imageMock.getType()).thenReturn(ImageType.PNG);
-            when(productMock.getStock()).thenReturn(stockMock);
+
             // exercise
             ProductFullResponse product = productService.viewOneProduct(TEST_PRODUCT_ID);
+
             // verify
             assertNotNull(product, "Product is null");
         }
@@ -108,26 +103,12 @@ public class ProductServiceImplTest {
         @Test
         public void testViewAllProductsSuccess() {
             // prepare
-            Product productMock1 = mock(Product.class);
-            Product productMock2 = mock(Product.class);
-            Product productMock3 = mock(Product.class);
-            Set<Product> products = Sets.newSet(productMock1, productMock2, productMock3);
-
-            Stock stockMock = mock(Stock.class);
-            Image imageMock = mock(Image.class);
-            Set<Image> imageSet = Sets.newSet(imageMock);
+            ProductResponse productMock1 = mock(ProductResponse.class);
+            ProductResponse productMock2 = mock(ProductResponse.class);
+            ProductResponse productMock3 = mock(ProductResponse.class);
+            Set<ProductResponse> products = Sets.newSet(productMock1, productMock2, productMock3);
 
             when(productRepository.findAllWithImages()).thenReturn(products);
-
-            when(imageMock.getType()).thenReturn(ImageType.PNG);
-            when(productMock1.getImages()).thenReturn(imageSet);
-            when(productMock1.getStock()).thenReturn(stockMock);
-
-            when(productMock2.getImages()).thenReturn(imageSet);
-            when(productMock2.getStock()).thenReturn(stockMock);
-
-            when(productMock3.getImages()).thenReturn(imageSet);
-            when(productMock3.getStock()).thenReturn(stockMock);
 
             // exercise
             Set<ProductResponse> productResponses = productService.viewAllProducts();

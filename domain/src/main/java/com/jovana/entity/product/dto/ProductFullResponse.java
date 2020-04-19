@@ -1,8 +1,10 @@
 package com.jovana.entity.product.dto;
 
+import com.google.common.collect.Lists;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
+import com.jovana.entity.product.image.Image;
 import com.jovana.entity.product.image.dto.ImageResponse;
 
 import java.math.BigDecimal;
@@ -26,18 +28,22 @@ public class ProductFullResponse {
     public ProductFullResponse() {
     }
 
-    public static ProductFullResponse createFromProduct(Product product, List<ImageResponse> imageResponses) {
-        ProductFullResponse response = new ProductFullResponse();
-        response.setId(product.getId());
-        response.setName(product.getName());
-        response.setMaterial(product.getMaterial());
-        response.setDescription(product.getDescription());
-        response.setPrice(product.getPrice());
-        response.setSizes(SizeCode.getStringsFromSizeCodes(product.getSizes()));
-        response.setColors(ColorCode.getStringsFromColorCodes(product.getColors()));
-        response.setInStock(product.getStock().getNumberOfUnitsInStock() > 0);
-        response.setImages(imageResponses);
-        return response;
+    // used by Hibernate
+    public ProductFullResponse(Product product) {
+        this.setId(product.getId());
+        this.setName(product.getName());
+        this.setMaterial(product.getMaterial());
+        this.setDescription(product.getDescription());
+        this.setPrice(product.getPrice());
+        this.setSizes(SizeCode.getStringsFromSizeCodes(product.getSizes()));
+        this.setColors(ColorCode.getStringsFromColorCodes(product.getColors()));
+        this.setInStock(product.getStock().getNumberOfUnitsInStock() > 0);
+
+        List<ImageResponse> imageResponses = Lists.newArrayList();
+        for (Image i : product.getImages()) {
+            imageResponses.add(ImageResponse.createFromImage(i));
+        }
+        this.setImages(imageResponses);
     }
 
     public Long getId() {
