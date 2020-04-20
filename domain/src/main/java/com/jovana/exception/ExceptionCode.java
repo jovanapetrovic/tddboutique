@@ -34,6 +34,9 @@ public enum ExceptionCode {
     // cart
     INVALID_CART_SIZE(1600),
 
+    // order
+    ORDER_PAYMENT_FAILED(1700),
+
     ;
 
     private Integer code;

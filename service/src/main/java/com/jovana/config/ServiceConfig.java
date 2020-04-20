@@ -23,4 +23,9 @@ public class ServiceConfig {
         return this.environment.getProperty("file.uploadDir");
     }
 
+    @Bean
+    public String getStripeApiKey() {
+        return this.environment.getProperty("stripe.apiKey");
+    }
+
 }

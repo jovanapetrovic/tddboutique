@@ -1,7 +1,5 @@
 package com.jovana.service.impl.product;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
@@ -10,8 +8,6 @@ import com.jovana.entity.product.dto.ProductRequest;
 import com.jovana.entity.product.dto.ProductResponse;
 import com.jovana.entity.product.dto.UpdateStockRequest;
 import com.jovana.entity.product.exception.ProductNameAlreadyExistsException;
-import com.jovana.entity.product.image.Image;
-import com.jovana.entity.product.image.dto.ImageResponse;
 import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.product.ProductRepository;
 import com.jovana.repositories.product.StockRepository;
@@ -24,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

@@ -29,6 +29,10 @@ spring:
 file:
     uploadDir: ${java.io.tmpdir}tddboutique\images
 
+# Payment Stripe apiKey
+stripe:
+    apiKey: replaceWithTestApiKey
+
 app:
     name: tddboutique
 
