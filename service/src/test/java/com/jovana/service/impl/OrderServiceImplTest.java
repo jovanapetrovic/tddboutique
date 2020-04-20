@@ -112,6 +112,22 @@ public class OrderServiceImplTest {
             assertEquals(CART_ITEM_1_PRICE.add(CART_ITEM_2_PRICE).add(CART_ITEM_3_PRICE), cartResponse.getTotalPrice());
         }
 
+        @DisplayName("Then empty cart is shown if there aren't any cart items")
+        @Test
+        public void testViewCartSuccessWhenCartIsEmpty() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            when(orderItemRepository.findAllCartItemsWithProductDataByUserId(TEST_USER_ID)).thenReturn(Sets.newSet());
+
+            // exercise
+            CartResponse cartResponse = orderService.viewCart(TEST_USER_ID);
+
+            // verify
+            assertNotNull(cartResponse);
+            assertEquals(0, cartResponse.getCartItems().size());
+            assertEquals(BigDecimal.ZERO, cartResponse.getTotalPrice());
+        }
+
     }
 
     @DisplayName("When we want to add items to cart")
