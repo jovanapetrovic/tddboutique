@@ -3,9 +3,7 @@ package com.jovana.service.integration;
 import com.google.common.collect.Lists;
 import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.OrderState;
-import com.jovana.entity.order.dto.CartItemDTO;
-import com.jovana.entity.order.dto.CartRequest;
-import com.jovana.entity.order.dto.AddToCartResponse;
+import com.jovana.entity.order.dto.*;
 import com.jovana.entity.product.Product;
 import com.jovana.repositories.order.OrderItemRepository;
 import com.jovana.service.impl.order.OrderService;
@@ -19,6 +17,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ public class OrderServiceImplIT extends AbstractTest {
 
     @DisplayName("When we want to find an order item by id")
     @Nested
-    class GetOrderItemTest {
+    class GetAndViewOrderItemTest {
 
         @WithMockCustomUser
         @DisplayName("Then OrderItem is fetched from database when id is valid")
@@ -53,6 +52,39 @@ public class OrderServiceImplIT extends AbstractTest {
             // verify
             assertNotNull(orderItem, "OrderItem is null");
         }
+
+        @WithMockCustomUser
+        @DisplayName("Then all cart items are fetched from database if there are any")
+        @Test
+        public void testViewAllProductsSuccess() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            BigDecimal TOTAL_PRICE = BigDecimal.valueOf(60).setScale(2);
+            // exercise
+            CartResponse cartResponse = orderService.viewCart(TEST_USER_ID);
+
+            // verify
+            assertAll("Verify cart response",
+                    () -> assertNotNull(cartResponse),
+                    () -> assertEquals(1, cartResponse.getCartItems().size()),
+                    () -> assertEquals(TOTAL_PRICE, cartResponse.getTotalPrice())
+            );
+
+            CartItemResponse cartItem = cartResponse.getCartItems().iterator().next();
+            assertAll("Verify cart item",
+                    () -> assertNotNull(cartItem),
+                    () -> assertNotNull(cartItem.getOrderItemId()),
+                    () -> assertNotNull(cartItem.getProductId()),
+                    () -> assertNotNull(cartItem.getProductName()),
+                    () -> assertNotNull(cartItem.getProductSize()),
+                    () -> assertNotNull(cartItem.getProductColor()),
+                    () -> assertNotNull(cartItem.getImages()),
+                    () -> assertNotNull(cartItem.getQuantity()),
+                    () -> assertEquals(3, cartItem.getQuantity()),
+                    () -> assertEquals(TOTAL_PRICE, cartItem.getTotalPricePerProduct())
+            );
+        }
+
     }
 
     @WithMockCustomUser
@@ -76,7 +108,7 @@ public class OrderServiceImplIT extends AbstractTest {
         @Test
         public void testAddToCartSuccess() {
             // prepare
-            Long TEST_USER_ID = 10L;
+            Long TEST_USER_ID = 11L;
             Long TEST_PRODUCT_ID = 10L;
             cartRequest.setCartItems(Lists.newArrayList(cartItem1, cartItem2));
 
@@ -113,12 +145,13 @@ public class OrderServiceImplIT extends AbstractTest {
     @Nested
     class RemoveItemFromCartTest {
 
+        @WithMockCustomUser
         @DisplayName("Then OrderItem is deleted from database if it is user's cart item")
         @Test
         public void testRemoveItemFromCartSuccess() {
             // prepare
             Long TEST_USER_ID = 12L;
-            Long TEST_CART_ITEM_ID = 11L;
+            Long TEST_CART_ITEM_ID = 12L;
 
             // exercise
             boolean isRemoved = orderService.removeItemFromCart(TEST_USER_ID, TEST_CART_ITEM_ID);
