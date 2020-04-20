@@ -2,6 +2,7 @@ package com.jovana.service.impl.order;
 
 import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.dto.CartRequest;
+import com.jovana.entity.order.dto.AddToCartResponse;
 import com.jovana.entity.order.dto.CartResponse;
 
 /**
@@ -11,8 +12,10 @@ public interface OrderService {
 
     OrderItem getOrderItemById(Long cartItemId);
 
-    CartResponse addItemsToCart(Long userId, CartRequest cartRequest);
+    AddToCartResponse addItemsToCart(Long userId, CartRequest cartRequest);
 
     boolean removeItemFromCart(Long userId, Long orderItemId);
+
+    CartResponse viewCart(Long userId);
 
 }

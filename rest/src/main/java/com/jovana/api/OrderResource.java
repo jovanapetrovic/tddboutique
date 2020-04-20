@@ -2,6 +2,7 @@ package com.jovana.api;
 
 import com.jovana.entity.PathConstants;
 import com.jovana.entity.order.dto.CartRequest;
+import com.jovana.entity.order.dto.AddToCartResponse;
 import com.jovana.entity.order.dto.CartResponse;
 import com.jovana.service.impl.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,16 @@ public class OrderResource {
     private OrderService orderService;
 
     @PostMapping(value = PathConstants.CART_ADD)
-    public ResponseEntity<CartResponse> addItemsToCartPOST(@PathVariable("userId") Long userId,
-                                                           @Valid @RequestBody CartRequest cartRequest) {
-        CartResponse cartResponse = orderService.addItemsToCart(userId, cartRequest);
-        return new ResponseEntity<>(cartResponse, HttpStatus.CREATED);
+    public ResponseEntity<AddToCartResponse> addItemsToCartPOST(@PathVariable("userId") Long userId,
+                                                                @Valid @RequestBody CartRequest cartRequest) {
+        AddToCartResponse addToCartResponse = orderService.addItemsToCart(userId, cartRequest);
+        return new ResponseEntity<>(addToCartResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = PathConstants.CART_VIEW_ALL)
+    public ResponseEntity<CartResponse> viewCartGET(@PathVariable("userId") Long userId) {
+        CartResponse cartResponse = orderService.viewCart(userId);
+        return new ResponseEntity<>(cartResponse, HttpStatus.OK);
     }
 
     @DeleteMapping(value = PathConstants.CART_REMOVE_ITEM)

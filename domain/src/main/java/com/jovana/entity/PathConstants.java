@@ -54,6 +54,7 @@ public final class PathConstants {
     public static final String CART = "/cart";
     public static final String CART_ADD = "/add-to-cart/" + PH_USER_ID;
     public static final String CART_REMOVE_ITEM = CART + "/remove-item/" + PH_USER_ID + SEPARATOR + PH_ORDER_ITEM_ID;
+    public static final String CART_VIEW_ALL = CART + "/view/" + PH_USER_ID;
 
     // order
     public static final String ORDER = "/order";

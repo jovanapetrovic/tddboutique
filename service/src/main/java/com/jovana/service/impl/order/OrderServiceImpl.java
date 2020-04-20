@@ -3,9 +3,7 @@ package com.jovana.service.impl.order;
 import com.google.common.collect.Sets;
 import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.OrderState;
-import com.jovana.entity.order.dto.CartItemDTO;
-import com.jovana.entity.order.dto.CartRequest;
-import com.jovana.entity.order.dto.CartResponse;
+import com.jovana.entity.order.dto.*;
 import com.jovana.entity.order.exception.InvalidCartSizeException;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
@@ -24,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -57,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
 
     @IsUser
     @Override
-    public CartResponse addItemsToCart(Long userId, CartRequest cartRequest) {
+    public AddToCartResponse addItemsToCart(Long userId, CartRequest cartRequest) {
         User user = userService.getUserById(userId);
         validateCartRequest(cartRequest);
 
@@ -89,9 +88,10 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> newCartItems = orderItemRepository.saveAll(cartItems);
         LOGGER.info("Saved {} cart items.", newCartItems.size());
         LOGGER.info("{} items are out of stock.", outOfStockItems.size());
-        return new CartResponse(orderedItems, outOfStockItems);
+        return new AddToCartResponse(orderedItems, outOfStockItems);
     }
 
+    @IsUser
     @Override
     public boolean removeItemFromCart(Long userId, Long orderItemId) {
         OrderItem orderItem = getOrderItemById(orderItemId);
@@ -100,6 +100,21 @@ public class OrderServiceImpl implements OrderService {
             return true;
         }
         throw new ActionNotAllowedException("This item is not in your current cart.");
+    }
+
+    @IsUser
+    @Override
+    public CartResponse viewCart(Long userId) {
+        Set<CartItemResponse> cartItems = orderItemRepository.findAllCartItemsWithProductDataByUserId(userId);
+        LOGGER.info("Found {} items in cart.", cartItems.size());
+
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (CartItemResponse item : cartItems) {
+            totalPrice = totalPrice.add(item.getTotalPricePerProduct());
+        }
+        LOGGER.info("Cart total price = {} EUR.", totalPrice);
+
+        return new CartResponse(cartItems, totalPrice);
     }
 
     private void validateCartRequest(CartRequest cartRequest) {

@@ -5,7 +5,7 @@ import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.OrderState;
 import com.jovana.entity.order.dto.CartItemDTO;
 import com.jovana.entity.order.dto.CartRequest;
-import com.jovana.entity.order.dto.CartResponse;
+import com.jovana.entity.order.dto.AddToCartResponse;
 import com.jovana.entity.product.Product;
 import com.jovana.repositories.order.OrderItemRepository;
 import com.jovana.service.impl.order.OrderService;
@@ -85,7 +85,7 @@ public class OrderServiceImplIT extends AbstractTest {
             Long productStockBefore = productBefore.getStock().getNumberOfUnitsInStock();
 
             // exercise
-            CartResponse cartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
+            AddToCartResponse addToCartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
 
             // verify
             Set<OrderItem> orderItemsAfter = orderItemRepository.findAllCartItemsByUserId(TEST_USER_ID);
@@ -93,9 +93,9 @@ public class OrderServiceImplIT extends AbstractTest {
             Long productStockAfter = productAfter.getStock().getNumberOfUnitsInStock();
 
             assertAll("Verify cart response",
-                    () -> assertNotNull(cartResponse),
-                    () -> assertEquals(2, cartResponse.getOrderedProducts().size()),
-                    () -> assertEquals(0, cartResponse.getOutOfStockProducts().size())
+                    () -> assertNotNull(addToCartResponse),
+                    () -> assertEquals(2, addToCartResponse.getOrderedProducts().size()),
+                    () -> assertEquals(0, addToCartResponse.getOutOfStockProducts().size())
             );
 
             assertAll("Verify new order items in db",

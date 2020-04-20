@@ -80,7 +80,7 @@ public class CouponServiceImplTest {
         @Test
         public void testViewAllUserCouponsSuccess() {
             // prepare
-            final Long TEST_USER_ID = 10L;
+            Long TEST_USER_ID = 10L;
 
             Coupon couponMock1 = mock(Coupon.class);
             Coupon couponMock2 = mock(Coupon.class);

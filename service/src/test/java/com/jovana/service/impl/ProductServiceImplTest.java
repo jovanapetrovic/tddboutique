@@ -187,7 +187,7 @@ public class ProductServiceImplTest {
         @Test
         public void testUpdateProductStockSuccess() {
             // prepare
-            final Long TEST_PRODUCT_ID = 10L;
+            Long TEST_PRODUCT_ID = 10L;
             UpdateStockRequest updateStockRequest = RequestTestDataProvider.getStockRequests().get("updateStockRequest");
             Product eveningDressProductBefore = TestDataProvider.getProducts().get("eveningDress");
             Product eveningDressProductAfter = TestDataProvider.getProducts().get("eveningDress");

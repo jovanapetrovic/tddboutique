@@ -3,11 +3,11 @@ package com.jovana.service.impl;
 import com.google.common.collect.Lists;
 import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.OrderState;
-import com.jovana.entity.order.dto.CartItemDTO;
-import com.jovana.entity.order.dto.CartRequest;
-import com.jovana.entity.order.dto.CartResponse;
+import com.jovana.entity.order.dto.*;
 import com.jovana.entity.order.exception.InvalidCartSizeException;
 import com.jovana.entity.product.Product;
+import com.jovana.entity.product.dto.ProductFullResponse;
+import com.jovana.entity.product.dto.ProductResponse;
 import com.jovana.entity.user.User;
 import com.jovana.exception.ActionNotAllowedException;
 import com.jovana.exception.EntityNotFoundException;
@@ -24,10 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +55,14 @@ public class OrderServiceImplTest {
 
     @DisplayName("When we want to find an order item by id")
     @Nested
-    class GetOrderItemTest {
+    class GetAndViewOrderItemTest {
+
+        @Spy
+        private CartItemResponse cartItem1;
+        @Spy
+        private CartItemResponse cartItem2;
+        @Spy
+        private CartItemResponse cartItem3;
 
         @DisplayName("Then OrderItem is fetched from database when id is valid")
         @Test
@@ -75,6 +86,32 @@ public class OrderServiceImplTest {
             assertThrows(EntityNotFoundException.class,
                     () -> orderService.getOrderItemById(TEST_ORDER_ITEM_ID), "OrderItem with id=" + TEST_ORDER_ITEM_ID + " doesn't exist");
         }
+
+        @DisplayName("Then all cart items are fetched from database if there are any")
+        @Test
+        public void testViewCartSuccess() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            BigDecimal CART_ITEM_1_PRICE = BigDecimal.valueOf(19.99);
+            BigDecimal CART_ITEM_2_PRICE = BigDecimal.valueOf(40.00);
+            BigDecimal CART_ITEM_3_PRICE = BigDecimal.valueOf(11.99);
+
+            cartItem1.setTotalPricePerProduct(CART_ITEM_1_PRICE);
+            cartItem2.setTotalPricePerProduct(CART_ITEM_2_PRICE);
+            cartItem3.setTotalPricePerProduct(CART_ITEM_3_PRICE);
+
+            Set<CartItemResponse> cartItems = Sets.newSet(cartItem1, cartItem2, cartItem3);
+            when(orderItemRepository.findAllCartItemsWithProductDataByUserId(TEST_USER_ID)).thenReturn(cartItems);
+
+            // exercise
+            CartResponse cartResponse = orderService.viewCart(TEST_USER_ID);
+
+            // verify
+            assertNotNull(cartResponse);
+            assertEquals(3, cartResponse.getCartItems().size());
+            assertEquals(CART_ITEM_1_PRICE.add(CART_ITEM_2_PRICE).add(CART_ITEM_3_PRICE), cartResponse.getTotalPrice());
+        }
+
     }
 
     @DisplayName("When we want to add items to cart")
@@ -118,13 +155,13 @@ public class OrderServiceImplTest {
             when(orderItemRepository.saveAll(anyIterable())).thenReturn(orderItems);
 
             // exercise
-            CartResponse cartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
+            AddToCartResponse addToCartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
 
             // verify
             assertAll("Verify cart response",
-                    () -> assertNotNull(cartResponse),
-                    () -> assertEquals(2, cartResponse.getOrderedProducts().size()),
-                    () -> assertEquals(0, cartResponse.getOutOfStockProducts().size())
+                    () -> assertNotNull(addToCartResponse),
+                    () -> assertEquals(2, addToCartResponse.getOrderedProducts().size()),
+                    () -> assertEquals(0, addToCartResponse.getOutOfStockProducts().size())
             );
             verify(orderItemRepository, times(1)).saveAll(anySet());
         }
@@ -144,14 +181,14 @@ public class OrderServiceImplTest {
             when(orderItemRepository.saveAll(anyIterable())).thenReturn(orderItems);
 
             // exercise
-            CartResponse cartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
+            AddToCartResponse addToCartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
 
             // verify
 
             assertAll("Verify cart response",
-                    () -> assertNotNull(cartResponse),
-                    () -> assertEquals(0, cartResponse.getOrderedProducts().size()),
-                    () -> assertEquals(1, cartResponse.getOutOfStockProducts().size())
+                    () -> assertNotNull(addToCartResponse),
+                    () -> assertEquals(0, addToCartResponse.getOrderedProducts().size()),
+                    () -> assertEquals(1, addToCartResponse.getOutOfStockProducts().size())
             );
             verify(orderItemRepository, times(1)).saveAll(anySet());
         }
