@@ -45,7 +45,7 @@ public class ShippingAddressServiceImplTest {
     @Mock
     private UserService userService;
 
-    @DisplayName("When we want to find a ShippingAddress by id")
+    @DisplayName("When we want to get one or more shipping addresses")
     @Nested
     class GetShippingAddressTest {
 
@@ -57,7 +57,7 @@ public class ShippingAddressServiceImplTest {
         @Test
         public void testGetShippingAddressById() {
             // prepare
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(ShippingAddress.class)));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(mock(ShippingAddress.class)));
             // exercise
             ShippingAddress shippingAddress = shippingAddressService.getUserShippingAddressById(TEST_SHIPPING_ADDRESS_ID);
             // verify
@@ -68,7 +68,7 @@ public class ShippingAddressServiceImplTest {
         @Test
         public void testGetShippingAddressByIdFailsWhenPassedIdDoesntExist() {
             // prepare
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.empty());
             // verify
             assertThrows(EntityNotFoundException.class,
                     () -> shippingAddressService.getUserShippingAddressById(SHIPPING_ADDRESS_ID_NOT_EXISTS), "ShippingAddress with id=" + SHIPPING_ADDRESS_ID_NOT_EXISTS + " doesn't exist");
@@ -130,7 +130,7 @@ public class ShippingAddressServiceImplTest {
         public void testAddUserShippingAddressSuccess() {
             // prepare
             when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnShippingAddress);
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnShippingAddress));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(johnShippingAddress));
 
             // exercise
             Long shippingAddressId = shippingAddressService.addUserShippingAddress(johnUser.getId(), shippingAddressRequest);
@@ -162,9 +162,9 @@ public class ShippingAddressServiceImplTest {
         @Test
         public void testAddUserShippingAddressSuccessWhenFirstAndLastNameAreCopiedFromUser() {
             // prepare
-            when(userService.getUserById(any(Long.class))).thenReturn(janeUser);
+            when(userService.getUserById(anyLong())).thenReturn(janeUser);
             when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(janeShippingAddress);
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(janeShippingAddress));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(janeShippingAddress));
 
             // exercise
             Long shippingAddressId = shippingAddressService.addUserShippingAddress(janeUser.getId(), shippingAddressRequestWithoutNames);
@@ -297,7 +297,7 @@ public class ShippingAddressServiceImplTest {
         public void testUpdateUserShippingAddressSuccess() {
             // prepare
             when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(johnUpdatedShippingAddress));
 
             // exercise
             Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), updateShippingAddressRequest);
@@ -324,7 +324,7 @@ public class ShippingAddressServiceImplTest {
             ShippingAddressRequest shippingAddressRequest = mock(ShippingAddressRequest.class);
             when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_PHONE_NUMBER);
             when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(johnUpdatedShippingAddress));
 
             // exercise
             Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
@@ -342,7 +342,7 @@ public class ShippingAddressServiceImplTest {
             when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_PHONE_NUMBER);
             when(shippingAddressRequest.getFirstName()).thenReturn("");
             when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(johnUpdatedShippingAddress));
 
             // exercise
             Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
@@ -360,7 +360,7 @@ public class ShippingAddressServiceImplTest {
             when(shippingAddressRequest.getPhoneNumber()).thenReturn(TEST_PHONE_NUMBER);
             when(shippingAddressRequest.getFirstName()).thenReturn("John");
             when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(johnUpdatedShippingAddress));
 
             // exercise
             Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);
@@ -379,7 +379,7 @@ public class ShippingAddressServiceImplTest {
             when(shippingAddressRequest.getFirstName()).thenReturn("John");
             when(shippingAddressRequest.getLastName()).thenReturn("");
             when(shippingAddressRepository.save(any(ShippingAddress.class))).thenReturn(johnUpdatedShippingAddress);
-            when(shippingAddressRepository.findById(any(Long.class))).thenReturn(Optional.of(johnUpdatedShippingAddress));
+            when(shippingAddressRepository.findById(anyLong())).thenReturn(Optional.of(johnUpdatedShippingAddress));
 
             // exercise
             Long shippingAddressId = shippingAddressService.updateUserShippingAddress(johnShippingAddress.getId(), shippingAddressRequest);

@@ -11,7 +11,6 @@ import java.util.Set;
 
 import com.jovana.entity.authority.Authority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jovana.entity.coupon.Coupon;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 
 import javax.persistence.*;
@@ -62,9 +61,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<ShippingAddress> shippingAddresses;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Coupon> coupons;
 
     public User() {
     }
@@ -131,14 +127,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setShippingAddresses(List<ShippingAddress> shippingAddresses) {
         this.shippingAddresses = shippingAddresses;
-    }
-
-    public List<Coupon> getCoupons() {
-        return coupons;
-    }
-
-    public void setCoupons(List<Coupon> coupons) {
-        this.coupons = coupons;
     }
 
 }

@@ -30,7 +30,7 @@ public class CouponServiceImplIT extends AbstractTest {
     @Autowired
     private CouponRepository couponRepository;
 
-    @DisplayName("When we want to find a Coupon by id")
+    @DisplayName("When we want to get one or more coupons")
     @Nested
     class GetCouponTest {
 

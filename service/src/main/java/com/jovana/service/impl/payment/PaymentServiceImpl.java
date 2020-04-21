@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 /**
  * Created by jovana on 20.04.2020
  */
@@ -28,12 +30,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @IsUser
     @Override
-    public PaymentResponse payOrder(Long amount, String description) {
+    public PaymentResponse payOrder(BigDecimal amount, String description) {
         Stripe.apiKey = getStripeApiKey;
+
+        Long amountInCents = amount.multiply(new BigDecimal("100")).longValue();
 
         ChargeCreateParams chargeParams =
                 ChargeCreateParams.builder()
-                        .setAmount(amount * 100) // amount is in cents
+                        .setAmount(amountInCents) // amount is in cents
                         .setCurrency(CURRENCY)
                         .setDescription(description)
                         .setSource(SOURCE)
@@ -42,6 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
         Charge charge;
         try {
             charge = Charge.create(chargeParams);
+            LOGGER.info("Payment successful. Amount charged = {}", charge.getAmount());
         } catch (StripeException e) {
             LOGGER.debug("Exception occurred on charge: stripeError = {}, requestId = {}", e.getStripeError(), e.getRequestId());
             throw new OrderPaymentFailedException(amount, description, "Failed to process payment for this order.");

@@ -27,7 +27,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
     @Autowired
     private ShippingAddressRepository shippingAddressRepository;
 
-    @DisplayName("When we want to find a ShippingAddress by id")
+    @DisplayName("When we want to get one or more shipping addresses")
     @Nested
     class GetShippingAddressTest {
 

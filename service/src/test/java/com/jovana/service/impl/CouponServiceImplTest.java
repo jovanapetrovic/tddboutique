@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class CouponServiceImplTest {
     @Mock
     private UserService userService;
 
-    @DisplayName("When we want to get a Coupon by id")
+    @DisplayName("When we want to get one or more coupons")
     @Nested
     class GetAndViewCouponTest {
 
@@ -59,7 +60,7 @@ public class CouponServiceImplTest {
         @Test
         public void testGetProductById() {
             // prepare
-            when(couponRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(Coupon.class)));
+            when(couponRepository.findById(anyLong())).thenReturn(Optional.of(mock(Coupon.class)));
             // exercise
             Coupon coupon = couponService.getCouponById(TEST_COUPON_ID);
             // verify
@@ -70,7 +71,7 @@ public class CouponServiceImplTest {
         @Test
         public void testGetCouponByIdFailsWhenPassedIdDoesntExist() {
             // prepare
-            when(couponRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+            when(couponRepository.findById(anyLong())).thenReturn(Optional.empty());
             // verify
             assertThrows(EntityNotFoundException.class,
                     () -> couponService.getCouponById(COUPON_ID_NOT_EXISTS), "Coupon with id=" + COUPON_ID_NOT_EXISTS + " doesn't exist");
@@ -91,7 +92,7 @@ public class CouponServiceImplTest {
 
             when(couponMock1.getValue()).thenReturn(CouponValue.COUPON_10);
             when(couponMock2.getValue()).thenReturn(CouponValue.COUPON_20);
-            when(couponMock3.getValue()).thenReturn(CouponValue.COUPON_3_FOR_2);
+            when(couponMock3.getValue()).thenReturn(CouponValue.COUPON_10);
 
             when(couponMock1.getStatus()).thenReturn(CouponStatus.ACTIVE);
             when(couponMock2.getStatus()).thenReturn(CouponStatus.REDEEMED);
@@ -125,10 +126,10 @@ public class CouponServiceImplTest {
         @Test
         public void testAddUserCouponSuccess() {
             // prepare
-            when(userService.getUserById(any(Long.class))).thenReturn(johnUser);
+            when(userService.getUserById(anyLong())).thenReturn(johnUser);
             when(couponRepository.save(any(Coupon.class))).thenReturn(johnCoupon);
 
-            when(couponRepository.findById(any(Long.class))).thenReturn(Optional.of(johnCoupon));
+            when(couponRepository.findById(anyLong())).thenReturn(Optional.of(johnCoupon));
 
             // exercise
             Long couponId = couponService.addUserCoupon(johnCouponRequest);
@@ -157,7 +158,7 @@ public class CouponServiceImplTest {
             User userMock = mock(User.class);
             CouponRequest couponRequestMock = mock(CouponRequest.class);
 
-            when(userService.getUserById(any(Long.class))).thenReturn(userMock);
+            when(userService.getUserById(anyLong())).thenReturn(userMock);
             when(couponRequestMock.getExpiryDate()).thenReturn(LocalDateTime.now().minusDays(1));
 
             // verify
@@ -168,9 +169,9 @@ public class CouponServiceImplTest {
 
     }
 
-    @DisplayName("When we want to redeem a coupon")
+    @DisplayName("When we want to check if a coupon is valid")
     @Nested
-    class RedeemCouponTest {
+    class CheckIfCouponIsValidTest {
 
         private final Long TEST_USER_ID = 10L;
         private final String TEST_COUPON_CODE = "ASDF5678asdf";
@@ -186,59 +187,102 @@ public class CouponServiceImplTest {
             johnExpiredCoupon = TestDataProvider.getCoupons().get("johnExpired");
         }
 
-        @DisplayName("Then coupon is redeemed when valid couponCode is passed")
+        @DisplayName("Then coupon is considered active when valid couponCode is passed")
         @Test
-        public void testRedeemCouponSuccess() {
+        public void testCheckIfCouponIsValidSuccess() {
             // prepare
             when(couponRepository.findByUserIdAndCode(anyLong(), anyString())).thenReturn(johnCoupon);
-            when(couponRepository.save(any(Coupon.class))).thenReturn(redeemedCoupon);
-
-            when(couponRepository.findById(any(Long.class))).thenReturn(Optional.of(redeemedCoupon));
-
             // exercise
-            Long couponId = couponService.redeemCoupon(TEST_USER_ID, TEST_COUPON_CODE);
-
+            Coupon coupon = couponService.checkIfCouponIsValid(TEST_USER_ID, TEST_COUPON_CODE);
             // verify
-            Coupon redeemedCoupon = couponService.getCouponById(couponId);
-
-            assertNotEquals(CouponStatus.REDEEMED.name(), redeemedCoupon.getStatus());
-            verify(couponRepository, times(1)).save(any(Coupon.class));
+            assertEquals(CouponStatus.ACTIVE, coupon.getStatus());
         }
 
         @DisplayName("Then error is thrown when coupon with passed couponCode doesn't exist for user")
         @Test
-        public void testRedeemCouponFailsWhenItDoesntExistInDb() {
+        public void testCheckIfCouponIsValidFailsWhenItDoesntExistInDb() {
             // prepare
             when(couponRepository.findByUserIdAndCode(anyLong(), anyString())).thenReturn(null);
 
             // verify
             assertThrows(EntityNotFoundException.class,
-                    () -> couponService.redeemCoupon(TEST_USER_ID, TEST_COUPON_CODE));
+                    () -> couponService.checkIfCouponIsValid(TEST_USER_ID, TEST_COUPON_CODE));
             verify(couponRepository, times(0)).save(any(Coupon.class));
         }
 
         @DisplayName("Then error is thrown when coupon is already redeemed")
         @Test
-        public void testRedeemCouponFailsWhenCouponIsAlreadyRedeemed() {
+        public void testCheckIfCouponIsValidFailsWhenCouponIsAlreadyRedeemed() {
             // prepare
             when(couponRepository.findByUserIdAndCode(anyLong(), anyString())).thenReturn(redeemedCoupon);
 
             // verify
             assertThrows(CouponAlreadyRedeemedException.class,
-                    () -> couponService.redeemCoupon(TEST_USER_ID, TEST_COUPON_CODE));
+                    () -> couponService.checkIfCouponIsValid(TEST_USER_ID, TEST_COUPON_CODE));
             verify(couponRepository, times(0)).save(any(Coupon.class));
         }
 
         @DisplayName("Then error is thrown when coupon has already expired")
         @Test
-        public void testRedeemCouponFailsWhenCouponHasExpired() {
+        public void testCheckIfCouponIsValidFailsWhenCouponHasExpired() {
             // prepare
             when(couponRepository.findByUserIdAndCode(anyLong(), anyString())).thenReturn(johnExpiredCoupon);
 
             // verify
             assertThrows(CouponExpiredException.class,
-                    () -> couponService.redeemCoupon(TEST_USER_ID, TEST_COUPON_CODE));
+                    () -> couponService.checkIfCouponIsValid(TEST_USER_ID, TEST_COUPON_CODE));
             verify(couponRepository, times(0)).save(any(Coupon.class));
+        }
+
+    }
+
+    @DisplayName("When we want to redeem a coupon")
+    @Nested
+    class RedeemCouponTest {
+
+        @DisplayName("Then coupon is redeemed when coupon is passed")
+        @Test
+        public void testRedeemCouponSuccess() {
+            // prepare
+            Coupon johnCoupon = TestDataProvider.getCoupons().get("john");
+            // exercise
+            boolean isRedeemed = couponService.redeemCoupon(johnCoupon);
+            // verify
+            assertTrue(isRedeemed);
+        }
+
+    }
+
+    @DisplayName("When we want to calculate a coupon discount")
+    @Nested
+    class CalculatePriceWithDiscountTest {
+
+        @DisplayName("Then a discount of 10% is applied when")
+        @Test
+        public void testCalculatePriceWith10PCTDiscountSuccess() {
+            // prepare
+            BigDecimal originalTotalPrice = new BigDecimal("74.99");
+            BigDecimal expectedDiscountedPrice = new BigDecimal("67.49");
+            Coupon johnCoupon = TestDataProvider.getCoupons().get("john");
+            // exercise
+            BigDecimal priceWithDiscount = couponService.calculatePriceWithDiscount(johnCoupon, originalTotalPrice);
+            // verify
+            assertNotNull(priceWithDiscount);
+            assertEquals(expectedDiscountedPrice, priceWithDiscount);
+        }
+
+        @DisplayName("Then a discount of 20% is applied when")
+        @Test
+        public void testCalculatePriceWith20PCTDiscountSuccess() {
+            // prepare
+            BigDecimal originalTotalPrice = new BigDecimal("74.99");
+            BigDecimal expectedDiscountedPrice = new BigDecimal("59.99");
+            Coupon johnCoupon = TestDataProvider.getCoupons().get("active20Coupon");
+            // exercise
+            BigDecimal priceWithDiscount = couponService.calculatePriceWithDiscount(johnCoupon, originalTotalPrice);
+            // verify
+            assertNotNull(priceWithDiscount);
+            assertEquals(expectedDiscountedPrice, priceWithDiscount);
         }
 
     }

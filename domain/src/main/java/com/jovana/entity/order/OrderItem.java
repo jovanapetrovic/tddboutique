@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Created by jovana on 13.04.2020
@@ -42,7 +43,11 @@ public class OrderItem extends AbstractAuditingEntity implements Serializable {
     private Long quantity;
 
     @Enumerated(EnumType.STRING)
-    private OrderState orderState = OrderState.CART;
+    private OrderItemState orderState = OrderItemState.CART;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     public OrderItem() {
     }
@@ -95,12 +100,24 @@ public class OrderItem extends AbstractAuditingEntity implements Serializable {
         this.quantity = quantity;
     }
 
-    public OrderState getOrderState() {
+    public OrderItemState getOrderState() {
         return orderState;
     }
 
-    public void setOrderState(OrderState orderState) {
-        this.orderState = orderState;
+    public void setOrderState(OrderItemState orderItemState) {
+        this.orderState = orderItemState;
+    }
+
+    public BigDecimal getTotalPricePerProduct() {
+        return this.getProduct().getPrice().multiply(BigDecimal.valueOf(this.getQuantity()));
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
 }

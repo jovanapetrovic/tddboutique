@@ -33,13 +33,6 @@ public class CouponResource {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = PathConstants.COUPON_REDEEM)
-    public ResponseEntity<Void> redeemCouponPUT(@PathVariable("userId") Long userId,
-                                                @PathVariable("couponCode") String couponCode) {
-        couponService.redeemCoupon(userId, couponCode);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping(value = PathConstants.COUPON_VIEW_ALL)
     public ResponseEntity<Set<CouponResponse>> viewAllUserCouponsGET(@PathVariable("userId") Long userId) {
         Set<CouponResponse> coupons = couponService.viewAllUserCoupons(userId);

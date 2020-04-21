@@ -48,7 +48,7 @@ public class UserServiceImplTest {
         public void testGetUserByIdSuccess() {
             // prepare
             Long TEST_USER_ID = 10L;
-            when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(User.class)));
+            when(userRepository.findById(anyLong())).thenReturn(Optional.of(mock(User.class)));
             // exercise
             User user = userService.getUserById(TEST_USER_ID);
             // verify
@@ -60,7 +60,7 @@ public class UserServiceImplTest {
         public void testGetUserByIdFailsWhenUserWithPassedIdDoesntExist() {
             // prepare
             Long TEST_USER_ID = 9999L;
-            when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+            when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
             // verify
             assertThrows(EntityNotFoundException.class,
                     () -> userService.getUserById(TEST_USER_ID), "User with id=" + TEST_USER_ID + " doesn't exist");

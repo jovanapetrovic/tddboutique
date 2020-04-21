@@ -32,7 +32,7 @@ public class ProductServiceImplIT extends AbstractTest {
     @Autowired
     private ProductRepository productRepository;
 
-    @DisplayName("When we want to find a Product by id")
+    @DisplayName("When we want to get one or more products")
     @Nested
     class GetAndViewProductTest {
 

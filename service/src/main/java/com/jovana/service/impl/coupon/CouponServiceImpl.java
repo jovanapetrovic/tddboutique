@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -86,16 +88,7 @@ public class CouponServiceImpl implements CouponService {
 
     @IsUser
     @Override
-    public Long redeemCoupon(Long userId, String couponCode) {
-        Coupon coupon = validateCoupon(userId, couponCode);
-
-        coupon.setStatus(CouponStatus.REDEEMED);
-
-        Coupon redeemedCoupon = couponRepository.save(coupon);
-        return redeemedCoupon.getId();
-    }
-
-    private Coupon validateCoupon(Long userId, String couponCode) {
+    public Coupon checkIfCouponIsValid(Long userId, String couponCode) {
         Coupon coupon = couponRepository.findByUserIdAndCode(userId, couponCode);
 
         if (coupon == null) {
@@ -110,6 +103,33 @@ public class CouponServiceImpl implements CouponService {
         }
 
         return coupon;
+    }
+
+    @IsUser
+    @Override
+    public boolean redeemCoupon(Coupon coupon) {
+        coupon.setStatus(CouponStatus.REDEEMED);
+        couponRepository.save(coupon);
+        return CouponStatus.REDEEMED.equals(coupon.getStatus());
+    }
+
+    @Override
+    public BigDecimal calculatePriceWithDiscount(Coupon coupon, BigDecimal originalTotalPrice) {
+        BigDecimal totalPriceWithDiscount = originalTotalPrice;
+
+        if (CouponValue.COUPON_10.equals(coupon.getValue())) {
+            totalPriceWithDiscount = originalTotalPrice.subtract(percentage(originalTotalPrice, new BigDecimal("10")));
+        }
+        if (CouponValue.COUPON_20.equals(coupon.getValue())) {
+            totalPriceWithDiscount = originalTotalPrice.subtract(percentage(originalTotalPrice, new BigDecimal("20")));
+        }
+
+        LOGGER.info("Applied coupon: " + coupon.getValue().getDescription() + ", newPrice = {}", totalPriceWithDiscount);
+        return totalPriceWithDiscount;
+    }
+
+    private static BigDecimal percentage(BigDecimal base, BigDecimal pct){
+        return base.multiply(pct).divide(new BigDecimal(100)).setScale(2, RoundingMode.HALF_EVEN);
     }
 
 }

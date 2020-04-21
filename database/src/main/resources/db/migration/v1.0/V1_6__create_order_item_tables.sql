@@ -13,8 +13,8 @@ CREATE TABLE order_item (
     last_modified_by varchar(30) DEFAULT NULL,
     last_modified_date timestamp NULL DEFAULT NULL,
     PRIMARY KEY (id),
-    KEY FK_CART_ITEM_USER (user_id),
-    KEY FK_CART_ITEM_PRODUCT (product_id),
-    CONSTRAINT FK_CART_ITEM_USER FOREIGN KEY (user_id) REFERENCES user (id),
-    CONSTRAINT FK_CART_ITEM_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id)
+    KEY FK_ORDER_ITEM_USER (user_id),
+    KEY FK_ORDER_ITEM_PRODUCT (product_id),
+    CONSTRAINT FK_ORDER_ITEM_USER FOREIGN KEY (user_id) REFERENCES user (id),
+    CONSTRAINT FK_ORDER_ITEM_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id)
 );

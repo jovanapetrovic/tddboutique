@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -31,7 +33,7 @@ public class PaymentServiceImplIT extends AbstractTest {
         @Test
         public void testPayOrderSuccess() {
             // prepare
-            Long TEST_AMOUNT = 1L;
+            BigDecimal TEST_AMOUNT = BigDecimal.ONE;
             String TEST_DESCRIPTION = "Test payment";
 
             // exercise
@@ -52,7 +54,7 @@ public class PaymentServiceImplIT extends AbstractTest {
         @Test
         public void testPayOrderFailsWhenAmountIsZero() {
             // prepare
-            Long TEST_AMOUNT = 0L;
+            BigDecimal TEST_AMOUNT = BigDecimal.ZERO;
             String TEST_DESCRIPTION = "Test payment";
             // verify
             assertThrows(OrderPaymentFailedException.class,

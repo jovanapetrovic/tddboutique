@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jovana.entity.coupon.CouponValue;
 import com.jovana.entity.coupon.dto.CouponRequest;
+import com.jovana.entity.order.dto.CheckoutCartRequest;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
@@ -128,6 +129,41 @@ public class RequestTestDataProvider {
         couponRequests.put("john", johnCoupon);
 
         return couponRequests;
+    }
+
+    public static Map<String, CheckoutCartRequest> getCheckoutCartRequests() {
+        Map<String, CheckoutCartRequest> checkoutCartRequests = new HashMap<>();
+
+        CheckoutCartRequest cardRequest = new CheckoutCartRequest();
+        cardRequest.setNote("Some note for seller");
+        cardRequest.setCouponCode("ASDF5678asdf");
+        cardRequest.setPaymentMethod("CARD");
+        cardRequest.setShippingAddressId(10L);
+
+        CheckoutCartRequest deliveryRequest = new CheckoutCartRequest();
+        deliveryRequest.setNote("Call my phone before delivery");
+        deliveryRequest.setCouponCode("7gHZfVo5gELe");
+        deliveryRequest.setPaymentMethod("DELIVERY");
+        deliveryRequest.setShippingAddressId(10L);
+
+        CheckoutCartRequest noCouponDeliveryRequest = new CheckoutCartRequest();
+        noCouponDeliveryRequest.setNote(null);
+        noCouponDeliveryRequest.setCouponCode(null);
+        noCouponDeliveryRequest.setPaymentMethod("DELIVERY");
+        noCouponDeliveryRequest.setShippingAddressId(10L);
+
+        CheckoutCartRequest emptyCouponDeliveryRequest = new CheckoutCartRequest();
+        emptyCouponDeliveryRequest.setNote(null);
+        emptyCouponDeliveryRequest.setCouponCode("");
+        emptyCouponDeliveryRequest.setPaymentMethod("DELIVERY");
+        emptyCouponDeliveryRequest.setShippingAddressId(10L);
+
+        checkoutCartRequests.put("card", cardRequest);
+        checkoutCartRequests.put("delivery", deliveryRequest);
+        checkoutCartRequests.put("deliveryNoCoupon", noCouponDeliveryRequest);
+        checkoutCartRequests.put("emptyCouponDeliveryRequest", emptyCouponDeliveryRequest);
+
+        return checkoutCartRequests;
     }
 
 }

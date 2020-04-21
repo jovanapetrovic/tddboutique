@@ -1,22 +1,25 @@
 package com.jovana.service.impl;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.jovana.entity.coupon.Coupon;
+import com.jovana.entity.order.Order;
 import com.jovana.entity.order.OrderItem;
-import com.jovana.entity.order.OrderState;
-import com.jovana.entity.order.dto.*;
-import com.jovana.entity.order.exception.InvalidCartSizeException;
-import com.jovana.entity.product.Product;
-import com.jovana.entity.product.dto.ProductFullResponse;
-import com.jovana.entity.product.dto.ProductResponse;
+import com.jovana.entity.order.PaymentStatus;
+import com.jovana.entity.order.dto.CheckoutCartRequest;
+import com.jovana.entity.order.dto.OrderCompletedResponse;
+import com.jovana.entity.order.dto.OrderSummary;
+import com.jovana.entity.order.payment.PaymentResponse;
+import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.user.User;
-import com.jovana.exception.ActionNotAllowedException;
-import com.jovana.exception.EntityNotFoundException;
-import com.jovana.repositories.order.OrderItemRepository;
+import com.jovana.repositories.order.OrderRepository;
+import com.jovana.service.impl.coupon.CouponService;
+import com.jovana.service.impl.order.OrderItemService;
 import com.jovana.service.impl.order.OrderService;
 import com.jovana.service.impl.order.OrderServiceImpl;
-import com.jovana.service.impl.product.ProductService;
+import com.jovana.service.impl.payment.PaymentService;
+import com.jovana.service.impl.shippingaddress.ShippingAddressService;
 import com.jovana.service.impl.user.UserService;
-import com.jovana.service.util.TestDataProvider;
+import com.jovana.service.util.RequestTestDataProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,22 +27,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
- * Created by jovana on 13.04.2020
+ * Created by jovana on 21.04.2020
  */
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceImplTest {
@@ -47,266 +48,206 @@ public class OrderServiceImplTest {
     @InjectMocks
     private OrderService orderService = new OrderServiceImpl();
     @Mock
-    private OrderItemRepository orderItemRepository;
+    private OrderRepository orderRepository;
     @Mock
     private UserService userService;
     @Mock
-    private ProductService productService;
+    private ShippingAddressService shippingAddressService;
+    @Mock
+    private CouponService couponService;
+    @Mock
+    private OrderItemService orderItemService;
+    @Mock
+    private PaymentService paymentService;
 
-    @DisplayName("When we want to find an order item by id")
+    @DisplayName("When we want to checkout user cart and have order processed")
     @Nested
-    class GetAndViewOrderItemTest {
+    class CheckoutCartAndProcessOrderTest {
 
-        @Spy
-        private CartItemResponse cartItem1;
-        @Spy
-        private CartItemResponse cartItem2;
-        @Spy
-        private CartItemResponse cartItem3;
+        private final Long TEST_USER_ID = 10L;
+        private final BigDecimal TEST_TOTAL_PRICE = new BigDecimal("49.98");
+        private final BigDecimal TEST_TOTAL_PRICE_WITH_DISCOUNT = new BigDecimal("44.98");
+        private final String TEST_PRODUCT_NAMES = "Casual dress, Evening dress";
+        private final String TEST_COUPON_CODE = "ASDF5678asdf";
+        private final String TEST_RECEIPT_URL = "https://pay.stripe.com/receipts/acct_12345";
 
-        @DisplayName("Then OrderItem is fetched from database when id is valid")
-        @Test
-        public void testGetOrderItemByIdSuccess() {
-            // prepare
-            Long TEST_ORDER_ITEM_ID = 10L;
-            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(OrderItem.class)));
-            // exercise
-            OrderItem orderItem = orderService.getOrderItemById(TEST_ORDER_ITEM_ID);
-            // verify
-            assertNotNull(orderItem, "OrderItem is null");
-        }
-
-        @DisplayName("Then error is thrown when OrderItem with passed id doesn't exist")
-        @Test
-        public void testGetOrderItemByIdFailsWhenOrderItemWithPassedIdDoesntExist() {
-            // prepare
-            Long TEST_ORDER_ITEM_ID = 9999L;
-            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.empty());
-            // verify
-            assertThrows(EntityNotFoundException.class,
-                    () -> orderService.getOrderItemById(TEST_ORDER_ITEM_ID), "OrderItem with id=" + TEST_ORDER_ITEM_ID + " doesn't exist");
-        }
-
-        @DisplayName("Then all cart items are fetched from database if there are any")
-        @Test
-        public void testViewCartSuccess() {
-            // prepare
-            Long TEST_USER_ID = 10L;
-            BigDecimal CART_ITEM_1_PRICE = BigDecimal.valueOf(19.99);
-            BigDecimal CART_ITEM_2_PRICE = BigDecimal.valueOf(40.00);
-            BigDecimal CART_ITEM_3_PRICE = BigDecimal.valueOf(11.99);
-
-            cartItem1.setTotalPricePerProduct(CART_ITEM_1_PRICE);
-            cartItem2.setTotalPricePerProduct(CART_ITEM_2_PRICE);
-            cartItem3.setTotalPricePerProduct(CART_ITEM_3_PRICE);
-
-            Set<CartItemResponse> cartItems = Sets.newSet(cartItem1, cartItem2, cartItem3);
-            when(orderItemRepository.findAllCartItemsWithProductDataByUserId(TEST_USER_ID)).thenReturn(cartItems);
-
-            // exercise
-            CartResponse cartResponse = orderService.viewCart(TEST_USER_ID);
-
-            // verify
-            assertNotNull(cartResponse);
-            assertEquals(3, cartResponse.getCartItems().size());
-            assertEquals(CART_ITEM_1_PRICE.add(CART_ITEM_2_PRICE).add(CART_ITEM_3_PRICE), cartResponse.getTotalPrice());
-        }
-
-        @DisplayName("Then empty cart is shown if there aren't any cart items")
-        @Test
-        public void testViewCartSuccessWhenCartIsEmpty() {
-            // prepare
-            Long TEST_USER_ID = 10L;
-            when(orderItemRepository.findAllCartItemsWithProductDataByUserId(TEST_USER_ID)).thenReturn(Sets.newSet());
-
-            // exercise
-            CartResponse cartResponse = orderService.viewCart(TEST_USER_ID);
-
-            // verify
-            assertNotNull(cartResponse);
-            assertEquals(0, cartResponse.getCartItems().size());
-            assertEquals(BigDecimal.ZERO, cartResponse.getTotalPrice());
-        }
-
-    }
-
-    @DisplayName("When we want to add items to cart")
-    @Nested
-    class AddItemsToCartTest {
+        private CheckoutCartRequest checkoutCartWithCard;
+        private CheckoutCartRequest checkoutCartWithDelivery;
+        private CheckoutCartRequest checkoutCartWithDeliveryAndNoCoupon;
+        private CheckoutCartRequest emptyCouponRequest;
 
         private User userMock;
-        private Product productMock;
+        private ShippingAddress shippingAddressMock;
+        private Coupon couponMock;
+        private OrderSummary orderSummaryMock;
+        private PaymentResponse paymentResponseMock;
 
-        private CartRequest cartRequest = new CartRequest();
-        private CartItemDTO cartItem1;
-        private CartItemDTO cartItem2;
+        private OrderItem orderItemMock1;
+        private OrderItem orderItemMock2;
+        private List<OrderItem> orderItemsListMock = new ArrayList<>();
 
-        private OrderItem orderItem1;
-        private OrderItem orderItem2;
+        private Order orderMock;
 
         @BeforeEach
-        void setUp() {
+        public void setUp() {
+            checkoutCartWithCard = RequestTestDataProvider.getCheckoutCartRequests().get("card");
+            checkoutCartWithDelivery = RequestTestDataProvider.getCheckoutCartRequests().get("delivery");
+            checkoutCartWithDeliveryAndNoCoupon = RequestTestDataProvider.getCheckoutCartRequests().get("deliveryNoCoupon");
+            emptyCouponRequest = RequestTestDataProvider.getCheckoutCartRequests().get("emptyCouponDeliveryRequest");
+
             userMock = mock(User.class);
-            productMock = mock(Product.class);
+            shippingAddressMock = mock(ShippingAddress.class);
+            couponMock = mock(Coupon.class);
+            orderSummaryMock = mock(OrderSummary.class);
+            paymentResponseMock = mock(PaymentResponse.class);
 
-            cartItem1 = TestDataProvider.getCartItems().get("cartItem1");
-            cartItem2 = TestDataProvider.getCartItems().get("cartItem2");
+            orderItemMock1 = mock(OrderItem.class);
+            orderItemMock2 = mock(OrderItem.class);
+            orderItemsListMock.add(orderItemMock1);
+            orderItemsListMock.add(orderItemMock2);
 
-            orderItem1 = TestDataProvider.getOrderItems().get("orderItem1");
-            orderItem2 = TestDataProvider.getOrderItems().get("orderItem2");
+            orderMock = mock(Order.class);
         }
 
-        @DisplayName("Then order items are created when valid CartRequest is passed")
+        @DisplayName("Then payment is charged and new order is created when valid " +
+                "CheckoutCartRequest(couponCode, CARD, shippingAddressId) is provided")
         @Test
-        public void testAddItemsToCartSuccess() {
+        public void testCheckoutCartWithCouponAndCardPaymentMethodSuccess() {
             // prepare
-            Long TEST_USER_ID = 10L;
-            cartRequest.setCartItems(Lists.newArrayList(cartItem1, cartItem2));
-            List<OrderItem> orderItems = Lists.newArrayList(orderItem1, orderItem2);
-
             when(userService.getUserById(anyLong())).thenReturn(userMock);
-            when(productService.getProductById(anyLong())).thenReturn(productMock);
-            when(productService.validateAndProcessProductStock(any(Product.class), anyLong())).thenReturn(true);
 
-            when(orderItemRepository.saveAll(anyIterable())).thenReturn(orderItems);
+            when(shippingAddressService.getUserShippingAddressById(anyLong())).thenReturn(shippingAddressMock);
+
+            when(couponService.checkIfCouponIsValid(anyLong(), anyString())).thenReturn(couponMock);
+
+            when(orderItemService.getOrderSummary(anyLong())).thenReturn(orderSummaryMock);
+            when(orderSummaryMock.getTotalPrice()).thenReturn(TEST_TOTAL_PRICE);
+            when(orderSummaryMock.getProductNames()).thenReturn(TEST_PRODUCT_NAMES);
+
+            when(couponService.calculatePriceWithDiscount(couponMock, TEST_TOTAL_PRICE)).thenReturn(TEST_TOTAL_PRICE_WITH_DISCOUNT);
+
+            when(paymentService.payOrder(TEST_TOTAL_PRICE_WITH_DISCOUNT, TEST_PRODUCT_NAMES)).thenReturn(paymentResponseMock);
+            when(paymentResponseMock.getReceiptUrl()).thenReturn(TEST_RECEIPT_URL);
+
+            when(couponService.redeemCoupon(any(Coupon.class))).thenReturn(true);
+            when(couponMock.getCode()).thenReturn(TEST_COUPON_CODE);
+
+            when(orderRepository.save(any(Order.class))).thenReturn(orderMock);
+
+            when(orderItemService.updateCartItemsToOrderItems(Sets.newHashSet(), orderMock)).thenReturn(orderItemsListMock);
 
             // exercise
-            AddToCartResponse addToCartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
+            OrderCompletedResponse orderCompletedResponse = orderService.checkoutCartAndProcessOrder(TEST_USER_ID, checkoutCartWithCard);
 
             // verify
-            assertAll("Verify cart response",
-                    () -> assertNotNull(addToCartResponse),
-                    () -> assertEquals(2, addToCartResponse.getOrderedProducts().size()),
-                    () -> assertEquals(0, addToCartResponse.getOutOfStockProducts().size())
+            assertAll("Verify order completed response (card)",
+                    () -> assertNotNull(orderCompletedResponse),
+                    () -> assertNotNull(orderCompletedResponse.getTotalPrice()),
+                    () -> assertEquals(TEST_TOTAL_PRICE, orderCompletedResponse.getTotalPrice()),
+                    () -> assertNotNull(orderCompletedResponse.getTotalPriceWithDiscount()),
+                    () -> assertEquals(TEST_TOTAL_PRICE_WITH_DISCOUNT, orderCompletedResponse.getTotalPriceWithDiscount()),
+                    () -> assertNotNull(orderCompletedResponse.getUsedCouponCode()),
+                    () -> assertEquals(TEST_COUPON_CODE, orderCompletedResponse.getUsedCouponCode()),
+                    () -> assertNotNull(orderCompletedResponse.getPaymentStatusDescription()),
+                    () -> assertEquals(PaymentStatus.PAID.getDescription(), orderCompletedResponse.getPaymentStatusDescription()),
+                    () -> assertNotNull(orderCompletedResponse.getReceiptUrl()),
+                    () -> assertEquals(TEST_RECEIPT_URL, orderCompletedResponse.getReceiptUrl())
             );
-            verify(orderItemRepository, times(1)).saveAll(anySet());
         }
 
-        @DisplayName("Then creating order items is skipped when product is out of stock")
+        @DisplayName("Then new order is created when valid " +
+                "CheckoutCartRequest(couponCode, DELIVERY, shippingAddressId) is provided")
         @Test
-        public void testAddItemsToCartSkipsWhenProductIsOutOfStock() {
+        public void testCheckoutCartWithCouponAndDeliveryPaymentMethodSuccess() {
             // prepare
-            Long TEST_USER_ID = 10L;
-            cartRequest.setCartItems(Lists.newArrayList(cartItem1));
-            List<OrderItem> orderItems = Lists.newArrayList(orderItem1);
-
             when(userService.getUserById(anyLong())).thenReturn(userMock);
-            when(productService.getProductById(anyLong())).thenReturn(productMock);
-            when(productService.validateAndProcessProductStock(any(Product.class), anyLong())).thenReturn(false);
 
-            when(orderItemRepository.saveAll(anyIterable())).thenReturn(orderItems);
+            when(shippingAddressService.getUserShippingAddressById(anyLong())).thenReturn(shippingAddressMock);
+
+            when(couponService.checkIfCouponIsValid(anyLong(), anyString())).thenReturn(couponMock);
+
+            when(orderItemService.getOrderSummary(anyLong())).thenReturn(orderSummaryMock);
+            when(orderSummaryMock.getTotalPrice()).thenReturn(TEST_TOTAL_PRICE);
+
+            when(couponService.calculatePriceWithDiscount(couponMock, TEST_TOTAL_PRICE)).thenReturn(TEST_TOTAL_PRICE_WITH_DISCOUNT);
+
+            when(couponService.redeemCoupon(any(Coupon.class))).thenReturn(true);
+            when(couponMock.getCode()).thenReturn(TEST_COUPON_CODE);
+
+            when(orderRepository.save(any(Order.class))).thenReturn(orderMock);
+
+            when(orderItemService.updateCartItemsToOrderItems(Sets.newHashSet(), orderMock)).thenReturn(orderItemsListMock);
 
             // exercise
-            AddToCartResponse addToCartResponse = orderService.addItemsToCart(TEST_USER_ID, cartRequest);
+            OrderCompletedResponse orderCompletedResponse = orderService.checkoutCartAndProcessOrder(TEST_USER_ID, checkoutCartWithDelivery);
 
             // verify
-
-            assertAll("Verify cart response",
-                    () -> assertNotNull(addToCartResponse),
-                    () -> assertEquals(0, addToCartResponse.getOrderedProducts().size()),
-                    () -> assertEquals(1, addToCartResponse.getOutOfStockProducts().size())
+            assertAll("Verify order completed response (delivery)",
+                    () -> assertNotNull(orderCompletedResponse),
+                    () -> assertNotNull(orderCompletedResponse.getTotalPrice()),
+                    () -> assertEquals(TEST_TOTAL_PRICE, orderCompletedResponse.getTotalPrice()),
+                    () -> assertNotNull(orderCompletedResponse.getTotalPriceWithDiscount()),
+                    () -> assertEquals(TEST_TOTAL_PRICE_WITH_DISCOUNT, orderCompletedResponse.getTotalPriceWithDiscount()),
+                    () -> assertNotNull(orderCompletedResponse.getUsedCouponCode()),
+                    () -> assertEquals(TEST_COUPON_CODE, orderCompletedResponse.getUsedCouponCode()),
+                    () -> assertNotNull(orderCompletedResponse.getPaymentStatusDescription()),
+                    () -> assertEquals(PaymentStatus.DELIVERY.getDescription(), orderCompletedResponse.getPaymentStatusDescription()),
+                    () -> assertNull(orderCompletedResponse.getReceiptUrl())
             );
-            verify(orderItemRepository, times(1)).saveAll(anySet());
         }
 
-        @DisplayName("Then error is thrown when cart is empty")
+        @DisplayName("Then new order is created when valid CheckoutCartRequest(DELIVERY, shippingAddressId) is provided")
         @Test
-        public void testAddItemsToCartFailsWhenCartIsEmpty() {
+        public void testCheckoutCartWithoutCouponAndDeliveryPaymentMethodSuccess() {
             // prepare
-            Long TEST_USER_ID = 10L;
-            cartRequest.setCartItems(Lists.newArrayList());
-
             when(userService.getUserById(anyLong())).thenReturn(userMock);
 
-            // verify
-            assertThrows(InvalidCartSizeException.class,
-                    () -> orderService.addItemsToCart(TEST_USER_ID, cartRequest), "Cart is empty.");
+            when(shippingAddressService.getUserShippingAddressById(anyLong())).thenReturn(shippingAddressMock);
 
-            verify(orderItemRepository, times(0)).saveAll(anySet());
-        }
+            when(orderItemService.getOrderSummary(anyLong())).thenReturn(orderSummaryMock);
+            when(orderSummaryMock.getTotalPrice()).thenReturn(TEST_TOTAL_PRICE);
 
-        @DisplayName("Then error is thrown when cart has more than 10 items")
-        @Test
-        public void testAddItemsToCartFailsWhenCartHasMoreThan10Items() {
-            // prepare
-            Long TEST_USER_ID = 10L;
-            CartItemDTO cartItemMock = mock(CartItemDTO.class);
-            cartRequest.setCartItems(Lists.newArrayList(
-                    cartItemMock, cartItemMock, cartItemMock, cartItemMock, cartItemMock,
-                    cartItemMock, cartItemMock, cartItemMock, cartItemMock, cartItemMock, cartItemMock));
+            when(orderRepository.save(any(Order.class))).thenReturn(orderMock);
 
-            when(userService.getUserById(anyLong())).thenReturn(userMock);
-
-            // verify
-            assertThrows(InvalidCartSizeException.class,
-                    () -> orderService.addItemsToCart(TEST_USER_ID, cartRequest), "Cart has more than 10 items.");
-
-            verify(orderItemRepository, times(0)).saveAll(anySet());
-        }
-
-    }
-
-    @DisplayName("When we want to remove an item from cart")
-    @Nested
-    class RemoveItemFromCartTest {
-
-        @DisplayName("Then OrderItem is deleted from database if it is user's cart item")
-        @Test
-        public void testRemoveItemFromCartSuccess() {
-            // prepare
-            Long TEST_USER_ID = 10L;
-            Long TEST_CART_ITEM_ID = 10L;
-            OrderItem orderItemMock = mock(OrderItem.class);
-            User userMock = mock(User.class);
-
-            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.of(orderItemMock));
-            when(orderItemMock.getUser()).thenReturn(userMock);
-            when(userMock.getId()).thenReturn(TEST_USER_ID);
-            when(orderItemMock.getOrderState()).thenReturn(OrderState.CART);
+            when(orderItemService.updateCartItemsToOrderItems(Sets.newHashSet(), orderMock)).thenReturn(orderItemsListMock);
 
             // exercise
-            boolean isRemoved = orderService.removeItemFromCart(TEST_USER_ID, TEST_CART_ITEM_ID);
+            OrderCompletedResponse orderCompletedResponse = orderService.checkoutCartAndProcessOrder(TEST_USER_ID, checkoutCartWithDeliveryAndNoCoupon);
+
             // verify
-            assertTrue(isRemoved);
+            assertAll("Verify order completed response without coupon",
+                    () -> assertNotNull(orderCompletedResponse),
+                    () -> assertNotNull(orderCompletedResponse.getUsedCouponCode()),
+                    () -> assertEquals("", orderCompletedResponse.getUsedCouponCode())
+            );
         }
 
-        @DisplayName("Then error is thrown when OrderItem is not user's item")
+        @DisplayName("Then new order is created when valid CheckoutCartRequest(empty_coupon, DELIVERY, shippingAddressId) is provided")
         @Test
-        public void testRemoveItemFromCartFailsWhenOrderItemDoesntBelongToUser() {
+        public void testCheckoutCartWithEmptyCouponSideCase() {
             // prepare
-            Long TEST_USER_ID = 10L;
-            Long TEST_ACTUAL_USER_ID = 11L;
-            Long TEST_ORDER_ITEM_ID = 9999L;
-            OrderItem orderItemMock = mock(OrderItem.class);
-            User userMock = mock(User.class);
+            when(userService.getUserById(anyLong())).thenReturn(userMock);
 
-            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.of(orderItemMock));
-            when(orderItemMock.getUser()).thenReturn(userMock);
-            when(userMock.getId()).thenReturn(TEST_ACTUAL_USER_ID);
+            when(shippingAddressService.getUserShippingAddressById(anyLong())).thenReturn(shippingAddressMock);
+
+            when(orderItemService.getOrderSummary(anyLong())).thenReturn(orderSummaryMock);
+            when(orderSummaryMock.getTotalPrice()).thenReturn(TEST_TOTAL_PRICE);
+
+            when(orderRepository.save(any(Order.class))).thenReturn(orderMock);
+
+            when(orderItemService.updateCartItemsToOrderItems(Sets.newHashSet(), orderMock)).thenReturn(orderItemsListMock);
+
+            // exercise
+            OrderCompletedResponse orderCompletedResponse = orderService.checkoutCartAndProcessOrder(TEST_USER_ID, emptyCouponRequest);
 
             // verify
-            assertThrows(ActionNotAllowedException.class,
-                    () -> orderService.removeItemFromCart(TEST_USER_ID, TEST_ORDER_ITEM_ID), "This item is not in your cart");
+            assertAll("Verify order completed response without coupon",
+                    () -> assertNotNull(orderCompletedResponse),
+                    () -> assertNotNull(orderCompletedResponse.getUsedCouponCode()),
+                    () -> assertEquals("", orderCompletedResponse.getUsedCouponCode())
+            );
         }
 
-        @DisplayName("Then error is thrown when OrderItem is not a cart item")
-        @Test
-        public void testRemoveItemFromCartFailsWhenOrderItemIsNotInUsersCart() {
-            // prepare
-            Long TEST_USER_ID = 10L;
-            Long TEST_ORDER_ITEM_ID = 9999L;
-            OrderItem orderItemMock = mock(OrderItem.class);
-            User userMock = mock(User.class);
-
-            when(orderItemRepository.findById(any(Long.class))).thenReturn(Optional.of(orderItemMock));
-            when(orderItemMock.getUser()).thenReturn(userMock);
-            when(userMock.getId()).thenReturn(TEST_USER_ID);
-            when(orderItemMock.getOrderState()).thenReturn(OrderState.ORDER);
-
-            // verify
-            assertThrows(ActionNotAllowedException.class,
-                    () -> orderService.removeItemFromCart(TEST_USER_ID, TEST_ORDER_ITEM_ID), "This item is not in your cart");
-        }
     }
 
 }

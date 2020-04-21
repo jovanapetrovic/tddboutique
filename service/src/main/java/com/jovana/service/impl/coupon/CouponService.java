@@ -4,6 +4,7 @@ import com.jovana.entity.coupon.Coupon;
 import com.jovana.entity.coupon.dto.CouponRequest;
 import com.jovana.entity.coupon.dto.CouponResponse;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 /**
@@ -17,6 +18,10 @@ public interface CouponService {
 
     Set<CouponResponse> viewAllUserCoupons(Long userId);
 
-    Long redeemCoupon(Long userId, String couponCode);
+    Coupon checkIfCouponIsValid(Long userId, String couponCode);
+
+    boolean redeemCoupon(Coupon coupon);
+
+    BigDecimal calculatePriceWithDiscount(Coupon coupon, BigDecimal originalTotalPrice);
 
 }

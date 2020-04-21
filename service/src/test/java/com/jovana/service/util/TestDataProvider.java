@@ -7,12 +7,11 @@ import com.jovana.entity.coupon.Coupon;
 import com.jovana.entity.coupon.CouponStatus;
 import com.jovana.entity.coupon.CouponValue;
 import com.jovana.entity.order.OrderItem;
-import com.jovana.entity.order.OrderState;
+import com.jovana.entity.order.OrderItemState;
 import com.jovana.entity.order.dto.CartItemDTO;
 import com.jovana.entity.product.ColorCode;
 import com.jovana.entity.product.Product;
 import com.jovana.entity.product.SizeCode;
-import com.jovana.entity.product.Stock;
 import com.jovana.entity.product.image.Image;
 import com.jovana.entity.product.image.ImageType;
 import com.jovana.entity.shippingaddress.ShippingAddress;
@@ -204,9 +203,18 @@ public class TestDataProvider {
         expiredCoupon.setStatus(CouponStatus.ACTIVE);
         expiredCoupon.setExpiryDate(LocalDateTime.now().minusDays(5));
 
+        Coupon active20Coupon = new Coupon();
+        active20Coupon.setId(13L);
+        active20Coupon.setUser(TestDataProvider.getUsers().get("john"));
+        active20Coupon.setCode("1234aBaB56CD");
+        active20Coupon.setValue(CouponValue.COUPON_20);
+        active20Coupon.setStatus(CouponStatus.ACTIVE);
+        active20Coupon.setExpiryDate(LocalDateTime.now().plusDays(5));
+
         coupons.put("john", johnCoupon);
         coupons.put("johnRedeemed", redeemedCoupon);
         coupons.put("johnExpired", expiredCoupon);
+        coupons.put("active20Coupon", active20Coupon);
 
         return coupons;
     }
@@ -249,7 +257,7 @@ public class TestDataProvider {
         orderItem1.setProductSize(SizeCode.S);
         orderItem1.setProductColor(ColorCode.BLACK);
         orderItem1.setQuantity(1L);
-        orderItem1.setOrderState(OrderState.CART);
+        orderItem1.setOrderState(OrderItemState.CART);
 
         OrderItem orderItem2 = new OrderItem();
         orderItem2.setId(10L);
@@ -258,7 +266,7 @@ public class TestDataProvider {
         orderItem2.setProductSize(SizeCode.S);
         orderItem2.setProductColor(ColorCode.RED);
         orderItem2.setQuantity(1L);
-        orderItem2.setOrderState(OrderState.CART);
+        orderItem2.setOrderState(OrderItemState.CART);
 
         orderItems.put("orderItem1", orderItem1);
         orderItems.put("orderItem2", orderItem1);

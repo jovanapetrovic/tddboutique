@@ -1,12 +1,13 @@
 package com.jovana.api;
 
-import com.jovana.entity.order.OrderItem;
 import com.jovana.service.impl.coupon.CouponService;
+import com.jovana.service.impl.order.OrderItemService;
 import com.jovana.service.impl.order.OrderService;
 import com.jovana.service.impl.product.ProductService;
 import com.jovana.service.impl.product.image.ImageStorageService;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
 import com.jovana.service.impl.user.UserService;
+import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
@@ -24,6 +25,8 @@ public class ServiceBeanMocks {
     private ImageStorageService imageStorageService;
     @MockBean
     private CouponService couponService;
+    @MockBean
+    private OrderItemService orderItemService;
     @MockBean
     private OrderService orderService;
 

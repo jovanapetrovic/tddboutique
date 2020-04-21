@@ -48,7 +48,7 @@ public class ProductServiceImplTest {
     @Mock
     private StockRepository stockRepository;
 
-    @DisplayName("When we want to get a Product by id")
+    @DisplayName("When we want to get one or more products")
     @Nested
     class GetAndViewProductTest {
 
@@ -59,7 +59,7 @@ public class ProductServiceImplTest {
         @Test
         public void testGetProductById() {
             // prepare
-            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(Product.class)));
+            when(productRepository.findById(anyLong())).thenReturn(Optional.of(mock(Product.class)));
             // exercise
             Product product = productService.getProductById(TEST_PRODUCT_ID);
             // verify
@@ -70,7 +70,7 @@ public class ProductServiceImplTest {
         @Test
         public void testGetProductByIdFailsWhenPassedIdDoesntExist() {
             // prepare
-            when(productRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+            when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
             // verify
             assertThrows(EntityNotFoundException.class,
                     () -> productService.getProductById(PRODUCT_ID_NOT_EXISTS), "Product with id=" + PRODUCT_ID_NOT_EXISTS + " doesn't exist");
@@ -81,7 +81,7 @@ public class ProductServiceImplTest {
         public void testViewOneProductSuccess() {
             // prepare
             ProductFullResponse productMock = mock(ProductFullResponse.class);
-            when(productRepository.findOneWithImages(any(Long.class))).thenReturn(productMock);
+            when(productRepository.findOneWithImages(anyLong())).thenReturn(productMock);
 
             // exercise
             ProductFullResponse product = productService.viewOneProduct(TEST_PRODUCT_ID);
@@ -93,7 +93,7 @@ public class ProductServiceImplTest {
         @DisplayName("Then error is thrown when Product with passed id doesn't exist")
         @Test
         public void testViewOneProductFailsWhenPassedIdDoesntExist() {
-            when(productRepository.findOneWithImages(any(Long.class))).thenReturn(null);
+            when(productRepository.findOneWithImages(anyLong())).thenReturn(null);
             // verify
             assertThrows(EntityNotFoundException.class,
                     () -> productService.viewOneProduct(PRODUCT_ID_NOT_EXISTS), "Product with id=" + PRODUCT_ID_NOT_EXISTS + " doesn't exist");
@@ -137,7 +137,7 @@ public class ProductServiceImplTest {
         public void testAddProductSuccess() {
             // prepare
             when(productRepository.save(any(Product.class))).thenReturn(casualDressProduct);
-            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(casualDressProduct));
+            when(productRepository.findById(anyLong())).thenReturn(Optional.of(casualDressProduct));
 
             // exercise
             Long productId = productService.addProduct(casualDressRequest);
@@ -193,7 +193,7 @@ public class ProductServiceImplTest {
             Product eveningDressProductAfter = TestDataProvider.getProducts().get("eveningDress");
             eveningDressProductAfter.setStock(updateStockRequest.getNumberOfUnitsInStock());
 
-            when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(eveningDressProductBefore));
+            when(productRepository.findById(anyLong())).thenReturn(Optional.of(eveningDressProductBefore));
             when(productRepository.save(any(Product.class))).thenReturn(eveningDressProductAfter);
 
             // exercise

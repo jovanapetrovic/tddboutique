@@ -18,7 +18,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     @Query("select it from OrderItem it " +
             "where it.user.id = :userId " +
             "and it.orderState = 'CART' ")
-    Set<OrderItem> findAllCartItemsByUserId(@Param("userId") Long userId);
+    Set<OrderItem> findAllUserCartItems(@Param("userId") Long userId);
 
 //    @Query("select it from OrderItem it, Product p " +
 //            "left join p.images i " +
@@ -33,5 +33,12 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             "and it.orderState = 'CART' " +
             "and p.deleted = false ")
     Set<CartItemResponse> findAllCartItemsWithProductDataByUserId(@Param("userId") Long userId);
+
+    @Query("select it from OrderItem it, Product p " +
+            "where it.product.id = p.id " +
+            "and it.user.id = :userId " +
+            "and it.orderState = 'CART' " +
+            "and p.deleted = false ")
+    Set<OrderItem> findAllCartItemsByUserId(@Param("userId") Long userId);
 
 }

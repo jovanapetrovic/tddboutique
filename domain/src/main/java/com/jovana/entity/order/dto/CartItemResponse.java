@@ -43,9 +43,7 @@ public class CartItemResponse {
 
         this.setQuantity(orderItem.getQuantity());
         this.setProductPrice(product.getPrice());
-
-        BigDecimal priceForQuantity = product.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
-        this.setTotalPricePerProduct(priceForQuantity);
+        this.setTotalPricePerProduct(orderItem.getTotalPricePerProduct());
     }
 
     public Long getOrderItemId() {
