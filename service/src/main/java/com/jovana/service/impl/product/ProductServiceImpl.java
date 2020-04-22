@@ -137,6 +137,12 @@ public class ProductServiceImpl implements ProductService {
         return products;
     }
 
+    @Override
+    public Set<ProductResponse> searchProducts(String searchText) {
+        Set<ProductResponse> products = productRepository.findAllWhereNameOrDescriptionContainsText(searchText);
+        LOGGER.info("Found {} products that match searchText = {}.", products.size(), searchText);
+        return products;
+    }
 
     private void validateProductName(String name) {
         if (productRepository.findByName(name) != null) {

@@ -117,6 +117,25 @@ public class ProductServiceImplTest {
             assertNotNull(productResponses);
             assertEquals(3, productResponses.size());
         }
+
+        @DisplayName("Then only products where name or description contain search text are fetched")
+        @Test
+        public void testSearchProductsSuccess() {
+            // prepare
+            String TEST_SEARCH_TEXT = "summer";
+            ProductResponse productMock1 = mock(ProductResponse.class);
+            ProductResponse productMock2 = mock(ProductResponse.class);
+            Set<ProductResponse> products = Sets.newSet(productMock1, productMock2);
+
+            when(productRepository.findAllWhereNameOrDescriptionContainsText(anyString())).thenReturn(products);
+
+            // exercise
+            Set<ProductResponse> productResponses = productService.searchProducts(TEST_SEARCH_TEXT);
+
+            // verify
+            assertNotNull(productResponses);
+            assertEquals(2, productResponses.size());
+        }
     }
 
     @DisplayName("When we want to add a new product")

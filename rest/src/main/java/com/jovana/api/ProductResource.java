@@ -130,8 +130,13 @@ public class ProductResource {
     }
 
     @GetMapping(value = PathConstants.PRODUCT_VIEW_ALL)
-    public ResponseEntity<Set<ProductResponse>> viewAllProductsGET() {
-        Set<ProductResponse> productResponses = productService.viewAllProducts();
+    public ResponseEntity<Set<ProductResponse>> viewAllProductsGET(@RequestParam(required = false) String searchText) {
+        Set<ProductResponse> productResponses;
+        if (searchText == null || searchText.isEmpty()) {
+            productResponses = productService.viewAllProducts();
+        } else {
+            productResponses = productService.searchProducts(searchText);
+        }
         return new ResponseEntity<>(productResponses, HttpStatus.OK);
     }
 

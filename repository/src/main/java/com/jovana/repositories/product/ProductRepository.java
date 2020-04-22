@@ -29,4 +29,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "where p.deleted = false ")
     Set<ProductResponse> findAllWithImages();
 
+    @Query("select new com.jovana.entity.product.dto.ProductResponse(p) " +
+            "from Product p " +
+            "where LOWER(p.name) like CONCAT('%', LOWER(:searchText), '%') " +
+            "or LOWER(p.description) like CONCAT('%', LOWER(:searchText), '%') " +
+            "and p.deleted = false ")
+    Set<ProductResponse> findAllWhereNameOrDescriptionContainsText(@Param("searchText") String searchText);
+
 }

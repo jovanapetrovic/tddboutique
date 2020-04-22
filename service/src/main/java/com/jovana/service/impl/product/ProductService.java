@@ -30,4 +30,6 @@ public interface ProductService {
 
     Set<ProductResponse> viewAllProducts();
 
+    Set<ProductResponse> searchProducts(String searchText);
+
 }

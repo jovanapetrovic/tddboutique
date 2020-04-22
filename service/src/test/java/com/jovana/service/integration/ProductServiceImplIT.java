@@ -94,6 +94,25 @@ public class ProductServiceImplIT extends AbstractTest {
             assertEquals(4, products.size());
         }
 
+        @WithMockCustomUser
+        @DisplayName("Then only products where name or description contain search text are fetched")
+        @Test
+        public void testSearchProductsSuccess() {
+            // exercise
+            String TEST_TEXT_SEARCH_NAME = "summer";
+            Set<ProductResponse> products = productService.searchProducts(TEST_TEXT_SEARCH_NAME);
+
+            String TEST_TEXT_SEARCH_DESCRIPTION = "aMazIng";
+            Set<ProductResponse> products1 = productService.searchProducts(TEST_TEXT_SEARCH_DESCRIPTION);
+
+            // verify
+            assertNotNull(products);
+            assertEquals(1, products.size());
+
+            assertNotNull(products1);
+            assertEquals(1, products1.size());
+        }
+
     }
 
     @DisplayName("When we want to add a new product")
