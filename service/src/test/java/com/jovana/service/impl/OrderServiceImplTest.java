@@ -5,13 +5,11 @@ import com.jovana.entity.coupon.Coupon;
 import com.jovana.entity.order.Order;
 import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.PaymentStatus;
-import com.jovana.entity.order.dto.CheckoutCartRequest;
-import com.jovana.entity.order.dto.OrderCompletedResponse;
-import com.jovana.entity.order.dto.OrderResponse;
-import com.jovana.entity.order.dto.OrderSummary;
+import com.jovana.entity.order.dto.*;
 import com.jovana.entity.order.payment.PaymentResponse;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.user.User;
+import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.order.OrderRepository;
 import com.jovana.service.impl.coupon.CouponService;
 import com.jovana.service.impl.order.OrderItemService;
@@ -252,15 +250,18 @@ public class OrderServiceImplTest {
 
     }
 
-    @DisplayName("When we want to get user orders")
+    @DisplayName("When we want to view one or more user orders")
     @Nested
     class GetUserOrdersTest {
+
+        private final Long TEST_USER_ID = 10L;
+        private final Long TEST_ORDER_ID = 10L;
+        private final Long TEST_ORDER_ID_NOT_EXISTS = 9999L;
 
         @DisplayName("Then all user's orders are fetched from database if there are any")
         @Test
         public void testViewUserOrdersSuccess() {
             // prepare
-            Long TEST_USER_ID = 10L;
             Order orderMock1 = mock(Order.class);
             Order orderMock2 = mock(Order.class);
             Set<Order> orders = org.mockito.internal.util.collections.Sets.newSet(orderMock1, orderMock2);
@@ -276,6 +277,27 @@ public class OrderServiceImplTest {
             // verify
             assertNotNull(orderResponses);
             assertEquals(2, orderResponses.size());
+        }
+
+        @DisplayName("Then Order with order items is fetched from database when id is valid")
+        @Test
+        public void testViewOneOrderSuccess() {
+            // prepare
+            OrderFullResponse orderResponseMock = mock(OrderFullResponse.class);
+            when(orderRepository.findOneWithOrderItemsByOrderIdAndUserId(anyLong(), anyLong())).thenReturn(orderResponseMock);
+            // exercise
+            OrderFullResponse orderFullResponse = orderService.viewOneOrder(TEST_USER_ID, TEST_ORDER_ID);
+            // verify
+            assertNotNull(orderFullResponse);
+        }
+
+        @DisplayName("Then error is thrown when Order with passed id doesn't exist")
+        @Test
+        public void testViewOneOrderFailsWhenPassedIdDoesntExist() {
+            // prepare
+            when(orderRepository.findOneWithOrderItemsByOrderIdAndUserId(anyLong(), anyLong())).thenReturn(null);
+            // verify
+            assertThrows(EntityNotFoundException.class, () -> orderService.viewOneOrder(TEST_USER_ID, TEST_ORDER_ID));
         }
     }
 

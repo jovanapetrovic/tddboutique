@@ -2,6 +2,7 @@ package com.jovana.api;
 
 import com.jovana.entity.PathConstants;
 import com.jovana.entity.order.dto.*;
+import com.jovana.entity.product.dto.ProductFullResponse;
 import com.jovana.service.impl.order.OrderItemService;
 import com.jovana.service.impl.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,13 @@ public class OrderResource {
     public ResponseEntity<Set<OrderResponse>> viewAllUserOrdersGET(@PathVariable("userId") Long userId) {
         Set<OrderResponse> orderResponses = orderService.viewUserOrders(userId);
         return new ResponseEntity<>(orderResponses, HttpStatus.OK);
+    }
+
+    @GetMapping(value = PathConstants.ORDER_VIEW_ONE)
+    public ResponseEntity<OrderFullResponse> viewOneUserOrderGET(@PathVariable("userId") Long userId,
+                                                                 @PathVariable("orderId") Long orderId) {
+        OrderFullResponse orderFullResponse = orderService.viewOneOrder(userId, orderId);
+        return new ResponseEntity<>(orderFullResponse, HttpStatus.OK);
     }
 
 }

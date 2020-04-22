@@ -8,6 +8,7 @@ public final class PathConstants {
     public static final String PH_PRODUCT_ID = "{productId}";
     public static final String PH_IMAGE_NAME = "{imageName:.+}";
     public static final String PH_ORDER_ITEM_ID = "{orderItemId}";
+    public static final String PH_ORDER_ID = "{orderId}";
 
     // Syntax
     public static final String SEPARATOR = "/";
@@ -58,6 +59,7 @@ public final class PathConstants {
     // order
     public static final String ORDER = "/order";
     public static final String ORDER_VIEW_ALL = "/orders/" + PH_USER_ID;
+    public static final String ORDER_VIEW_ONE = ORDER + SEPARATOR + PH_USER_ID + SEPARATOR + PH_ORDER_ID;
 
     private PathConstants() {
     }

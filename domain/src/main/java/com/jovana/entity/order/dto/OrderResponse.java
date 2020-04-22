@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class OrderResponse {
 
     private Long orderId;
-    private LocalDateTime date;
+    private LocalDateTime dateCreated;
     private BigDecimal totalPrice;
     private BigDecimal priceWithDiscount;
     private String paymentStatusDescription;
@@ -23,7 +23,7 @@ public class OrderResponse {
     public static OrderResponse createFromOrder(Order order) {
         OrderResponse response = new OrderResponse();
         response.setOrderId(order.getId());
-        response.setDate(order.getCreatedDate());
+        response.setDateCreated(order.getCreatedDate());
         response.setTotalPrice(order.getTotalPrice());
         response.setPriceWithDiscount(order.getPriceWithDiscount());
         response.setPaymentStatusDescription(order.getPaymentStatus().getDescription());
@@ -39,12 +39,12 @@ public class OrderResponse {
         this.orderId = orderId;
     }
 
-    public LocalDateTime getDate() {
-        return date;
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public BigDecimal getTotalPrice() {

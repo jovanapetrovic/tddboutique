@@ -8,19 +8,12 @@ import com.jovana.entity.shippingaddress.ShippingAddress;
 public class ShippingAddressResponse {
 
     private Long id;
-
     private String firstName;
-
     private String lastName;
-
     private String address;
-
     private Long zipCode;
-
     private String city;
-
     private String country;
-
     private String phoneNumber;
 
     public ShippingAddressResponse() {

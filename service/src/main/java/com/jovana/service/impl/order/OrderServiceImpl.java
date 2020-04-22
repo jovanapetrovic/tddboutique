@@ -4,19 +4,18 @@ import com.google.common.collect.Sets;
 import com.jovana.entity.coupon.Coupon;
 import com.jovana.entity.order.Order;
 import com.jovana.entity.order.PaymentMethod;
-import com.jovana.entity.order.dto.OrderCompletedResponse;
+import com.jovana.entity.order.dto.*;
 import com.jovana.entity.order.PaymentStatus;
-import com.jovana.entity.order.dto.CheckoutCartRequest;
-import com.jovana.entity.order.dto.OrderResponse;
-import com.jovana.entity.order.dto.OrderSummary;
 import com.jovana.entity.order.payment.PaymentResponse;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.user.User;
+import com.jovana.exception.EntityNotFoundException;
 import com.jovana.repositories.order.OrderRepository;
 import com.jovana.service.impl.coupon.CouponService;
 import com.jovana.service.impl.payment.PaymentService;
 import com.jovana.service.impl.shippingaddress.ShippingAddressService;
 import com.jovana.service.impl.user.UserService;
+import com.jovana.service.security.IsAdminOrUser;
 import com.jovana.service.security.IsUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    @IsUser
+    @IsAdminOrUser
     @Override
     public Set<OrderResponse> viewUserOrders(Long userId) {
         Set<Order> orders = orderRepository.findAllByUserId(userId);
@@ -117,6 +116,17 @@ public class OrderServiceImpl implements OrderService {
         }
         LOGGER.debug("Found {} orders for user with id = {}.", orderResponses.size(), userId);
         return orderResponses;
+    }
+
+    @IsAdminOrUser
+    @Override
+    public OrderFullResponse viewOneOrder(Long userId, Long orderId) {
+        OrderFullResponse orderFullResponse = orderRepository.findOneWithOrderItemsByOrderIdAndUserId(userId, orderId);
+        if (orderFullResponse == null) {
+            LOGGER.info("Order with id = {} was not found in the db.", orderId);
+            throw new EntityNotFoundException("No order found with id = " + orderId);
+        }
+        return orderFullResponse;
     }
 
     private Order createNewOrder(User user,
