@@ -1,11 +1,7 @@
 package com.jovana.api;
 
 import com.jovana.entity.PathConstants;
-import com.jovana.entity.order.dto.OrderCompletedResponse;
-import com.jovana.entity.order.dto.CartRequest;
-import com.jovana.entity.order.dto.AddToCartResponse;
-import com.jovana.entity.order.dto.CartResponse;
-import com.jovana.entity.order.dto.CheckoutCartRequest;
+import com.jovana.entity.order.dto.*;
 import com.jovana.service.impl.order.OrderItemService;
 import com.jovana.service.impl.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 /**
  * Created by jovana on 13.04.2020
@@ -52,6 +49,12 @@ public class OrderResource {
                                                                                   @Valid @RequestBody CheckoutCartRequest checkoutCartRequest) {
         OrderCompletedResponse orderCompletedResponse = orderService.checkoutCartAndProcessOrder(userId, checkoutCartRequest);
         return new ResponseEntity<>(orderCompletedResponse, HttpStatus.OK);
+    }
+
+    @GetMapping(value = PathConstants.ORDER_VIEW_ALL)
+    public ResponseEntity<Set<OrderResponse>> viewAllUserOrdersGET(@PathVariable("userId") Long userId) {
+        Set<OrderResponse> orderResponses = orderService.viewUserOrders(userId);
+        return new ResponseEntity<>(orderResponses, HttpStatus.OK);
     }
 
 }

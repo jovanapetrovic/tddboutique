@@ -1,11 +1,13 @@
 package com.jovana.service.impl.order;
 
+import com.google.common.collect.Sets;
 import com.jovana.entity.coupon.Coupon;
 import com.jovana.entity.order.Order;
 import com.jovana.entity.order.PaymentMethod;
 import com.jovana.entity.order.dto.OrderCompletedResponse;
 import com.jovana.entity.order.PaymentStatus;
 import com.jovana.entity.order.dto.CheckoutCartRequest;
+import com.jovana.entity.order.dto.OrderResponse;
 import com.jovana.entity.order.dto.OrderSummary;
 import com.jovana.entity.order.payment.PaymentResponse;
 import com.jovana.entity.shippingaddress.ShippingAddress;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 
 /**
@@ -102,6 +105,18 @@ public class OrderServiceImpl implements OrderService {
                 isCardPayment,
                 paymentResponse != null ? paymentResponse.getReceiptUrl() : null
         );
+    }
+
+    @IsUser
+    @Override
+    public Set<OrderResponse> viewUserOrders(Long userId) {
+        Set<Order> orders = orderRepository.findAllByUserId(userId);
+        Set<OrderResponse> orderResponses = Sets.newHashSet();
+        for (Order order : orders) {
+            orderResponses.add(OrderResponse.createFromOrder(order));
+        }
+        LOGGER.debug("Found {} orders for user with id = {}.", orderResponses.size(), userId);
+        return orderResponses;
     }
 
     private Order createNewOrder(User user,

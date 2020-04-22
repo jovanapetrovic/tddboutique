@@ -7,6 +7,7 @@ import com.jovana.entity.order.OrderItem;
 import com.jovana.entity.order.PaymentStatus;
 import com.jovana.entity.order.dto.CheckoutCartRequest;
 import com.jovana.entity.order.dto.OrderCompletedResponse;
+import com.jovana.entity.order.dto.OrderResponse;
 import com.jovana.entity.order.dto.OrderSummary;
 import com.jovana.entity.order.payment.PaymentResponse;
 import com.jovana.entity.shippingaddress.ShippingAddress;
@@ -32,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -248,6 +250,33 @@ public class OrderServiceImplTest {
             );
         }
 
+    }
+
+    @DisplayName("When we want to get user orders")
+    @Nested
+    class GetUserOrdersTest {
+
+        @DisplayName("Then all user's orders are fetched from database if there are any")
+        @Test
+        public void testViewUserOrdersSuccess() {
+            // prepare
+            Long TEST_USER_ID = 10L;
+            Order orderMock1 = mock(Order.class);
+            Order orderMock2 = mock(Order.class);
+            Set<Order> orders = org.mockito.internal.util.collections.Sets.newSet(orderMock1, orderMock2);
+
+            when(orderRepository.findAllByUserId(TEST_USER_ID)).thenReturn(orders);
+
+            when(orderMock1.getPaymentStatus()).thenReturn(PaymentStatus.PAID);
+            when(orderMock2.getPaymentStatus()).thenReturn(PaymentStatus.DELIVERY);
+
+            // exercise
+            Set<OrderResponse> orderResponses = orderService.viewUserOrders(TEST_USER_ID);
+
+            // verify
+            assertNotNull(orderResponses);
+            assertEquals(2, orderResponses.size());
+        }
     }
 
 }

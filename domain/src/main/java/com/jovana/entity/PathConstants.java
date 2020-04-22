@@ -55,6 +55,10 @@ public final class PathConstants {
     public static final String CART_VIEW_ALL = CART + "/view/" + PH_USER_ID;
     public static final String CART_CHECKOUT = CART + "/checkout/" + PH_USER_ID;
 
+    // order
+    public static final String ORDER = "/order";
+    public static final String ORDER_VIEW_ALL = "/orders/" + PH_USER_ID;
+
     private PathConstants() {
     }
 
