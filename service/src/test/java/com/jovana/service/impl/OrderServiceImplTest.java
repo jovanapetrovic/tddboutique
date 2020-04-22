@@ -217,8 +217,7 @@ public class OrderServiceImplTest {
             // verify
             assertAll("Verify order completed response without coupon",
                     () -> assertNotNull(orderCompletedResponse),
-                    () -> assertNotNull(orderCompletedResponse.getUsedCouponCode()),
-                    () -> assertEquals("", orderCompletedResponse.getUsedCouponCode())
+                    () -> assertNull(orderCompletedResponse.getUsedCouponCode())
             );
         }
 
@@ -243,8 +242,7 @@ public class OrderServiceImplTest {
             // verify
             assertAll("Verify order completed response without coupon",
                     () -> assertNotNull(orderCompletedResponse),
-                    () -> assertNotNull(orderCompletedResponse.getUsedCouponCode()),
-                    () -> assertEquals("", orderCompletedResponse.getUsedCouponCode())
+                    () -> assertNull(orderCompletedResponse.getUsedCouponCode())
             );
         }
 
@@ -297,7 +295,7 @@ public class OrderServiceImplTest {
             // prepare
             when(orderRepository.findOneWithOrderItemsByOrderIdAndUserId(anyLong(), anyLong())).thenReturn(null);
             // verify
-            assertThrows(EntityNotFoundException.class, () -> orderService.viewOneOrder(TEST_USER_ID, TEST_ORDER_ID));
+            assertThrows(EntityNotFoundException.class, () -> orderService.viewOneOrder(TEST_USER_ID, TEST_ORDER_ID_NOT_EXISTS));
         }
     }
 

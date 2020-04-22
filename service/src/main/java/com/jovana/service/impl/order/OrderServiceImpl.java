@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
         return new OrderCompletedResponse(
                 orderSummary.getTotalPrice(),
                 totalPriceWithDiscount,
-                coupon != null ? coupon.getCode() : "",
+                coupon != null ? coupon.getCode() : null,
                 isCardPayment,
                 paymentResponse != null ? paymentResponse.getReceiptUrl() : null
         );

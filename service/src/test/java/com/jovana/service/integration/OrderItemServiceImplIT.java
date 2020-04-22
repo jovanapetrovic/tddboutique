@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by jovana on 13.04.2020
  */
-@FlywayTest(locationsForMigrate = {"db.additional.order"})
+@FlywayTest(locationsForMigrate = {"db.additional.orderitem"})
 public class OrderItemServiceImplIT extends AbstractTest {
 
     @Autowired
