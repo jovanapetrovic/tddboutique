@@ -95,7 +95,7 @@ public class ImageStorageServiceImplTest {
             when(imageRepository.findById(anyLong())).thenReturn(Optional.of(image));
 
             // exercise
-            String imageName = imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock);
+            imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock);
 
             // verify
             Image newImage = imageRepository.findById(IMAGE_ID).get();
@@ -127,7 +127,7 @@ public class ImageStorageServiceImplTest {
             when(imageRepository.findById(anyLong())).thenReturn(Optional.of(image));
 
             // exercise
-            String imageName = imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock);
+            imageStorageService.addAndStoreImage(TEST_PRODUCT_ID, imageFileMock);
 
             // verify
             Image newImage = imageRepository.findById(IMAGE_ID).get();

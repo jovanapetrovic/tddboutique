@@ -1,6 +1,5 @@
 package com.jovana.service.integration;
 
-import com.jovana.entity.product.dto.ProductResponse;
 import com.jovana.entity.shippingaddress.ShippingAddress;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressRequest;
 import com.jovana.entity.shippingaddress.dto.ShippingAddressResponse;
@@ -53,7 +52,7 @@ public class ShippingAddressServiceImplIT extends AbstractTest {
             Set<ShippingAddressResponse> shippingAddresses = shippingAddressService.viewAllShippingAddresses(TEST_USER_ID);
             // verify
             assertNotNull(shippingAddresses);
-            assertEquals(1, shippingAddresses.size());
+            assertEquals(2, shippingAddresses.size());
         }
 
     }
